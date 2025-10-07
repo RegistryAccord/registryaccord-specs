@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "com.registryaccord.profile.v1.0.0",
+  "title": "Profile",
+  "description": "A schema representing a user's profile on the RegistryAccord network.",
+  "type": "object",
+  "properties": {
+    "displayName": {
+      "type": "string",
+      "description": "The user's public display name.",
+      "maxLength": 64
+    },
+    "bio": {
+      "type": "string",
+      "description": "A short user biography.",
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "displayName"
+  ]
+}
