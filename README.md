@@ -25,6 +25,8 @@ The specifications in this repository are in an early, formative stage. They are
   * **GOVERNANCE.md**: This file details the policy for schema versioning, the process for proposing changes, and the deprecation policy.
   * **FEDERATION.md**: This file contains the draft specification for Discovery Gateway federation, including expected behaviors and SLA targets.
 
+Normative language in this repository uses RFC 2119 and RFC 8174; capitalized MUST/SHOULD/MAY are to be interpreted as defined there, only where capitalized [TERMINOLOGY.md]. See schemas/INDEX.md for the current catalog, schemas/SPEC-README.md for authoring rules, GOVERNANCE.md for evolution policy, and CONTRIBUTING.md for the proposal/PR flow. 
+
 -----
 
 ### Contribution
