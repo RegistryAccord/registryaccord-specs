@@ -1,20 +1,22 @@
 # RegistryAccord Protocol Governance
 
-### ## Philosophy & Overview
+### Philosophy & Overview
 
 This document defines the official process for governing changes to the RegistryAccord protocol specifications. Our goal is to ensure the protocol evolves in a stable, transparent, and community-informed manner.
 
 The process outlined here is the initial governance model for the project's early phases ("Architect" and "Community Builder"). It is designed to be lightweight and based on standard open-source practices. We expect this process to evolve into a more formal, community-driven model as the project matures.
 
-### ## Scope
+### Scope
 
 This governance process applies to all changes to the **Lexicon Schemas** and other core specification documents contained within the `registryaccord-specs` repository.
 
 ---
 
-### ## The Change Process
+### The Change Process
 
 All substantive changes to the protocol specifications, from fixing a typo to adding a new schema, must follow this process.
+
+Process: Issue (proposal template) → PR (schemas+examples+docs) → Review (N maintainers) → Merge & tag. Stability: DRAFT→STABLE when two independent implementations pass examples under CI. Breaking: publish under a new schema id/version per policy (compatibility first). 
 
 #### **Step 1: Discussion (GitHub Issue)**
 
@@ -41,7 +43,7 @@ All substantive changes to the protocol specifications, from fixing a typo to ad
 
 ---
 
-### ## Schema Versioning
+### Schema Versioning
 
 All Lexicon schemas follow **Semantic Versioning 2.0.0 (SemVer)**. The version number is defined in the `$id` field of each schema file (e.g., `com.registryaccord.profile.v1.0.0`).
 
