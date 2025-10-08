@@ -16,8 +16,6 @@ This governance process applies to all changes to the **Lexicon Schemas** and ot
 
 All substantive changes to the protocol specifications, from fixing a typo to adding a new schema, must follow this process.
 
-Process: Issue (proposal template) → PR (schemas+examples+docs) → Review (N maintainers) → Merge & tag. Stability: DRAFT→STABLE when two independent implementations pass examples under CI. Breaking: publish under a new schema id/version per policy (compatibility first). 
-
 #### **Step 1: Discussion (GitHub Issue)**
 
 * **Start Here:** Before making any changes, you must first open a **GitHub Issue** to describe your proposed change.
@@ -40,6 +38,8 @@ Process: Issue (proposal template) → PR (schemas+examples+docs) → Review (N 
 
 * **Consensus:** Once the PR has been approved by at least one core maintainer and any outstanding feedback has been addressed, it will be merged into the `main` branch.
 * **Rejection:** A PR may be rejected if it does not align with the protocol's vision, introduces an unnecessary breaking change, or fails to gain consensus. The reasons for rejection will be clearly communicated in the PR.
+
+Process: Issue (proposal template) → PR (schemas+examples+docs) → Review (N maintainers) → Merge & tag. Stability: DRAFT→STABLE when two independent implementations pass examples under CI. Breaking: publish under a new schema id/version per policy (compatibility first). 
 
 ---
 
