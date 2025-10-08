@@ -1,44 +1,40 @@
- ADR 001: Initial DID Method for Phase 1
+# ADR 001: Initial DID Method
 
 * **Status:** Accepted
-* **Date:** 2025-10-07
+* **Date:** 2025-10-08
 
 ---
 
 ### ## Context
 
-The RegistryAccord protocol requires a decentralized, user-sovereign identity method to ensure that a user's identity is a portable asset they control, independent of any single service. The primary goals for this identity system are cryptographic verifiability, data portability, and human-readability.
+The RegistryAccord protocol requires a decentralized, user-sovereign identity method to ensure a user's identity is a portable asset they control. The solution must balance two key objectives:
+1.  Provide a simple, "no-setup" onboarding experience for our primary audience of non-technical creators.
+2.  Offer a fully decentralized, self-sovereign option for technically advanced users who wish to have maximum control.
 
-Two primary candidates were considered for the initial implementation:
-1.  **`did:plc`**: Provides strong auditability and is managed by a dedicated server, which can simplify key recovery.
-2.  **`did:web`**: Uses a standard domain name to host a DID document, relying on existing DNS and HTTPS infrastructure.
-
-A decision is needed on which method to use as the default for the Phase 1 Proof of Concept (PoC) and initial implementation.
+The two primary candidates considered were `did:web` (relying on user-owned domains) and `did:plc` (relying on a managed directory server). A decision is needed on which method to prioritize and offer as the default.
 
 ---
 
 ### ## Decision
 
-We will adopt **`did:web`** as the default DID method for Phase 1 of the RegistryAccord protocol.
+We will adopt **`did:plc`** as the **default, platform-managed** DID method for the RegistryAccord protocol.
 
-This decision is based on the following reasons:
-* **Simplicity and Speed:** `did:web` does not require any on-chain transactions or specialized server infrastructure beyond a standard web server. This allows for faster implementation and easier testing during the PoC phase.
-* **Alignment with CDV Model:** The method aligns perfectly with the protocol's goal of allowing users to self-host their Creator Data Vault (CDV) on their own domain. A user's identity can be directly tied to the domain where their data resides.
-* **Low Barrier to Entry:** It is built on familiar, open standards (DNS, HTTPS, JSON) that are well-understood by the developer community, making it easy for early adopters to create and manage their identities.
+We will also support **`did:web`** as an **optional, self-sovereign** method for users who already own and manage a domain and wish to use it for their identity.
+
+This decision to prioritize `did:plc` is based on the following reasons:
+
+* **Simplified User Onboarding:** It provides a "no-setup" flow that does not require users to purchase or configure a domain name, which is a significant barrier for non-technical creators.
+* **Robust Key Management:** A managed `did:plc` server allows the platform to offer user-friendly key rotation and account recovery flows, which is a critical feature for mainstream adoption and aligns with the protocol's goals.
+* **Strong Auditability:** The `did:plc` method provides a secure, auditable history of key rotations and document updates, which enhances the security and trustworthiness of the identity layer.
 
 ---
 
 ### ## Consequences
 
 * **Positive:**
-    * This choice significantly accelerates the development timeline for the Phase 1 PoC.
-    * It reinforces the narrative of user sovereignty by directly linking identity to a user-controlled domain name.
-    * The developer experience for the PoC will be simpler, as creating a `did:web` can be easily demonstrated.
-
-* **Trade-offs:**
-    * The auditability of identity history is less robust compared to `did:plc`.
-    * Identity security is tied to the security of the user's domain name registration and DNS configuration.
-
-* **Future Work:**
-    * `did:plc` remains a strong candidate for a future managed identity option provided by RegistryAccord or third-party providers. It can be offered as a high-assurance alternative for users who do not wish to manage their own domain.
-    * The key lifecycle runbook must provide clear guidance on securing a domain for use with `did:web`.
+    * This approach significantly lowers the barrier to entry for our core target audience of creators.
+    * It directly supports the guiding principle of "Pragmatic Decentralization" by providing a simple, managed on-ramp while still supporting a fully decentralized alternative.
+    * It gives users a clear choice, reinforcing the commitment to "Creator-Centric Ownership".
+* **Impact on Roadmap:**
+    * The development of a managed `did:plc` server in the `registryaccord-identity-go` repository is now a critical-path deliverable for Phase 1.
+    * The `registryaccord-cli-ts` and the future flagship `registryaccord-app` must be designed to handle both `did:plc` and `did:web` identifiers.
