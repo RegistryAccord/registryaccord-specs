@@ -1,0 +1,24 @@
+# Windsurf Rules for registryaccord-specs
+
+scope:
+  - Canonical specifications repo for RegistryAccord: schemas (Lexicon v1), ADRs, governance, and examples.
+
+authoring:
+  - Use Lexicon v1 JSON under schemas/lexicons with NSIDs (reverse-DNS), e.g., com.registryaccord.identity.
+  - Keep changes backward compatible; breaking changes require new NSIDs per evolution policy.
+  - Provide examples for each schema in examples/ and link them from schemas/INDEX.md.
+
+validation:
+  - Local: npm ci && npm run validate (loads all lexicons).
+  - CI must pass before proposing merge; update INDEX and examples with schema changes.
+
+review_checklist:
+  - NSID matches file name; defs include proper record/query/procedure shapes; required fields minimal and clear.
+  - Examples validate; descriptions precise; refs correct; no unused defs.
+  - GOVERNANCE and TERMINOLOGY references intact when adding normative requirements.
+
+security_docs:
+  - No secrets or environment credentials in repo; security disclosures via SECURITY.md only.
+
+output_policy:
+  - Propose minimal diffs with file/line context; batch trivial formatting; isolate breaking changes; include rationale referencing ADRs.

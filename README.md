@@ -23,7 +23,6 @@ The specifications in this repository are in an early, formative stage. They are
   * **/schemas**: This directory contains the core of the protocol—the **Lexicon** definitions in JSON Schema format that define all network objects and actions.
   * **/adr**: This directory contains our **Architecture Decision Records (ADRs)**. These documents outline the rationale behind key technical choices, such as our default DID method.
   * **GOVERNANCE.md**: This file details the policy for schema versioning, the process for proposing changes, and the deprecation policy.
-  * **FEDERATION.md**: This file contains the draft specification for Discovery Gateway federation, including expected behaviors and SLA targets.
 
 Normative language in this repository uses RFC 2119 and RFC 8174; capitalized MUST/SHOULD/MAY are to be interpreted as defined there, only where capitalized [TERMINOLOGY.md]. See schemas/INDEX.md for the current catalog, schemas/SPEC-README.md for authoring rules, GOVERNANCE.md for evolution policy, and CONTRIBUTING.md for the proposal/PR flow. 
 

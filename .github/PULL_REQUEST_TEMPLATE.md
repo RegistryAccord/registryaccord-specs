@@ -1,1 +1,8 @@
-Summary, Validation checklist (npm run validate; examples updated), Docs updated (INDEX/SPEC-README; ADRs if needed), Breaking changes & migration. 
+# .github/PULL_REQUEST_TEMPLATE.md
+## Summary
+## Validation
+- [ ] npm run validate
+- [ ] Examples updated
+- [ ] INDEX/docs updated
+## Breaking changes
+## Links (issues/ADRs)

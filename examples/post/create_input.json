@@ -1,2 +1,1 @@
-// examples/post/create_input.json
-{ "text": "Hello, sovereign web.", "authorDid": "did:ra:ed25519:EXAMPLE" }
+{ "text": "Hello, sovereign web.", "authorDid": "did:ra:ed25519:EXAMPLE", "createdAt": "2025-01-01T00:00:00Z" }

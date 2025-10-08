@@ -12,7 +12,7 @@
         "properties": {
           "text": {"type": "string", "maxLength": 2048},
           "createdAt": {"type": "string", "format": "datetime"},
-          "authorDid": {"type": "string"}
+          "authorDid": {"type": "string", "format": "did"}
         }
       }
     },

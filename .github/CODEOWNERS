@@ -1,3 +1,4 @@
+# .github/CODEOWNERS
 * @RegistryAccord/maintainers
 /schemas/* @RegistryAccord/spec-editors
 /adr/* @RegistryAccord/spec-editors

@@ -1,11 +1,3 @@
-You should add the `LEXICON.md` file to the **root directory** of your `registryaccord-specs` repository.
-
-This file serves as a high-level, human-readable guide to the protocol's data language. It explains the core concepts and points developers to the formal schema definitions.
-
-Here is the recommended content for your `LEXICON.md` file.
-
------
-
 # RegistryAccord Lexicon
 
 ### Overview
@@ -14,7 +6,7 @@ The Lexicon is the shared language of the RegistryAccord network. It is a collec
 
 By providing a clear, versioned, and open set of schemas, the Lexicon ensures that all participants in the ecosystem—from the flagship application to third-party clients and services—can communicate and interoperate reliably. This document provides a high-level overview of the Lexicon's core concepts.
 
-**The formal, machine-readable schema definitions are located in the `/schemas` directory as JSON Schema files.**
+**The formal, machine-readable Lexicon definitions are located in the `schemas/lexicons/` directory as Lexicon v1 JSON files.**
 
 -----
 
@@ -33,13 +25,11 @@ The protocol is built around a few core data types, or "nouns." Each of these is
 
 -----
 
-### Naming and Versioning
+### Naming and Evolution
 
-To ensure clarity and prevent collisions, all schemas use a reverse-domain name identifier (e.g., `com.registryaccord.profile`).
+To ensure clarity and prevent collisions, all schemas use a reverse-domain name identifier (NSID), e.g., `com.registryaccord.profile`.
 
-Each individual schema is versioned independently using **Semantic Versioning (SemVer)** (e.g., `1.0.0`). This allows us to evolve the protocol by introducing new, backward-compatible schema versions or carefully managing breaking changes.
-
-The governance process for proposing and ratifying schema changes is detailed in our `GOVERNANCE.md` file.
+We evolve schemas additively under the same NSID when changes are backward-compatible. Breaking changes MUST be published under a new NSID, with migration notes tracked in `schemas/INDEX.md` and rationale captured in an ADR. See `GOVERNANCE.md` for the full evolution policy.
 
 ### How to Find Schemas
 

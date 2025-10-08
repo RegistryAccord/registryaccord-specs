@@ -43,13 +43,13 @@ Process: Issue (proposal template) → PR (schemas+examples+docs) → Review (N 
 
 ---
 
-### Schema Versioning
+### Schema Evolution Policy
 
-All Lexicon schemas follow **Semantic Versioning 2.0.0 (SemVer)**. The version number is defined in the `$id` field of each schema file (e.g., `com.registryaccord.profile.v1.0.0`).
+Lexicons use NSIDs (reverse-DNS identifiers) and are authored as Lexicon v1 JSON. We do not embed SemVer into IDs. Evolution follows these rules:
 
-* **MAJOR** version change (e.g., `1.x.x` -> `2.0.0`): For a breaking change that is not backward-compatible. This requires a formal ADR and significant community discussion.
-* **MINOR** version change (e.g., `1.0.x` -> `1.1.0`): For adding new, optional fields or functionality in a backward-compatible manner.
-* **PATCH** version change (e.g., `1.0.0` -> `1.0.1`): For backward-compatible bug fixes or clarifications in descriptions.
+* **Additive changes (backward-compatible):** You MAY add optional fields, new non-breaking defs, queries, or procedures under the same NSID. Avoid changing required fields.
+* **Breaking changes:** You MUST publish a new NSID (e.g., `com.registryaccord.feed.post2` or a new namespace path) and deprecate the former in `schemas/INDEX.md` with migration notes. Breaking changes require an ADR and consensus.
+* **Status:** Schemas are `DRAFT` until two independent implementations validate against examples under CI, then may be marked `STABLE` in `schemas/INDEX.md`.
 
 ### ## Architectural Decision Records (ADRs)
 
