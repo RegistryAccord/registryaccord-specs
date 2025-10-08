@@ -5,7 +5,7 @@
 
 ---
 
-### ## Context
+### Context
 
 The RegistryAccord protocol requires a decentralized, user-sovereign identity method to ensure a user's identity is a portable asset they control. The solution must balance two key objectives:
 1.  Provide a simple, "no-setup" onboarding experience for our primary audience of non-technical creators.
@@ -15,7 +15,7 @@ The two primary candidates considered were `did:web` (relying on user-owned doma
 
 ---
 
-### ## Decision
+### Decision
 
 We will adopt **`did:plc`** as the **default, platform-managed** DID method for the RegistryAccord protocol.
 
@@ -29,7 +29,7 @@ This decision to prioritize `did:plc` is based on the following reasons:
 
 ---
 
-### ## Consequences
+### Consequences
 
 * **Positive:**
     * This approach significantly lowers the barrier to entry for our core target audience of creators.
