@@ -1,0 +1,2 @@
+// examples/identity/create_output.json
+{ "did": "did:ra:ed25519:EXAMPLE" }
