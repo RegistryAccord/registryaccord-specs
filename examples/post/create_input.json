@@ -1,0 +1,2 @@
+// examples/post/create_input.json
+{ "text": "Hello, sovereign web.", "authorDid": "did:ra:ed25519:EXAMPLE" }
