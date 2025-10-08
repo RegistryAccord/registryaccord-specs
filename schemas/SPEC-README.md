@@ -1,0 +1,1 @@
+Lexicon authoring: place Lexicon JSON files under schemas/lexicons; use NSIDs (reverse‑DNS) such as com.registryaccord.identity; evolve schemas additively; breaking changes require new ids; validate locally with npm run validate. 
