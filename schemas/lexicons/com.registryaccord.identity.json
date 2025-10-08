@@ -1,0 +1,40 @@
+{
+  "lexicon": 1,
+  "id": "com.registryaccord.identity",
+  "defs": {
+    "record": {
+      "type": "record",
+      "description": "RegistryAccord identity record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["did", "publicKey", "createdAt"],
+        "properties": {
+          "did": {"type": "string"},
+          "publicKey": {"type": "bytes"},
+          "createdAt": {"type": "string", "format": "datetime"}
+        }
+      }
+    },
+    "create": {
+      "type": "procedure",
+      "description": "Create a new identity",
+      "input": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["publicKey"],
+          "properties": { "publicKey": {"type": "bytes"} }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["did"],
+          "properties": { "did": {"type": "string"} }
+        }
+      }
+    }
+  }
+}
