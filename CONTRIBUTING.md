@@ -33,6 +33,8 @@ For those who want to contribute directly to the specification files, we follow 
 5.  **Submit a Pull Request (PR)** to the `main` branch of the official repository.
 6.  In your PR description, please provide a clear explanation of the changes and link to any relevant GitHub Issues.
 
+Before PR: run npm ci && npm run validate; update schemas/INDEX.md and examples; use the PR template; link related issue and ADRs for rationale. 
+
 -----
 
 ### Developer Certificate of Origin (DCO)
