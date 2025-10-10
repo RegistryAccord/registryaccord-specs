@@ -1,54 +1,55 @@
-# Contributing to RegistryAccord Specifications
+# Contributing to RegistryAccord Specs
 
-Thank you for your interest in contributing to the RegistryAccord protocol\! We are in an early, formative stage, and we welcome feedback and ideas from the community to help us build a robust and fair economic layer for the creator economy.
+Thanks for helping improve the protocol specifications.
 
-This document provides a set of guidelines to help you get started.
+Principles
+- Protocol-first, developer-ready specs with strong governance, portability, and repeatability. 
+- Backward-compatible evolution by default; major bumps only for explicit breaking changes.
+- All schema and example changes must be validated in CI and reflected in the changelog.
 
-### Code of Conduct
+What lives here
+- Versioned Lexicons (JSON Schemas)
+- Governance and versioning policy
+- Federation draft (gateway)
+- Payments design (Phase 1 design-only)
+- Fixtures and conformance manifest
+- Security and privacy summaries
+- Style and authoring guides, templates
 
-This project and everyone participating in it is governed by our [Code of Conduct](https://github.com/RegistryAccord/registryaccord-specs/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior.
+Workflow
+1) Fork and branch from main with a descriptive name (e.g., feat/post-mentions-v1-1-0). 
+2) Make changes and update fixtures: ≥3 valid and ≥3 invalid examples per schema. 
+3) Run local checks: make validate-schemas, make lint-docs, make diff-schemas. 
+4) Update CHANGELOG.md with semver impact and migration notes if applicable. 
+5) Open a PR; fill the checklist; pass CI; request CODEOWNERS review. 
+6) For draft→stable promotions, attach governance checklist and conformance status.
 
------
+Governance gates
+- Draft: open iteration; not required for external conformance.
+- Stable: frozen except additive changes; requires conformance-ready fixtures.
+- Deprecated: scheduled removal with migration guidance and timelines.
 
-### How Can I Contribute?
+Semver for schemas
+- Patch: clarifications, doc typos, non-normative notes.
+- Minor: additive fields/enum values with no breaking invariants.
+- Major: removals/renames/behavioral changes; requires deprecation plan and migration.
 
-As we are in the "Architect Phase," the most valuable contributions are discussions and feedback on the core concepts of the protocol.
+PR checklist
+- [ ] Schemas validate; fixtures cover edge cases and negative cases.
+- [ ] CHANGELOG updated with semver and rationale.
+- [ ] SPEC_INDEX.json and SPEC_VERSION_MATRIX.md updated if needed.
+- [ ] Federation samples or payments design updated if payloads change.
+- [ ] Governance checklist attached for status changes.
+- [ ] Links validated; docs lint passes.
 
-### **Reporting Bugs and Suggesting Enhancements**
+Local commands
+- make validate-schemas
+- make lint-docs
+- make diff-schemas
 
-The best way to provide feedback is by opening a **GitHub Issue**.
+Community norms
+- Respectful and constructive collaboration.
+- Security-sensitive issues use private disclosure channels (see SECURITY.md).
 
-  * **Check existing issues** before opening a new one to see if your topic is already being discussed.
-  * If you're reporting a bug, please include as much detail as possible to help us reproduce it.
-  * If you're suggesting an enhancement or a change to the specification, please describe the problem you're trying to solve and your proposed solution.
-
-### **Proposing Changes with Pull Requests**
-
-For those who want to contribute directly to the specification files, we follow a standard GitHub workflow:
-
-1.  **Fork** the `registryaccord-specs` repository to your own GitHub account.
-2.  **Create a new branch** for your changes (e.g., `git checkout -b feature/add-profile-schema`).
-3.  **Make your changes** to the relevant files.
-4.  **Sign your work** (see Developer Certificate of Origin below).
-5.  **Submit a Pull Request (PR)** to the `main` branch of the official repository.
-6.  In your PR description, please provide a clear explanation of the changes and link to any relevant GitHub Issues.
-
-Before PR: run npm ci && npm run validate; update schemas/INDEX.md and examples; use the PR template; link related issue and ADRs for rationale. 
-
------
-
-### Developer Certificate of Origin (DCO)
-
-To ensure that contributions are properly licensed, we use the Developer Certificate of Origin (DCO). Every commit you make must be "signed off" by including a `Signed-off-by` line in the commit message.
-
-You can do this automatically by using the `-s` flag with your git commit command:
-
-```bash
-git commit -s -m "feat: add schema for user profiles"
-```
-
-This will add a line to your commit message like:
-
-`Signed-off-by: Your Name <your.email@example.com>`
-
-By signing your work, you are certifying that you have the right to contribute the code under the project's license.
+Licensing
+- Schemas and docs are released under a permissive license for maximum interoperability.
