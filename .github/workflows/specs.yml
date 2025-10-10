@@ -1,0 +1,33 @@
+name: specs-ci
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: |
+          npm ci || true
+
+      - name: Validate JSON Schemas against fixtures
+        run: |
+          make validate-schemas
+
+      - name: Lint Markdown
+        run: |
+          make lint-docs
+
+      - name: Validate SPEC_INDEX coherence
+        run: |
+          make diff-schemas
