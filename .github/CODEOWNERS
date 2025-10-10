@@ -1,4 +1,21 @@
-# .github/CODEOWNERS
-* @RegistryAccord/maintainers
-/schemas/* @RegistryAccord/spec-editors
-/adr/* @RegistryAccord/spec-editors
+# Default owners
+*       @RegistryAccord/protocol-maintainers
+
+# Lexicons (schemas)
+/lexicons/**                @RegistryAccord/protocol-maintainers
+
+# Federation draft
+/federation/**              @RegistryAccord/protocol-maintainers
+
+# Payments design (Phase 1 design-only)
+/payments-design/**         @RegistryAccord/protocol-maintainers
+
+# Fixtures and conformance manifest
+/fixtures/**                @RegistryAccord/protocol-maintainers
+/conformance/**             @RegistryAccord/protocol-maintainers
+
+# Security and privacy
+/security/**                @RegistryAccord/protocol-maintainers
+
+# Repository-global docs
+/*.md                       @RegistryAccord/protocol-maintainers
