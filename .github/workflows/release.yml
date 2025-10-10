@@ -1,0 +1,31 @@
+name: specs-release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify governance checklist
+        run: |
+          echo "Ensure governance checks completed before tagging"
+          # Placeholder for automated checks
+
+      - name: Generate release notes
+        run: |
+          ./scripts/gen-release-notes.sh > RELEASE_NOTES.md || true
+
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            SPEC_INDEX.json
+            CHANGELOG.md
+            RELEASE_NOTES.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
