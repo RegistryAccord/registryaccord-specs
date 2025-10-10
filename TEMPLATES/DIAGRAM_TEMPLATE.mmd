@@ -1,0 +1,9 @@
+sequenceDiagram
+  autonumber
+  participant Client
+  participant Service
+  participant Bus as NATS JetStream
+  Client->>Service: Request (with Idempotency-Key)
+  Service-->>Client: 202 Accepted (correlationId)
+  Service->>Bus: Publish event (type, version, payload)
+  Note over Bus: Dedup window applies
