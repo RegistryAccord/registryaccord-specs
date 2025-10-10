@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.registryaccord.org/lexicons/{namespace}/{name}/{version}.json",
+  "title": "{namespace}.{name} v{version}",
+  "description": "Describe purpose, ownership, invariants, and links to fixtures.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "createdAt": { "type": "string", "format": "date-time", "description": "RFC 3339 UTC timestamp" }
+  },
+  "required": ["createdAt"],
+  "allOf": [
+    { "description": "Cross-field constraints (if any) go here." }
+  ],
+  "examples": [],
+  "x-governance": {
+    "namespace": "{namespace}",
+    "name": "{name}",
+    "version": "{version}",
+    "status": "draft"
+  }
+}
