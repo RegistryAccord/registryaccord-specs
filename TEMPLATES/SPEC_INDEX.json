@@ -1,0 +1,23 @@
+{
+  "schemas": [
+    {
+      "namespace": "ra.social.profile",
+      "name": "profile",
+      "versions": ["1.0.0"],
+      "latestStable": "1.0.0",
+      "status": "stable",
+      "deprecates": null,
+      "replacedBy": null
+    },
+    {
+      "namespace": "ra.social.post",
+      "name": "post",
+      "versions": ["1.0.0"],
+      "latestStable": "1.0.0",
+      "status": "stable",
+      "deprecates": null,
+      "replacedBy": null
+    }
+  ],
+  "generatedAt": "2025-10-10T00:00:00Z"
+}
