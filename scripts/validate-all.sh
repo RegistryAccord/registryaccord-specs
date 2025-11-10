@@ -25,27 +25,22 @@ echo ""
 services=("identity" "content" "payments" "storage" "feeds" "revenue" "analytics")
 for service in "${services[@]}"; do
   echo -n "  Validating $service service... "
-  # Add debugging output
-  echo "DEBUG: Validating $service service" >&2
   
-  # Capture output and exit code separately
-  OUTPUT_FILE=$(mktemp)
-  npm run lint:$service > "$OUTPUT_FILE" 2>&1
-  EXIT_CODE=$?
+  # Run the validation command and capture exit code
+  if npm run lint:$service > /dev/null 2>&1; then
+    EXIT_CODE=0
+  else
+    EXIT_CODE=$?
+  fi
   
   if [ $EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}✓${NC}"
     ((PASSED_SERVICES++))
-    echo "DEBUG: $service service validation passed" >&2
   else
     echo -e "${RED}✗${NC}"
-    echo "DEBUG: $service service validation failed with exit code $EXIT_CODE" >&2
-    echo "DEBUG: Output:" >&2
-    cat "$OUTPUT_FILE" >&2
+    # Show the actual output for debugging
+    npm run lint:$service >&2 || true
   fi
-  
-  # Clean up
-  rm -f "$OUTPUT_FILE"
 done
 
 echo ""
@@ -55,7 +50,6 @@ echo "=========================================="
 echo ""
 echo "Services validated: $PASSED_SERVICES/$TOTAL_SERVICES"
 
-echo "DEBUG: PASSED_SERVICES=$PASSED_SERVICES, TOTAL_SERVICES=$TOTAL_SERVICES" >&2
 if [ $PASSED_SERVICES -eq $TOTAL_SERVICES ]; then
   echo -e "${GREEN}✅ All specifications are valid!${NC}"
   echo ""
@@ -71,11 +65,9 @@ if [ $PASSED_SERVICES -eq $TOTAL_SERVICES ]; then
   echo "   3. Reference implementations"
   echo "   4. Third-party adoption"
   echo ""
-  echo "DEBUG: Exiting with code 0" >&2
   exit 0
 else
   echo -e "${RED}❌ Some specifications have errors${NC}"
   echo "Run 'npm run lint' for details"
-  echo "DEBUG: Exiting with code 1" >&2
   exit 1
 fi
