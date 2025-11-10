@@ -1,0 +1,57 @@
+test_suite: "Analytics Service - Privacy Budget"
+version: "1.0.0"
+tests:
+  - name: "Query Metrics Within Privacy Budget"
+    description: "Query metrics while respecting differential privacy budget"
+    steps:
+      - request:
+          method: POST
+          path: /v1/metrics/query
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            query:
+              dimensions: ["content_id", "user_segment"]
+              metrics: ["views", "engagement_time"]
+              filters:
+                date_range:
+                  start: "2025-11-01"
+                  end: "2025-11-06"
+              aggregation: "sum"
+            privacy:
+              epsilon: 1.0
+              delta: 1e-5
+        expected_response:
+          status: 200
+          body:
+            data:
+              results:
+                - content_id: "content-123"
+                  user_segment: "tech_enthusiasts"
+                  views: 1500
+                  engagement_time: 45000
+              privacy_applied: true
+              epsilon_consumed: 1.0
+              delta_consumed: 1e-5
+              query_executed_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Check Privacy Budget Status"
+    description: "Check current privacy budget consumption status"
+    steps:
+      - request:
+          method: GET
+          path: /v1/analytics/privacy-budget/status
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              total_epsilon_budget: 10.0
+              consumed_epsilon_budget: 7.5
+              remaining_epsilon_budget: 2.5
+              total_delta_budget: 1e-3
+              consumed_delta_budget: 5e-4
+              remaining_delta_budget: 5e-4
+              budget_reset_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              warning_threshold_reached: false

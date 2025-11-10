@@ -1,0 +1,91 @@
+# Auction and Events Example
+# This example demonstrates real-time bidding and tracking impressions/clicks
+
+# Step 1: Real-time Bidding
+auction_bid_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/auction
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    auction_id: "auction-20251015-001"
+    impression_id: "imp-20251015-001"
+    user_id: "123e4567-e89b-12d3-a456-426614174005"
+    content_id: "content-20251015-001"
+    context:
+      page_url: "https://example.com/tech-news"
+      referrer: "https://google.com/search?q=tech"
+      device_type: "mobile"
+      user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)"
+
+auction_bid_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      auction_id: "auction-20251015-001"
+      bid_amount: 2.75
+      creative_id: "123e4567-e89b-12d3-a456-426614174003"
+      win: true
+
+# Step 2: Record Impression
+record_impression_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/impression
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    impression_id: "imp-20251015-001"
+    auction_id: "auction-20251015-001"
+    creative_id: "123e4567-e89b-12d3-a456-426614174003"
+    user_id: "123e4567-e89b-12d3-a456-426614174005"
+    timestamp: "2025-10-15T10:15:30Z"
+    viewable: true
+    context:
+      page_url: "https://example.com/tech-news"
+      position: "header"
+      size: "728x90"
+
+record_impression_response:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+
+# Step 3: Record Click
+record_click_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/click
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    click_id: "click-20251015-001"
+    impression_id: "imp-20251015-001"
+    user_id: "123e4567-e89b-12d3-a456-426614174005"
+    timestamp: "2025-10-15T10:15:45Z"
+    context:
+      page_url: "https://example.com/tech-news"
+      coordinates: "x:320,y:45"
+
+record_click_response:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440007

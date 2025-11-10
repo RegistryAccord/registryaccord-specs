@@ -1,0 +1,211 @@
+# Ledger Audit Example
+# This example demonstrates ledger querying for audit purposes
+
+# Step 1: Get Account Balance
+get_account_balance_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/ledgers/balance?account_id=123e4567-e89b-12d3-a456-426614174000
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_account_balance_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+  body:
+    data:
+      account_id: "123e4567-e89b-12d3-a456-426614174000"
+      balance: 125000
+      currency: "USD"
+      updated_at: "2025-11-01T10:00:00Z"
+
+# Step 2: List Ledger Entries for Account
+list_ledger_entries_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/ledgers?account_id=123e4567-e89b-12d3-a456-426614174000&limit=5
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_ledger_entries_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440007
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174006"
+        entry_type: "PAYMENT_RECEIVED"
+        debit_account: "platform_escrow"
+        credit_account: "123e4567-e89b-12d3-a456-426614174000"
+        amount: 8500
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174002"
+        description: "Revenue share for premium content purchase"
+        timestamp: "2025-11-01T10:05:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174007"
+        entry_type: "SPLIT_DISTRIBUTED"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "platform_fees"
+        amount: 1500
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174002"
+        description: "Platform fee for premium content purchase"
+        timestamp: "2025-11-01T10:05:01Z"
+      - id: "123e4567-e89b-12d3-a456-426614174008"
+        entry_type: "PAYOUT_SENT"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "bank_account_12345"
+        amount: 7000
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174004"
+        description: "Payout to creator bank account"
+        timestamp: "2025-11-01T10:10:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174009"
+        entry_type: "REFUND_ISSUED"
+        debit_account: "platform_escrow"
+        credit_account: "123e4567-e89b-12d3-a456-426614174000"
+        amount: 1250
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174005"
+        description: "Partial refund for disputed transaction"
+        timestamp: "2025-11-01T10:20:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174010"
+        entry_type: "FEE_COLLECTED"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "platform_dispute_fees"
+        amount: 100
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174005"
+        description: "Dispute processing fee"
+        timestamp: "2025-11-01T10:20:01Z"
+    pagination:
+      has_next_page: true
+      has_prev_page: false
+      next_cursor: "eyJ0aW1lc3RhbXAiOiIyMDI1LTExLTAxVDEwOjIwOjAxWiIsInJrZXkiOiIxMjNlNDU2Ny1lODliLTEyZDMtYTQ1Ni00MjY2MTQxNzQwMTAifQ=="
+
+# Step 3: Get Specific Ledger Entry
+get_ledger_entry_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/ledgers/123e4567-e89b-12d3-a456-426614174006
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_ledger_entry_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440008
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174006"
+      entry_type: "PAYMENT_RECEIVED"
+      debit_account: "platform_escrow"
+      credit_account: "123e4567-e89b-12d3-a456-426614174000"
+      amount: 8500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      description: "Revenue share for premium content purchase"
+      timestamp: "2025-11-01T10:05:00Z"
+
+# Step 4: List Ledger Entries by Date Range
+list_ledger_entries_date_range_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/ledgers?account_id=123e4567-e89b-12d3-a456-426614174000&start_date=2025-11-01T00:00:00Z&end_date=2025-11-01T23:59:59Z
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_ledger_entries_date_range_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440009
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174006"
+        entry_type: "PAYMENT_RECEIVED"
+        debit_account: "platform_escrow"
+        credit_account: "123e4567-e89b-12d3-a456-426614174000"
+        amount: 8500
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174002"
+        description: "Revenue share for premium content purchase"
+        timestamp: "2025-11-01T10:05:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174007"
+        entry_type: "SPLIT_DISTRIBUTED"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "platform_fees"
+        amount: 1500
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174002"
+        description: "Platform fee for premium content purchase"
+        timestamp: "2025-11-01T10:05:01Z"
+      - id: "123e4567-e89b-12d3-a456-426614174008"
+        entry_type: "PAYOUT_SENT"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "bank_account_12345"
+        amount: 7000
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174004"
+        description: "Payout to creator bank account"
+        timestamp: "2025-11-01T10:10:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174009"
+        entry_type: "REFUND_ISSUED"
+        debit_account: "platform_escrow"
+        credit_account: "123e4567-e89b-12d3-a456-426614174000"
+        amount: 1250
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174005"
+        description: "Partial refund for disputed transaction"
+        timestamp: "2025-11-01T10:20:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174010"
+        entry_type: "FEE_COLLECTED"
+        debit_account: "123e4567-e89b-12d3-a456-426614174000"
+        credit_account: "platform_dispute_fees"
+        amount: 100
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174005"
+        description: "Dispute processing fee"
+        timestamp: "2025-11-01T10:20:01Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false
+
+# Step 5: Verify Account Balance Consistency
+verify_balance_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/ledgers/balance?account_id=123e4567-e89b-12d3-a456-426614174000
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+verify_balance_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440010
+  body:
+    data:
+      account_id: "123e4567-e89b-12d3-a456-426614174000"
+      balance: 125000
+      currency: "USD"
+      updated_at: "2025-11-01T10:00:00Z"

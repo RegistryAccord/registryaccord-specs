@@ -1,0 +1,202 @@
+# Campaign Management Example
+# This example demonstrates creating and managing an advertising campaign
+
+# Step 1: Create Campaign
+create_campaign_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/campaigns
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    name: "Fall 2025 Product Launch"
+    advertiser_id: "123e4567-e89b-12d3-a456-426614174000"
+    start_date: "2025-11-01"
+    end_date: "2025-12-31"
+    budget:
+      amount: 50000
+      currency: "USD"
+    status: "ACTIVE"
+
+create_campaign_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174001"
+      name: "Fall 2025 Product Launch"
+      advertiser_id: "123e4567-e89b-12d3-a456-426614174000"
+      start_date: "2025-11-01"
+      end_date: "2025-12-31"
+      budget:
+        amount: 50000
+        currency: "USD"
+      status: "ACTIVE"
+      created_at: "2025-10-15T10:00:00Z"
+      updated_at: "2025-10-15T10:00:00Z"
+
+# Step 2: Create Audience Segment
+create_segment_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/segments
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    name: "Tech Enthusiasts"
+    description: "Users interested in technology products"
+    criteria:
+      interests:
+        - "technology"
+        - "gadgets"
+        - "innovation"
+      age_range:
+        min: 18
+        max: 45
+
+create_segment_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      name: "Tech Enthusiasts"
+      description: "Users interested in technology products"
+      criteria:
+        interests:
+          - "technology"
+          - "gadgets"
+          - "innovation"
+        age_range:
+          min: 18
+          max: 45
+      size: 250000
+      created_at: "2025-10-15T10:05:00Z"
+      updated_at: "2025-10-15T10:05:00Z"
+
+# Step 3: Upload Creative
+upload_creative_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/creatives
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    name: "Fall Launch Banner"
+    content_type: "image/jpeg"
+    size_bytes: 1572864
+    checksum:
+      sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+upload_creative_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      name: "Fall Launch Banner"
+      content_type: "image/jpeg"
+      size_bytes: 1572864
+      checksum:
+        sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      url: "https://storage.registryaccord.com/creatives/123e4567-e89b-12d3-a456-426614174003.jpg?signature=abc123"
+      url_expires_at: "2025-10-15T11:05:00Z"
+      created_at: "2025-10-15T10:05:00Z"
+      updated_at: "2025-10-15T10:05:00Z"
+
+# Step 4: Create Line Item
+create_line_item_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/lineitems
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+    name: "Tech Enthusiasts - Banner"
+    bid_amount: 2.50
+    bid_type: "CPM"
+    targeting:
+      segment_ids:
+        - "123e4567-e89b-12d3-a456-426614174002"
+      content_categories:
+        - "technology"
+        - "business"
+    status: "ACTIVE"
+
+create_line_item_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174004"
+      campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+      name: "Tech Enthusiasts - Banner"
+      bid_amount: 2.50
+      bid_type: "CPM"
+      targeting:
+        segment_ids:
+          - "123e4567-e89b-12d3-a456-426614174002"
+        content_categories:
+          - "technology"
+          - "business"
+      status: "ACTIVE"
+      created_at: "2025-10-15T10:10:00Z"
+      updated_at: "2025-10-15T10:10:00Z"
+
+# Step 5: List Campaigns
+list_campaigns_request:
+  method: GET
+  url: https://api.registryaccord.com/revenue/v1/ads/campaigns?advertiser_id=123e4567-e89b-12d3-a456-426614174000
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_campaigns_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174001"
+        name: "Fall 2025 Product Launch"
+        advertiser_id: "123e4567-e89b-12d3-a456-426614174000"
+        start_date: "2025-11-01"
+        end_date: "2025-12-31"
+        budget:
+          amount: 50000
+          currency: "USD"
+        status: "ACTIVE"
+        created_at: "2025-10-15T10:00:00Z"
+        updated_at: "2025-10-15T10:00:00Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false

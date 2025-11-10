@@ -1,0 +1,209 @@
+name: Token Operations Lifecycle
+description: |
+  Token lifecycle operations:
+  1. Mint token (POST /v1/tokens with client_credentials)
+  2. Verify token (POST /v1/tokens/verify)
+  3. Refresh token (POST /v1/tokens/refresh)
+  4. Revoke token (DELETE /v1/tokens/{id})
+  5. Error scenarios (expired token, invalid token, revoked token)
+steps:
+  # Step 1: Mint Token with Client Credentials
+  - name: Mint Access Token
+    description: Mint a new access token using client credentials flow
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440014"
+        Content-Type: "application/json"
+        Authorization: "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ="
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        scopes:
+          - "identity:read"
+          - "identity:write"
+          - "consent:read"
+        expires_in: 3600
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440014"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "999"
+          X-RateLimit-Reset: "1730885400"
+          Cache-Control: "no-store"
+          Pragma: "no-cache"
+        body:
+          id: "e5f6g7h8-i9j0-1234-k5l6-m7n8o9p0q1r2"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          token_type: access
+          scopes:
+            - "identity:read"
+            - "identity:write"
+            - "consent:read"
+          issued_at: "2025-11-06T10:55:00Z"
+          expires_at: "2025-11-06T11:55:00Z"
+          revoked_at: null
+
+  # Step 2: Verify Valid Token
+  - name: Verify Valid Token
+    description: Verify a valid token's authenticity and scopes
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens/verify
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440015"
+        Content-Type: "application/json"
+      body:
+        token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTpyZWFkIGlkZW50aXR5OndyaXRlIGNvbnNlbnQ6cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440015"
+          X-RateLimit-Limit: "10000"
+          X-RateLimit-Remaining: "9999"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          valid: true
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          scopes:
+            - "identity:read"
+            - "identity:write"
+            - "consent:read"
+          expires_at: "2025-11-06T11:55:00Z"
+
+  # Step 3: Refresh Token
+  - name: Refresh Access Token
+    description: Refresh an existing token before expiration
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens/refresh
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440016"
+        Content-Type: "application/json"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTpyZWFkIGlkZW50aXR5OndyaXRlIGNvbnNlbnQ6cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+      body:
+        refresh_token: "f6g7h8i9-j0k1-2345-l6m7-n8o9p0q1r2s3"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440016"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "998"
+          X-RateLimit-Reset: "1730885400"
+          Cache-Control: "no-store"
+          Pragma: "no-cache"
+        body:
+          id: "g7h8i9j0-k1l2-3456-m7n8-o9p0q1r2s3t4"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          token_type: access
+          scopes:
+            - "identity:read"
+            - "identity:write"
+            - "consent:read"
+          issued_at: "2025-11-06T11:00:00Z"
+          expires_at: "2025-11-06T12:00:00Z"
+          revoked_at: null
+
+  # Step 4: Revoke Token
+  - name: Revoke Access Token
+    description: Revoke a token to invalidate it immediately
+    request:
+      method: DELETE
+      url: https://api.registryaccord.com/identity/v1/tokens/e5f6g7h8-i9j0-1234-k5l6-m7n8o9p0q1r2
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440017"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTp3cml0ZSBjb25zZW50OndyaXRlIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 204
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440017"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "997"
+          X-RateLimit-Reset: "1730885400"
+
+  # Step 5: Verify Revoked Token
+  - name: Verify Revoked Token
+    description: Attempt to verify a revoked token
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens/verify
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440018"
+        Content-Type: "application/json"
+      body:
+        token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTpyZWFkIGlkZW50aXR5OndyaXRlIGNvbnNlbnQ6cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    responses:
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440018"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided token has been revoked"
+          instance: "/v1/tokens/verify"
+          trace_id: "550e8400-e29b-41d4-a716-446655440018"
+
+  # Step 6: Use Expired Token
+  - name: Use Expired Token
+    description: Attempt to use an expired token
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/identities/123e4567-e89b-12d3-a456-426614174000
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440019"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODE4NjB9.signature_expired"
+    responses:
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440019"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided JWT token has expired"
+          instance: "/v1/identities/123e4567-e89b-12d3-a456-426614174000"
+          trace_id: "550e8400-e29b-41d4-a716-446655440019"
+
+  # Step 7: Use Invalid Token
+  - name: Use Invalid Token
+    description: Attempt to use a malformed or invalid token
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/identities/123e4567-e89b-12d3-a456-426614174000
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440020"
+        Authorization: "Bearer invalid_token_format"
+    responses:
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440020"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided token is malformed or invalid"
+          instance: "/v1/identities/123e4567-e89b-12d3-a456-426614174000"
+          trace_id: "550e8400-e29b-41d4-a716-446655440020"

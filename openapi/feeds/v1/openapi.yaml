@@ -1,0 +1,1002 @@
+openapi: 3.1.0
+info:
+  title: RegistryAccord Feed Generator API
+  version: 1.0.0
+  description: |
+    Pluggable feed generation and ranking system with deterministic baseline,
+    custom rankers, and A/B testing support.
+  contact:
+    name: RegistryAccord Maintainers
+    url: https://github.com/RegistryAccord/registryaccord-specs
+    email: specs@registryaccord.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Feeds
+    description: Generate personalized feeds
+  - name: Signals
+    description: Manage ranking signals
+  - name: Experiments
+    description: A/B testing for ranking algorithms
+
+servers:
+  - url: https://api.registryaccord.dev/feeds
+    description: Development environment
+  - url: https://api.registryaccord.com/feeds
+    description: Production environment
+
+security:
+  - oauth2: []
+  - bearerAuth: []
+
+paths:
+  /v1/feeds/query:
+    post:
+      tags:
+        - Feeds
+      summary: Generate personalized feed
+      description: Generate a personalized feed for a user
+      operationId: generateFeed
+      security:
+        - oauth2:
+            - feed:read
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedQuery'
+      responses:
+        '200':
+          description: Feed generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FeedItem'
+                  cache_id:
+                    type: string
+                    format: uuid
+                    description: ID of cached feed for future retrieval
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/{id}:
+    get:
+      tags:
+        - Feeds
+      summary: Get cached feed
+      description: Retrieve a previously generated feed by ID
+      operationId: getCachedFeed
+      security:
+        - oauth2:
+            - feed:read
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cached feed retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FeedItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/signals:
+    get:
+      tags:
+        - Signals
+      summary: List available ranking signals
+      description: List all available ranking signals
+      operationId: listSignals
+      security:
+        - oauth2:
+            - signal:read
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ranking signals retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RankingSignal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/signals/custom:
+    post:
+      tags:
+        - Signals
+      summary: Register custom signal
+      description: Register a custom ranking signal
+      operationId: registerCustomSignal
+      security:
+        - oauth2:
+            - signal:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - implementation_url
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                implementation_url:
+                  type: string
+                  format: uri
+                  description: URL to the signal implementation
+      responses:
+        '201':
+          description: Custom signal registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RankingSignal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/experiments:
+    post:
+      tags:
+        - Experiments
+      summary: Create A/B test
+      description: Create a new A/B test for ranking algorithms
+      operationId: createExperiment
+      security:
+        - oauth2:
+            - experiment:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Experiment'
+      responses:
+        '201':
+          description: A/B test created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Experiment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    get:
+      tags:
+        - Experiments
+      summary: List experiments
+      description: List all A/B tests
+      operationId: listExperiments
+      security:
+        - oauth2:
+            - experiment:read
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+      responses:
+        '200':
+          description: A/B tests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Experiment'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/experiments/{id}/results:
+    get:
+      tags:
+        - Experiments
+      summary: Get experiment results
+      description: Retrieve results for a specific A/B test
+      operationId: getExperimentResults
+      security:
+        - oauth2:
+            - experiment:read
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A/B test results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      experiment_id:
+                        type: string
+                        format: uuid
+                      start_time:
+                        type: string
+                        format: date-time
+                      end_time:
+                        type: string
+                        format: date-time
+                      variants:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            variant_id:
+                              type: string
+                            name:
+                              type: string
+                            metrics:
+                              type: object
+                              description: Key performance metrics
+                              additionalProperties:
+                                type: number
+                      winner:
+                        type: string
+                        description: Winning variant ID if test is complete
+                      confidence:
+                        type: number
+                        description: Statistical confidence level (0-1)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/scorecards/{ranker_id}:
+    get:
+      tags:
+        - Feeds
+      summary: Retrieve public fairness scorecard
+      description: Retrieve public fairness scorecard for a certified ranker
+      operationId: getFairnessScorecard
+      security:
+        - oauth2:
+            - feed:read
+        - bearerAuth: []
+      parameters:
+        - name: ranker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique identifier for the ranker
+      responses:
+        '200':
+          description: Fairness scorecard retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FairnessScorecard'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/audits/{ranker_id}:
+    get:
+      tags:
+        - Feeds
+      summary: Retrieve audit history
+      description: Retrieve audit history and results for a ranker
+      operationId: getAuditHistory
+      security:
+        - oauth2:
+            - feed:read
+        - bearerAuth: []
+      parameters:
+        - name: ranker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique identifier for the ranker
+      responses:
+        '200':
+          description: Audit history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - ranker_id
+                      - audits
+                    properties:
+                      ranker_id:
+                        type: string
+                        format: uuid
+                      audits:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AuditReport'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/disputes:
+    post:
+      tags:
+        - Feeds
+      summary: Submit fairness dispute
+      description: Submit a fairness dispute
+      operationId: submitDispute
+      security:
+        - oauth2:
+            - feed:read
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeSubmission'
+      responses:
+        '201':
+          description: Dispute submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DisputeOutcome'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/feeds/disputes/stats:
+    get:
+      tags:
+        - Feeds
+      summary: Retrieve dispute statistics
+      description: Retrieve aggregated dispute statistics (public, no auth required)
+      operationId: getDisputeStats
+      responses:
+        '200':
+          description: Dispute statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total_disputes:
+                        type: integer
+                      disputes_by_type:
+                        type: object
+                        properties:
+                          demographic_bias:
+                            type: integer
+                          content_discrimination:
+                            type: integer
+                          engagement_manipulation:
+                            type: integer
+                          other:
+                            type: integer
+                      average_resolution_time_days:
+                        type: number
+                      resolution_outcomes:
+                        type: object
+                        properties:
+                          upheld:
+                            type: integer
+                          dismissed:
+                            type: integer
+                          partially_upheld:
+                            type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+components:
+  schemas:
+    FeedQuery:
+      type: object
+      required: [user_id]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        ranker:
+          type: string
+          enum:
+            - BASELINE_CHRONOLOGICAL
+            - ENGAGEMENT_BASED
+            - RELEVANCE_BASED
+            - CUSTOM
+          default: BASELINE_CHRONOLOGICAL
+        custom_ranker_id:
+          type: string
+          format: uuid
+          description: ID of registered custom ranker
+        signals:
+          type: array
+          items:
+            type: string
+          description: Signals to use for ranking
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+        experiment_id:
+          type: string
+          format: uuid
+          description: A/B test experiment ID
+    
+    FeedItem:
+      type: object
+      required: [content_id, score, position]
+      properties:
+        content_id:
+          type: string
+          format: uuid
+        score:
+          type: number
+          description: Ranking score
+        position:
+          type: integer
+          minimum: 1
+        explanation:
+          type: object
+          properties:
+            user_facing:
+              type: string
+              description: High-level, obfuscated explanation
+              example: "Popular with people you follow"
+            auditor_detail:
+              type: object
+              description: Detailed factors (auditor-only)
+              properties:
+                signals_used:
+                  type: array
+                  items:
+                    type: string
+                weights:
+                  type: object
+    
+    RankingSignal:
+      type: object
+      required: [id, name, type]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - RECENCY
+            - ENGAGEMENT
+            - RELEVANCE
+            - SOCIAL_GRAPH
+            - CUSTOM
+        description:
+          type: string
+    
+    Experiment:
+      type: object
+      required: [id, name, variants, status, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        variants:
+          type: array
+          items:
+            type: object
+            properties:
+              variant_id:
+                type: string
+              name:
+                type: string
+              ranker:
+                type: string
+              traffic_percentage:
+                type: integer
+                minimum: 0
+                maximum: 100
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - RUNNING
+            - PAUSED
+            - COMPLETED
+        created_at:
+          type: string
+          format: date-time
+    
+    Pagination:
+      type: object
+      properties:
+        has_next_page:
+          type: boolean
+        has_prev_page:
+          type: boolean
+        next_cursor:
+          type: string
+        prev_cursor:
+          type: string
+    
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - correlationId
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional structured information about the error
+            correlationId:
+              type: string
+              format: uuid
+              description: Unique identifier for tracing errors across systems
+    
+    FairnessScorecard:
+      type: object
+      required:
+        - ranker_id
+        - last_audit_date
+        - certification_status
+      properties:
+        ranker_id:
+          type: string
+          format: uuid
+        last_audit_date:
+          type: string
+          format: date-time
+        next_audit_date:
+          type: string
+          format: date-time
+        fairness_scores:
+          type: object
+          properties:
+            demographic_parity:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Score from 0-100 indicating demographic fairness
+            content_equity:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Score from 0-100 indicating content type equity
+            engagement_fairness:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Score from 0-100 indicating engagement proxy fairness
+        certification_status:
+          type: string
+          enum: [CERTIFIED, SUSPENDED, REVOKED, PENDING_AUDIT]
+        violations:
+          type: array
+          items:
+            type: object
+            properties:
+              violation_date:
+                type: string
+                format: date-time
+              violation_type:
+                type: string
+              resolution_status:
+                type: string
+                enum: [RESOLVED, PENDING, APPEALED]
+        dispute_count:
+          type: integer
+          description: Number of active disputes
+    
+    AuditReport:
+      type: object
+      required:
+        - audit_id
+        - audit_date
+        - auditor_name
+        - findings
+      properties:
+        audit_id:
+          type: string
+          format: uuid
+        audit_date:
+          type: string
+          format: date-time
+        auditor_name:
+          type: string
+        findings:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+                enum: [DEMOGRAPHIC_PARITY, CONTENT_EQUITY, ENGAGEMENT_FAIRNESS, METHODOLOGY]
+              severity:
+                type: string
+                enum: [LOW, MEDIUM, HIGH, CRITICAL]
+              description:
+                type: string
+              remediation_status:
+                type: string
+                enum: [PENDING, IN_PROGRESS, COMPLETED]
+        next_audit_date:
+          type: string
+          format: date-time
+    
+    DisputeSubmission:
+      type: object
+      required:
+        - ranker_id
+        - dispute_type
+        - description
+      properties:
+        ranker_id:
+          type: string
+          format: uuid
+        dispute_type:
+          type: string
+          enum: [DEMOGRAPHIC_BIAS, CONTENT_DISCRIMINATION, ENGAGEMENT_MANIPULATION, OTHER]
+        description:
+          type: string
+          minLength: 50
+          maxLength: 2000
+        evidence:
+          type: object
+          properties:
+            timestamps:
+              type: array
+              items:
+                type: string
+                format: date-time
+            user_ids:
+              type: array
+              items:
+                type: string
+              description: Anonymized user identifiers
+            supporting_data:
+              type: string
+              description: Additional supporting information
+    
+    DisputeOutcome:
+      type: object
+      required:
+        - dispute_id
+        - status
+        - created_at
+      properties:
+        dispute_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [SUBMITTED, UNDER_REVIEW, RESOLVED, ESCALATED]
+        created_at:
+          type: string
+          format: date-time
+        expected_resolution_date:
+          type: string
+          format: date-time
+        resolution:
+          type: object
+          properties:
+            outcome:
+              type: string
+              enum: [UPHELD, DISMISSED, PARTIALLY_UPHELD]
+            resolution_date:
+              type: string
+              format: date-time
+            summary:
+              type: string
+  
+  responses:
+    BadRequest:
+      description: Bad Request - The request was invalid or cannot be served
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Unauthorized:
+      description: Unauthorized - Authentication failed or not provided
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Forbidden:
+      description: Forbidden - The authenticated user does not have permission to access this resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Not Found - The requested resource could not be found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Conflict:
+      description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    TooManyRequests:
+      description: Too Many Requests - The user has sent too many requests in a given amount of time
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+    
+    InternalServerError:
+      description: Internal Server Error - The server encountered an unexpected condition
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    ServiceUnavailable:
+      description: Service Unavailable - The server is currently unable to handle the request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+  
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    After:
+      name: after
+      in: query
+      description: Cursor for forward pagination
+      required: false
+      schema:
+        type: string
+    
+    Before:
+      name: before
+      in: query
+      description: Cursor for backward pagination
+      required: false
+      schema:
+        type: string
+  
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.registryaccord.com/authorize
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            feed:read: Generate and read feeds
+            signal:read: Read ranking signals
+            signal:write: Register custom signals
+            experiment:read: Read A/B test results
+            experiment:write: Create and manage experiments
+        clientCredentials:
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            feed:read: Generate and read feeds
+            signal:read: Read ranking signals
+            signal:write: Register custom signals
+            experiment:read: Read A/B test results
+            experiment:write: Create and manage experiments
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

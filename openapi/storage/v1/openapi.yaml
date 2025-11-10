@@ -1,0 +1,958 @@
+openapi: 3.1.0
+info:
+  title: RegistryAccord Storage Gateway API
+  version: 1.0.0
+  description: |
+    Storage abstraction layer enabling pluggable backends (S3, GCS, Azure, 3rd-party)
+    with pre-signed URLs, multipart uploads, and KMS encryption integration.
+  contact:
+    name: RegistryAccord Maintainers
+    url: https://github.com/RegistryAccord/registryaccord-specs
+    email: specs@registryaccord.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Buckets
+    description: Manage storage buckets
+  - name: Objects
+    description: Manage storage objects
+  - name: Uploads
+    description: Handle multipart uploads
+
+servers:
+  - url: https://api.registryaccord.dev/storage
+    description: Development environment
+  - url: https://api.registryaccord.com/storage
+    description: Production environment
+
+security:
+  - oauth2: []
+  - bearerAuth: []
+
+paths:
+  /v1/storage/buckets:
+    post:
+      tags:
+        - Buckets
+      summary: Create bucket
+      description: Create a new storage bucket
+      operationId: createBucket
+      security:
+        - oauth2:
+            - bucket:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - owner_id
+                - provider
+              properties:
+                name:
+                  type: string
+                  pattern: '^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+                  description: Bucket name (DNS-compliant)
+                owner_id:
+                  type: string
+                  format: uuid
+                provider:
+                  type: string
+                  enum:
+                    - S3
+                    - GCS
+                    - AZURE_BLOB
+                    - CUSTOM
+                region:
+                  type: string
+                  description: Storage region
+                encryption:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    kms_key_id:
+                      type: string
+                versioning_enabled:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: Bucket created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Bucket'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    get:
+      tags:
+        - Buckets
+      summary: List buckets
+      description: List storage buckets with pagination
+      operationId: listBuckets
+      security:
+        - oauth2:
+            - bucket:read
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - name: owner_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by owner ID
+      responses:
+        '200':
+          description: Buckets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bucket'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/buckets/{id}:
+    get:
+      tags:
+        - Buckets
+      summary: Get bucket
+      description: Retrieve a storage bucket by ID
+      operationId: getBucket
+      security:
+        - oauth2:
+            - bucket:read
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bucket retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Bucket'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    delete:
+      tags:
+        - Buckets
+      summary: Delete bucket
+      description: Delete a storage bucket
+      operationId: deleteBucket
+      security:
+        - oauth2:
+            - bucket:write
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Bucket deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/objects:
+    post:
+      tags:
+        - Objects
+      summary: Initiate object upload
+      description: Initiate a new object upload
+      operationId: createObject
+      security:
+        - oauth2:
+            - storage:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - bucket_id
+                - key
+                - content_type
+                - size_bytes
+              properties:
+                bucket_id:
+                  type: string
+                  format: uuid
+                key:
+                  type: string
+                  description: Object key/path within bucket
+                content_type:
+                  type: string
+                  example: "video/mp4"
+                size_bytes:
+                  type: integer
+                  minimum: 0
+                metadata:
+                  type: object
+                  description: Custom metadata
+                  additionalProperties: true
+                storage_class:
+                  type: string
+                  enum:
+                    - STANDARD
+                    - INFREQUENT_ACCESS
+                    - GLACIER
+                    - DEEP_ARCHIVE
+      responses:
+        '201':
+          description: Object created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StorageObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    get:
+      tags:
+        - Objects
+      summary: List objects
+      description: List storage objects with pagination
+      operationId: listObjects
+      security:
+        - oauth2:
+            - storage:read
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - name: bucket_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Filter by bucket ID
+      responses:
+        '200':
+          description: Objects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StorageObject'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/objects/{id}:
+    get:
+      tags:
+        - Objects
+      summary: Get object metadata
+      description: Retrieve storage object metadata by ID
+      operationId: getObject
+      security:
+        - oauth2:
+            - storage:read
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Object metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StorageObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    delete:
+      tags:
+        - Objects
+      summary: Delete object
+      description: Delete a storage object with cascading RTBF support
+      operationId: deleteObject
+      security:
+        - oauth2:
+            - storage:delete
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Object deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/uploads:
+    post:
+      tags:
+        - Uploads
+      summary: Create multipart upload session
+      description: Create a new multipart upload session
+      operationId: createMultipartUpload
+      security:
+        - oauth2:
+            - storage:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - bucket_id
+                - key
+                - content_type
+              properties:
+                bucket_id:
+                  type: string
+                  format: uuid
+                key:
+                  type: string
+                  description: Object key/path within bucket
+                content_type:
+                  type: string
+                  example: "video/mp4"
+                metadata:
+                  type: object
+                  description: Custom metadata
+                  additionalProperties: true
+                storage_class:
+                  type: string
+                  enum:
+                    - STANDARD
+                    - INFREQUENT_ACCESS
+                    - GLACIER
+                    - DEEP_ARCHIVE
+      responses:
+        '201':
+          description: Multipart upload session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MultipartUpload'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/uploads/{id}/parts:
+    post:
+      tags:
+        - Uploads
+      summary: Upload part
+      description: Upload a part for a multipart upload
+      operationId: uploadPart
+      security:
+        - oauth2:
+            - storage:write
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: part_number
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Part number (1-based index)
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Part uploaded successfully
+          headers:
+            ETag:
+              description: Part ETag
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/uploads/{id}/complete:
+    post:
+      tags:
+        - Uploads
+      summary: Complete upload
+      description: Complete a multipart upload
+      operationId: completeMultipartUpload
+      security:
+        - oauth2:
+            - storage:write
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parts:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - part_number
+                      - etag
+                    properties:
+                      part_number:
+                        type: integer
+                        minimum: 1
+                      etag:
+                        type: string
+      responses:
+        '200':
+          description: Multipart upload completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StorageObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/storage/uploads/{id}:
+    delete:
+      tags:
+        - Uploads
+      summary: Abort upload
+      description: Abort a multipart upload
+      operationId: abortMultipartUpload
+      security:
+        - oauth2:
+            - storage:write
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Multipart upload aborted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+components:
+  schemas:
+    Bucket:
+      type: object
+      required: [id, name, owner_id, provider, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+          description: Bucket name (DNS-compliant)
+        owner_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          enum:
+            - S3
+            - GCS
+            - AZURE_BLOB
+            - CUSTOM
+        region:
+          type: string
+          description: Storage region
+        encryption:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              default: true
+            kms_key_id:
+              type: string
+        versioning_enabled:
+          type: boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+    
+    StorageObject:
+      type: object
+      required: [id, bucket_id, key, size_bytes, content_type, checksum, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        bucket_id:
+          type: string
+          format: uuid
+        key:
+          type: string
+          description: Object key/path within bucket
+        size_bytes:
+          type: integer
+          minimum: 0
+        content_type:
+          type: string
+          example: "video/mp4"
+        checksum:
+          type: object
+          properties:
+            md5:
+              type: string
+              description: MD5 hash (base64)
+            sha256:
+              type: string
+              description: SHA-256 hash (hex)
+        metadata:
+          type: object
+          description: Custom metadata
+          additionalProperties: true
+        storage_class:
+          type: string
+          enum:
+            - STANDARD
+            - INFREQUENT_ACCESS
+            - GLACIER
+            - DEEP_ARCHIVE
+        presigned_url:
+          type: string
+          format: uri
+          description: Pre-signed URL for direct access (temporary)
+        presigned_url_expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    
+    MultipartUpload:
+      type: object
+      required: [id, bucket_id, key, upload_id, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        bucket_id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        upload_id:
+          type: string
+          description: Backend provider upload ID
+        parts:
+          type: array
+          items:
+            type: object
+            properties:
+              part_number:
+                type: integer
+                minimum: 1
+              size_bytes:
+                type: integer
+              etag:
+                type: string
+              uploaded_at:
+                type: string
+                format: date-time
+              status:
+                type: string
+                enum:
+                  - IN_PROGRESS
+                  - COMPLETED
+                  - ABORTED
+        status:
+          type: string
+          enum:
+            - IN_PROGRESS
+            - COMPLETED
+            - ABORTED
+        created_at:
+          type: string
+          format: date-time
+    
+    Pagination:
+      type: object
+      properties:
+        has_next_page:
+          type: boolean
+        has_prev_page:
+          type: boolean
+        next_cursor:
+          type: string
+        prev_cursor:
+          type: string
+    
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - correlationId
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional structured information about the error
+            correlationId:
+              type: string
+              format: uuid
+              description: Unique identifier for tracing errors across systems
+  
+  responses:
+    BadRequest:
+      description: Bad Request - The request was invalid or cannot be served
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Unauthorized:
+      description: Unauthorized - Authentication failed or not provided
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Forbidden:
+      description: Forbidden - The authenticated user does not have permission to access this resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Not Found - The requested resource could not be found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Conflict:
+      description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    TooManyRequests:
+      description: Too Many Requests - The user has sent too many requests in a given amount of time
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+    
+    InternalServerError:
+      description: Internal Server Error - The server encountered an unexpected condition
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    ServiceUnavailable:
+      description: Service Unavailable - The server is currently unable to handle the request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+  
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    After:
+      name: after
+      in: query
+      description: Cursor for forward pagination
+      required: false
+      schema:
+        type: string
+    
+    Before:
+      name: before
+      in: query
+      description: Cursor for backward pagination
+      required: false
+      schema:
+        type: string
+  
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.registryaccord.com/authorize
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            storage:read: Read storage objects
+            storage:write: Upload objects
+            storage:delete: Delete objects
+            bucket:read: Read bucket information
+            bucket:write: Create and manage buckets
+        clientCredentials:
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            storage:read: Read storage objects
+            storage:write: Upload objects
+            storage:delete: Delete objects
+            bucket:read: Read bucket information
+            bucket:write: Create and manage buckets
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

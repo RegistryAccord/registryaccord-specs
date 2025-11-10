@@ -1,0 +1,204 @@
+# Payment Intent Flow Example
+# This example demonstrates the complete flow for processing a payment with fraud detection
+
+# Step 1: Create Payment Intent
+create_payment_intent_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payments/intents
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
+    Content-Type: application/json
+  body:
+    amount: 10000
+    currency: "USD"
+    description: "Premium content purchase"
+    payment_method: "CARD"
+    split_rules:
+      - recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+        type: "PERCENTAGE"
+        percentage: 85.0
+        description: "Creator revenue share"
+      - recipient_id: "123e4567-e89b-12d3-a456-426614174001"
+        type: "PERCENTAGE"
+        percentage: 15.0
+        description: "Platform fee"
+
+create_payment_intent_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      amount: 10000
+      currency: "USD"
+      description: "Premium content purchase"
+      payment_method: "CARD"
+      split_rules:
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+          type: "PERCENTAGE"
+          percentage: 85.0
+          description: "Creator revenue share"
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174001"
+          type: "PERCENTAGE"
+          percentage: 15.0
+          description: "Platform fee"
+      status: "REQUIRES_CONFIRMATION"
+      client_secret: "pi_123_secret_456"
+      created_at: "2025-11-01T10:00:00Z"
+      updated_at: "2025-11-01T10:00:00Z"
+
+# Step 2: Confirm Payment Intent (Fraud Detection Triggered)
+confirm_payment_intent_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payments/intents/123e4567-e89b-12d3-a456-426614174002/confirm
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    payment_method_details:
+      card_number: "4242424242424242"
+      expiry_month: 12
+      expiry_year: 2027
+      cvc: "123"
+
+confirm_payment_intent_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      amount: 10000
+      currency: "USD"
+      description: "Premium content purchase"
+      payment_method: "CARD"
+      split_rules:
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+          type: "PERCENTAGE"
+          percentage: 85.0
+          description: "Creator revenue share"
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174001"
+          type: "PERCENTAGE"
+          percentage: 15.0
+          description: "Platform fee"
+      status: "PROCESSING"
+      client_secret: "pi_123_secret_456"
+      created_at: "2025-11-01T10:00:00Z"
+      updated_at: "2025-11-01T10:00:05Z"
+
+# Step 3: Fraud Detection Webhook (Simulated)
+fraud_detection_webhook:
+  method: POST
+  url: https://merchant-website.com/webhooks/fraud
+  headers:
+    Authorization: Bearer webhook_secret
+    Content-Type: application/json
+  body:
+    event: "payment.fraud_detected"
+    data:
+      payment_intent_id: "123e4567-e89b-12d3-a456-426614174002"
+      fraud_score: 85
+      reason: "Unusual spending pattern detected"
+      recommended_action: "HOLD_FOR_REVIEW"
+
+# Step 4: Check Payment Intent Status After Fraud Detection
+check_payment_intent_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/payments/intents/123e4567-e89b-12d3-a456-426614174002
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+check_payment_intent_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      amount: 10000
+      currency: "USD"
+      description: "Premium content purchase"
+      payment_method: "CARD"
+      split_rules:
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+          type: "PERCENTAGE"
+          percentage: 85.0
+          description: "Creator revenue share"
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174001"
+          type: "PERCENTAGE"
+          percentage: 15.0
+          description: "Platform fee"
+      status: "PROCESSING"
+      client_secret: "pi_123_secret_456"
+      created_at: "2025-11-01T10:00:00Z"
+      updated_at: "2025-11-01T10:00:10Z"
+
+# Step 5: Merchant Reviews and Approves Payment
+merchant_approval_request:
+  method: POST
+  url: https://merchant-website.com/admin/payments/approve
+  headers:
+    Authorization: Bearer admin_token
+    Content-Type: application/json
+  body:
+    payment_intent_id: "123e4567-e89b-12d3-a456-426614174002"
+    action: "APPROVE"
+
+merchant_approval_response:
+  status: 200
+  body:
+    message: "Payment approved successfully"
+
+# Step 6: Final Payment Status Check
+final_status_check_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/payments/intents/123e4567-e89b-12d3-a456-426614174002
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+final_status_check_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      amount: 10000
+      currency: "USD"
+      description: "Premium content purchase"
+      payment_method: "CARD"
+      split_rules:
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+          type: "PERCENTAGE"
+          percentage: 85.0
+          description: "Creator revenue share"
+        - recipient_id: "123e4567-e89b-12d3-a456-426614174001"
+          type: "PERCENTAGE"
+          percentage: 15.0
+          description: "Platform fee"
+      status: "SUCCEEDED"
+      client_secret: "pi_123_secret_456"
+      created_at: "2025-11-01T10:00:00Z"
+      updated_at: "2025-11-01T10:05:00Z"

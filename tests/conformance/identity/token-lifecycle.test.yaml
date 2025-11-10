@@ -1,0 +1,36 @@
+test_suite: "Identity Service - Token Lifecycle"
+version: "1.0.0"
+tests:
+  - name: "Issue Session Token"
+    description: "Issue JWT session token after WebAuthn authentication"
+    steps:
+      - request:
+          method: POST
+          path: /v1/sessions
+          body:
+            nonce: "valid-nonce-from-previous-step"
+            signature: "webauthn-signature"
+        expected_response:
+          status: 200
+          body:
+            data:
+              access_token: "^[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+$"
+              token_type: "Bearer"
+              expires_in: 3600
+              scope: "identity:read content:read"
+
+  - name: "Verify Token"
+    description: "Verify JWT token validity"
+    steps:
+      - request:
+          method: GET
+          path: /v1/tokens/verify
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              valid: true
+              identity_id: "^[a-zA-Z0-9-]+$"
+              expires_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

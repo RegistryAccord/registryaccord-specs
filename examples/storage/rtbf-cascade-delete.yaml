@@ -1,0 +1,157 @@
+# RTBF Cascade Delete Example
+# This example demonstrates cascading deletion for RTBF compliance
+
+# Step 1: Create Bucket for User
+create_user_bucket_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/buckets
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440003
+    Content-Type: application/json
+  body:
+    name: "user-content-123e4567"
+    owner_id: "123e4567-e89b-12d3-a456-426614174000"
+    provider: "S3"
+    region: "us-west-2"
+
+create_user_bucket_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      name: "user-content-123e4567"
+      owner_id: "123e4567-e89b-12d3-a456-426614174000"
+      provider: "S3"
+      region: "us-west-2"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: Upload Multiple Objects to Bucket
+upload_object_1_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/objects
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440004
+    Content-Type: application/json
+  body:
+    bucket_id: "123e4567-e89b-12d3-a456-426614174005"
+    key: "profile-picture.jpg"
+    content_type: "image/jpeg"
+    size_bytes: 102400
+
+upload_object_1_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174006"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174005"
+      key: "profile-picture.jpg"
+      size_bytes: 102400
+      content_type: "image/jpeg"
+      created_at: "2025-11-01T10:00:05Z"
+
+upload_object_2_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/objects
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440005
+    Content-Type: application/json
+  body:
+    bucket_id: "123e4567-e89b-12d3-a456-426614174005"
+    key: "videos/intro.mp4"
+    content_type: "video/mp4"
+    size_bytes: 52428800
+
+upload_object_2_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174007"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174005"
+      key: "videos/intro.mp4"
+      size_bytes: 52428800
+      content_type: "video/mp4"
+      created_at: "2025-11-01T10:00:10Z"
+
+# Step 3: RTBF Request - Delete User Bucket (Cascading Delete)
+delete_user_bucket_request:
+  method: DELETE
+  url: https://api.registryaccord.com/storage/v1/storage/buckets/123e4567-e89b-12d3-a456-426614174005
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+delete_user_bucket_response:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+
+# Step 4: Verify Objects Are Deleted
+verify_object_1_deleted_request:
+  method: GET
+  url: https://api.registryaccord.com/storage/v1/storage/objects/123e4567-e89b-12d3-a456-426614174006
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+verify_object_1_deleted_response:
+  status: 404
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440007
+  body:
+    error:
+      code: "NOT_FOUND"
+      message: "Object not found"
+      correlationId: 550e8400-e29b-41d4-a716-446655440007
+
+verify_object_2_deleted_request:
+  method: GET
+  url: https://api.registryaccord.com/storage/v1/storage/objects/123e4567-e89b-12d3-a456-426614174007
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+verify_object_2_deleted_response:
+  status: 404
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 994
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440008
+  body:
+    error:
+      code: "NOT_FOUND"
+      message: "Object not found"
+      correlationId: 550e8400-e29b-41d4-a716-446655440008

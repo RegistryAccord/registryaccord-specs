@@ -1,0 +1,31 @@
+name: Submit Fairness Dispute
+description: |
+  Authenticated user submits a fairness dispute with evidence.
+steps:
+  - request:
+      method: POST
+      path: /v1/feeds/disputes
+      headers:
+        RA-API-Version: "2025-11-01"
+        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        Content-Type: "application/json"
+      body:
+        data:
+          ranker_id: "550e8400-e29b-41d4-a716-446655440000"
+          dispute_type: "DEMOGRAPHIC_BIAS"
+          description: "Observed consistent underrepresentation of certain demographic groups in feed results over the past month."
+          evidence:
+            timestamps: ["2025-10-01T10:00:00Z", "2025-10-15T14:30:00Z"]
+            user_ids: ["anon-123", "anon-456"]
+    response:
+      status: 201
+      body:
+        data:
+          dispute_id: "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+          status: "SUBMITTED"
+          created_at: "2025-11-01T10:00:00Z"
+          expected_resolution_date: "2025-11-15T10:00:00Z"
+          resolution:
+            outcome: null
+            resolution_date: null
+            summary: null

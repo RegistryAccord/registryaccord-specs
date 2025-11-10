@@ -1,0 +1,49 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://api.registryaccord.com/schemas/audits/dispute-submission",
+"title": "Dispute Submission",
+"description": "Fairness dispute submission schema",
+"type": "object",
+"required": ["ranker_id", "dispute_type", "description"],
+"properties": {
+  "ranker_id": {
+    "type": "string",
+    "format": "uuid"
+  },
+  "dispute_type": {
+    "type": "string",
+    "enum": [
+      "DEMOGRAPHIC_BIAS",
+      "CONTENT_DISCRIMINATION",
+      "ENGAGEMENT_MANIPULATION",
+      "OTHER"
+    ]
+  },
+  "description": {
+    "type": "string",
+    "minLength": 50,
+    "maxLength": 2000
+  },
+  "evidence": {
+    "type": "object",
+    "properties": {
+      "timestamps": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "user_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Anonymized user identifiers"
+      },
+      "supporting_data": {
+        "type": "string"
+      }
+    }
+  }
+}

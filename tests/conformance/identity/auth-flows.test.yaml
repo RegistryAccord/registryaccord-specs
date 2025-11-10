@@ -1,0 +1,35 @@
+test_suite: "Identity Service - Authentication Flows"
+version: "1.0.0"
+tests:
+  - name: "WebAuthn Registration Flow"
+    description: "Complete WebAuthn registration flow with challenge-response"
+    steps:
+      - request:
+          method: POST
+          path: /v1/identities
+          body:
+            type: "individual"
+            display_name: "Test User"
+        expected_response:
+          status: 201
+          body:
+            data:
+              id: "^[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+$"
+              type: "individual"
+              display_name: "Test User"
+              created_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "WebAuthn Authentication Flow"
+    description: "Complete WebAuthn authentication flow with challenge-response"
+    steps:
+      - request:
+          method: POST
+          path: /v1/sessions/nonce
+          body:
+            identity_id: "test-user-id"
+        expected_response:
+          status: 200
+          body:
+            data:
+              nonce: "^[a-zA-Z0-9]{32}$"
+              expires_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

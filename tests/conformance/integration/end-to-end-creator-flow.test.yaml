@@ -1,0 +1,89 @@
+test_suite: "Integration - End-to-End Creator Flow"
+version: "1.0.0"
+tests:
+  - name: "Complete Creator Workflow"
+    description: "Complete end-to-end workflow for a content creator"
+    steps:
+      # Step 1: Create identity
+      - request:
+          method: POST
+          path: /v1/identities
+          body:
+            type: "individual"
+            display_name: "Test Creator"
+        expected_response:
+          status: 201
+
+      # Step 2: Create content
+      - request:
+          method: POST
+          path: /v1/content
+          headers:
+            Authorization: "Bearer creator-jwt"
+          body:
+            type: "article"
+            title: "Test Article"
+            content: "This is a test article content"
+            license: "CC-BY-4.0"
+        expected_response:
+          status: 201
+
+      # Step 3: Set up revenue split
+      - request:
+          method: POST
+          path: /v1/payments/splits
+          headers:
+            Authorization: "Bearer creator-jwt"
+          body:
+            content_id: "content-123"
+            splits:
+              - recipient_did: "did:ra:creator-123"
+                percentage: 70
+                type: "creator"
+              - recipient_did: "did:ra:platform-123"
+                percentage: 30
+                type: "platform"
+        expected_response:
+          status: 201
+
+      # Step 4: Upload media asset
+      - request:
+          method: POST
+          path: /v1/storage/uploads
+          headers:
+            Authorization: "Bearer creator-jwt"
+          body:
+            content_type: "image/jpeg"
+            content_length: 102400
+        expected_response:
+          status: 201
+
+      # Step 5: Add to collection
+      - request:
+          method: POST
+          path: /v1/collections
+          headers:
+            Authorization: "Bearer creator-jwt"
+          body:
+            name: "My Articles"
+            description: "Collection of my articles"
+            visibility: "public"
+        expected_response:
+          status: 201
+
+      # Step 6: Verify in feed
+      - request:
+          method: POST
+          path: /v1/feeds/query
+          headers:
+            Authorization: "Bearer creator-jwt"
+          body:
+            query:
+              type: "author"
+              author_did: "did:ra:creator-123"
+        expected_response:
+          status: 200
+          body:
+            data:
+              - content_id: "content-123"
+                title: "Test Article"

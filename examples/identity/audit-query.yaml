@@ -1,0 +1,188 @@
+name: Audit Event Querying
+description: |
+  Audit event querying:
+  1. Query all events (GET /v1/audit)
+  2. Filter by identity_id
+  3. Filter by event type
+  4. Date range filtering
+  5. Pagination (cursor-based with limit, after, before)
+  6. Example audit events for different operations
+steps:
+  # Step 1: Query All Events
+  - name: Query All Audit Events
+    description: Retrieve all audit events with default pagination
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/audit?limit=5
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440021"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJhdWRpdDpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440021"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "999"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data:
+            - id: "h8i9j0k1-l2m3-4567-n8o9-p0q1r2s3t4u5"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              event_type: "identity.created"
+              resource_type: "identity"
+              resource_id: "123e4567-e89b-12d3-a456-426614174000"
+              action: "create"
+              timestamp: "2025-11-06T10:43:00Z"
+              ip_address: "192.168.1.100"
+              user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+              metadata: {}
+            - id: "i9j0k1l2-m3n4-5678-o9p0-q1r2s3t4u5v6"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              event_type: "session.created"
+              resource_type: "session"
+              resource_id: "550e8400-e29b-41d4-a716-446655440006"
+              action: "create"
+              timestamp: "2025-11-06T10:46:00Z"
+              ip_address: "192.168.1.100"
+              user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+              metadata: {}
+          pagination:
+            has_next_page: true
+            next_cursor: "eyJ0aW1lc3RhbXAiOiIyMDI1LTExLTA2VDEwOjUyOjAwWiIsInJrZXkiOiJsMm0zbjRvNS1wNnE3LTg5MDEtcjJzMy10NHU1djZ3N3g4eTkifQ=="
+
+  # Step 2: Filter by Identity ID
+  - name: Filter Audit Events by Identity
+    description: Retrieve audit events for a specific identity
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/audit?identity_id=123e4567-e89b-12d3-a456-426614174000&limit=5
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440022"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJhdWRpdDpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440022"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "998"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data:
+            - id: "h8i9j0k1-l2m3-4567-n8o9-p0q1r2s3t4u5"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              event_type: "identity.created"
+              resource_type: "identity"
+              resource_id: "123e4567-e89b-12d3-a456-426614174000"
+              action: "create"
+              timestamp: "2025-11-06T10:43:00Z"
+              ip_address: "192.168.1.100"
+              user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+              metadata: {}
+          pagination:
+            has_next_page: false
+            next_cursor: null
+
+  # Step 3: Filter by Event Type
+  - name: Filter Audit Events by Type
+    description: Retrieve audit events of a specific type
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/audit?event_type=consent.granted&limit=5
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440023"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJhdWRpdDpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440023"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "997"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data: []
+          pagination:
+            has_next_page: false
+            next_cursor: null
+
+  # Step 4: Date Range Filtering
+  - name: Filter Audit Events by Date Range
+    description: Retrieve audit events within a specific time range
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/audit?start_time=2025-11-06T10:45:00Z&end_time=2025-11-06T10:55:00Z&limit=10
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440024"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJhdWRpdDpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440024"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "996"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data: []
+          pagination:
+            has_next_page: false
+            next_cursor: null
+
+  # Step 5: Pagination with After Cursor
+  - name: Paginate Audit Events
+    description: Retrieve next page of audit events using cursor
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/audit?limit=5&after=eyJ0aW1lc3RhbXAiOiIyMDI1LTExLTA2VDEwOjUyOjAwWiIsInJrZXkiOiJsMm0zbjRvNS1wNnE3LTg5MDEtcjJzMy10NHU1djZ3N3g4eTkifQ==
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440025"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJhdWRpdDpyZWFkIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440025"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "995"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data: []
+          pagination:
+            has_next_page: false
+            next_cursor: null
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440025"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided JWT token has expired"
+          instance: "/v1/audit"
+          trace_id: "550e8400-e29b-41d4-a716-446655440025"
+      forbidden:
+        status: 403
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440025"
+        body:
+          type: "https://api.registryaccord.com/errors/scope_denied"
+          title: "Scope Denied"
+          status: 403
+          detail: "The requested operation requires 'audit:read' scope"
+          instance: "/v1/audit"
+          trace_id: "550e8400-e29b-41d4-a716-446655440025"

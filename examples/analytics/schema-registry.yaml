@@ -1,0 +1,136 @@
+# Schema Registry Example
+# This example demonstrates registering and using event schemas
+
+# Step 1: Register Schema
+register_schema_request:
+  method: POST
+  url: https://api.registryaccord.com/analytics/v1/schemas
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    id: "123e4567-e89b-12d3-a456-426614174006"
+    name: "purchase_event"
+    version: "1.0.0"
+    schema:
+      type: "object"
+      required:
+        - "event_id"
+        - "user_id"
+        - "product_id"
+        - "amount"
+        - "currency"
+        - "timestamp"
+      properties:
+        event_id:
+          type: "string"
+          format: "uuid"
+        user_id:
+          type: "string"
+          format: "uuid"
+        product_id:
+          type: "string"
+        amount:
+          type: "number"
+          minimum: 0
+        currency:
+          type: "string"
+          pattern: "^[A-Z]{3}$"
+        timestamp:
+          type: "string"
+          format: "date-time"
+        discount_code:
+          type: "string"
+        payment_method:
+          type: "string"
+          enum:
+            - "credit_card"
+            - "debit_card"
+            - "paypal"
+            - "crypto"
+
+register_schema_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174006"
+      name: "purchase_event"
+      version: "1.0.0"
+      schema:
+        type: "object"
+        required:
+          - "event_id"
+          - "user_id"
+          - "product_id"
+          - "amount"
+          - "currency"
+          - "timestamp"
+        properties:
+          event_id:
+            type: "string"
+            format: "uuid"
+          user_id:
+            type: "string"
+            format: "uuid"
+          product_id:
+            type: "string"
+          amount:
+            type: "number"
+            minimum: 0
+          currency:
+            type: "string"
+            pattern: "^[A-Z]{3}$"
+          timestamp:
+            type: "string"
+            format: "date-time"
+          discount_code:
+            type: "string"
+          payment_method:
+            type: "string"
+            enum:
+              - "credit_card"
+              - "debit_card"
+              - "paypal"
+              - "crypto"
+      created_at: "2025-10-15T10:05:00Z"
+
+# Step 2: List Schemas
+list_schemas_request:
+  method: GET
+  url: https://api.registryaccord.com/analytics/v1/schemas?limit=10
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_schemas_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174006"
+        name: "purchase_event"
+        version: "1.0.0"
+        created_at: "2025-10-15T10:05:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174007"
+        name: "page_view_event"
+        version: "1.2.0"
+        created_at: "2025-09-20T14:30:00Z"
+      - id: "123e4567-e89b-12d3-a456-426614174008"
+        name: "user_registration_event"
+        version: "1.0.0"
+        created_at: "2025-08-15T09:15:00Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false

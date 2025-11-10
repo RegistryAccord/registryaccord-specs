@@ -1,0 +1,130 @@
+# Reporting and Budgeting Example
+# This example demonstrates generating reports and managing budgets
+
+# Step 1: Get Campaign Report
+get_campaign_report_request:
+  method: GET
+  url: https://api.registryaccord.com/revenue/v1/ads/reports/campaign/123e4567-e89b-12d3-a456-426614174001?start_date=2025-10-01&end_date=2025-10-15&metrics=impressions,clicks,spend,ctr,cpc
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_campaign_report_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440008
+  body:
+    data:
+      campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+      start_date: "2025-10-01"
+      end_date: "2025-10-15"
+      metrics:
+        impressions: 125000
+        clicks: 3125
+        conversions: 156
+        spend: 343.75
+        ctr: 0.025
+        cpc: 0.11
+        cpa: 2.20
+
+# Step 2: Get Attribution Report
+get_attribution_report_request:
+  method: GET
+  url: https://api.registryaccord.com/revenue/v1/ads/reports/attribution?start_date=2025-10-01&end_date=2025-10-15&attribution_model=last_click
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_attribution_report_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440009
+  body:
+    data:
+      start_date: "2025-10-01"
+      end_date: "2025-10-15"
+      conversions:
+        - conversion_id: "conv-20251015-001"
+          user_id: "123e4567-e89b-12d3-a456-426614174005"
+          touchpoints:
+            - campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+              timestamp: "2025-10-15T10:15:45Z"
+              attribution_weight: 1.0
+      metrics:
+        total_conversions: 156
+        total_value: 31200
+        roas: 90.7
+
+# Step 3: Get Budget Status
+get_budget_status_request:
+  method: GET
+  url: https://api.registryaccord.com/revenue/v1/ads/budget/123e4567-e89b-12d3-a456-426614174001
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_budget_status_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440010
+  body:
+    data:
+      campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+      total_budget: 50000
+      spent: 343.75
+      remaining: 49656.25
+      daily_budget: 1000
+      daily_spent: 25.50
+      last_updated: "2025-10-15T10:15:45Z"
+
+# Step 4: Process IVT Refund
+process_ivt_refund_request:
+  method: POST
+  url: https://api.registryaccord.com/revenue/v1/ads/refunds
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+    amount: 15.75
+    reason: "Invalid traffic detected by TAG baseline filters"
+    detection_method: "TAG_BASELINE"
+    evidence:
+      - type: "log"
+        url: "https://logs.registryaccord.com/ivt/20251015-001"
+        description: "Suspicious IP pattern detected"
+
+process_ivt_refund_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440011
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174006"
+      campaign_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 15.75
+      reason: "Invalid traffic detected by TAG baseline filters"
+      status: "PENDING"
+      evidence:
+        - type: "log"
+          url: "https://logs.registryaccord.com/ivt/20251015-001"
+          description: "Suspicious IP pattern detected"
+      created_at: "2025-10-15T10:20:00Z"
+      updated_at: "2025-10-15T10:20:00Z"

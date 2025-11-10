@@ -1,0 +1,63 @@
+test_suite: "Storage Gateway - Multipart Uploads"
+version: "1.0.0"
+tests:
+  - name: "Initialize Multipart Upload"
+    description: "Initialize a multipart upload session"
+    steps:
+      - request:
+          method: POST
+          path: /v1/storage/uploads
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            content_type: "video/mp4"
+            content_length: 104857600
+        expected_response:
+          status: 201
+          body:
+            data:
+              upload_id: "^[a-zA-Z0-9-]+$"
+              url: "https://storage.example.com/upload-session"
+              expires_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Upload Part with Checksum"
+    description: "Upload a part with SHA-256 checksum verification"
+    steps:
+      - request:
+          method: PUT
+          path: /v1/storage/uploads/{upload_id}/parts/{part_number}
+          headers:
+            Authorization: "Bearer test-jwt-token"
+            Content-MD5: "base64-encoded-md5-hash"
+            Content-Length: 52428800
+          body: "<binary data>"
+        expected_response:
+          status: 200
+          body:
+            data:
+              part_number: 1
+              etag: "sha256:[a-f0-9]{64}"
+              size: 52428800
+
+  - name: "Finalize Multipart Upload"
+    description: "Finalize multipart upload with checksum verification"
+    steps:
+      - request:
+          method: POST
+          path: /v1/storage/uploads/{upload_id}/complete
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            parts:
+              - part_number: 1
+                etag: "sha256:part1-hash"
+              - part_number: 2
+                etag: "sha256:part2-hash"
+        expected_response:
+          status: 200
+          body:
+            data:
+              object_id: "^[a-zA-Z0-9-]+$"
+              content_address: "sha256:[a-f0-9]{64}"
+              size: 104857600
+              finalized_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

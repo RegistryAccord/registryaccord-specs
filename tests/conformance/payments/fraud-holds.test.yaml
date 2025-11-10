@@ -1,0 +1,38 @@
+test_suite: "Payments Service - Fraud Detection"
+version: "1.0.0"
+tests:
+  - name: "Place Fraud Hold on Payment"
+    description: "Place a hold on a payment due to suspected fraud"
+    steps:
+      - request:
+          method: POST
+          path: /v1/payments/{payment_id}/holds
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            reason: "suspected_fraud"
+            notes: "High velocity transactions detected"
+        expected_response:
+          status: 200
+          body:
+            data:
+              payment_id: "^[a-zA-Z0-9-]+$"
+              status: "on_hold"
+              hold_reason: "suspected_fraud"
+              hold_placed_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Release Fraud Hold"
+    description: "Release a payment hold after fraud review"
+    steps:
+      - request:
+          method: DELETE
+          path: /v1/payments/{payment_id}/holds/{hold_id}
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              payment_id: "^[a-zA-Z0-9-]+$"
+              status: "released"
+              hold_released_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

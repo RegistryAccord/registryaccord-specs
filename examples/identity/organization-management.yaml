@@ -1,0 +1,233 @@
+name: Organization Management
+description: |
+  Organization lifecycle operations:
+  1. Create organization (POST /v1/organizations)
+  2. Add member to organization (POST /v1/organizations/{id}/members)
+  3. List organization members (GET /v1/organizations/{id}/members)
+  4. Update member role (PATCH /v1/organizations/{id}/members/{member_id})
+  5. Remove member (DELETE /v1/organizations/{id}/members/{member_id})
+  6. Error scenarios (unauthorized, forbidden, not found)
+steps:
+  # Step 1: Create Organization
+  - name: Create Organization
+    description: Create a new organization
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/organizations
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440026"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246d3JpdGUiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+        Content-Type: "application/json"
+      body:
+        name: "Acme Corporation"
+        display_name: "Acme Corp"
+        description: "A sample organization for demonstration purposes"
+        website: "https://acme.com"
+        logo_url: "https://acme.com/logo.png"
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440026"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "99"
+          X-RateLimit-Reset: "1730885400"
+          Location: "https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef"
+        body:
+          id: "f1e2d3c4-b5a6-7890-1234-567890abcdef"
+          name: "Acme Corporation"
+          display_name: "Acme Corp"
+          description: "A sample organization for demonstration purposes"
+          website: "https://acme.com"
+          logo_url: "https://acme.com/logo.png"
+          created_at: "2025-11-06T11:05:00Z"
+          updated_at: "2025-11-06T11:05:00Z"
+          is_active: true
+
+  # Step 2: Add Member to Organization
+  - name: Add Member to Organization
+    description: Add a member to the organization with OWNER role
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440027"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246d3JpdGUiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        role: OWNER
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440027"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "999"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          organization_id: "f1e2d3c4-b5a6-7890-1234-567890abcdef"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          role: OWNER
+          joined_at: "2025-11-06T11:06:00Z"
+          is_active: true
+
+  # Step 3: List Organization Members
+  - name: List Organization Members
+    description: List all members of the organization
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members?limit=10
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440028"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440028"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "998"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data:
+            - id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+              organization_id: "f1e2d3c4-b5a6-7890-1234-567890abcdef"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              role: OWNER
+              joined_at: "2025-11-06T11:06:00Z"
+              is_active: true
+          pagination:
+            has_next_page: false
+            next_cursor: null
+
+  # Step 4: Update Member Role
+  - name: Update Member Role
+    description: Update a member's role from OWNER to ADMIN
+    request:
+      method: PATCH
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members/a1b2c3d4-e5f6-7890-1234-567890abcdef
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440029"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246d3JpdGUiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+        Content-Type: "application/json"
+      body:
+        role: ADMIN
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440029"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "997"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          organization_id: "f1e2d3c4-b5a6-7890-1234-567890abcdef"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          role: ADMIN
+          joined_at: "2025-11-06T11:06:00Z"
+          updated_at: "2025-11-06T11:07:00Z"
+          is_active: true
+
+  # Step 5: Remove Member
+  - name: Remove Member from Organization
+    description: Remove a member from the organization
+    request:
+      method: DELETE
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members/a1b2c3d4-e5f6-7890-1234-567890abcdef
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440030"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246d3JpdGUiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+    responses:
+      success:
+        status: 204
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440030"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "996"
+          X-RateLimit-Reset: "1730885400"
+
+  # Step 6: Error Scenarios
+  - name: Unauthorized Access
+    description: Attempt to access organization without proper authentication
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440031"
+    responses:
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440031"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "Missing or invalid authorization header"
+          instance: "/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members"
+          trace_id: "550e8400-e29b-41d4-a716-446655440031"
+
+  - name: Forbidden Access
+    description: Attempt to perform admin action without proper scope
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440032"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "987f6543-e21b-43d5-a678-123456789000"
+        role: MEMBER
+    responses:
+      forbidden:
+        status: 403
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440032"
+        body:
+          type: "https://api.registryaccord.com/errors/scope_denied"
+          title: "Scope Denied"
+          status: 403
+          detail: "The requested operation requires 'organization:write' scope"
+          instance: "/v1/organizations/f1e2d3c4-b5a6-7890-1234-567890abcdef/members"
+          trace_id: "550e8400-e29b-41d4-a716-446655440032"
+
+  - name: Organization Not Found
+    description: Attempt to access a non-existent organization
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/organizations/00000000-0000-0000-0000-000000000000/members
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440033"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJvcmdhbml6YXRpb246cmVhZCIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    responses:
+      not_found:
+        status: 404
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440033"
+        body:
+          type: "https://api.registryaccord.com/errors/resource_not_found"
+          title: "Resource Not Found"
+          status: 404
+          detail: "Organization with ID '00000000-0000-0000-0000-000000000000' not found"
+          instance: "/v1/organizations/00000000-0000-0000-0000-000000000000/members"
+          trace_id: "550e8400-e29b-41d4-a716-446655440033"

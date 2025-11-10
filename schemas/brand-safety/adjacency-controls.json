@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.registryaccord.com/schemas/brand-safety/adjacency-controls",
+  "title": "Advertiser Adjacency Controls",
+  "description": "Exclusion lists for brand safety controls",
+  "type": "object",
+  "required": ["advertiser_id", "exclusions"],
+  "properties": {
+    "advertiser_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "exclusions": {
+      "type": "object",
+      "properties": {
+        "category_exclusions": {
+          "type": "array",
+          "description": "IAB categories to exclude",
+          "items": {
+            "type": "string",
+            "pattern": "^IAB[0-9]+(-[0-9]+)?$"
+          }
+        },
+        "content_type_exclusions": {
+          "type": "array",
+          "description": "Content types to exclude",
+          "items": {
+            "type": "string",
+            "enum": [
+              "UGC",
+              "NEWS",
+              "OPINION",
+              "SATIRE",
+              "ADULT"
+            ]
+          }
+        },
+        "creator_exclusions": {
+          "type": "array",
+          "description": "Specific creators to exclude",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "keyword_exclusions": {
+          "type": "array",
+          "description": "Keywords to exclude",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

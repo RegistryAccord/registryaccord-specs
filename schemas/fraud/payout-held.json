@@ -1,0 +1,57 @@
+{
+  "$id": "https://registryaccord.com/schemas/fraud/payout-held.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Payout Held Event",
+  "description": "Event payload for when a payout is held for fraud review",
+  "type": "object",
+  "required": [
+    "event",
+    "data"
+  ],
+  "properties": {
+    "event": {
+      "type": "string",
+      "const": "payout.held"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "payout_id",
+        "hold_reason",
+        "hold_until",
+        "timestamp"
+      ],
+      "properties": {
+        "payout_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the payout that was held"
+        },
+        "hold_reason": {
+          "type": "string",
+          "enum": [
+            "FRAUD_REVIEW",
+            "COMPLIANCE_CHECK",
+            "MANUAL_REVIEW",
+            "DISPUTE_PENDING"
+          ],
+          "description": "Reason why the payout was held"
+        },
+        "hold_until": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Automatic release timestamp if not manually reviewed"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about why the payout was held"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the payout was held"
+        }
+      }
+    }
+  }
+}

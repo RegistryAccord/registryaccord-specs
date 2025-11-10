@@ -1,0 +1,256 @@
+# Dispute Resolution Example
+# This example demonstrates the complete dispute resolution workflow
+
+# Step 1: Create Dispute
+create_dispute_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/disputes
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440003
+    Content-Type: application/json
+  body:
+    dispute_type: "REVENUE_SPLIT"
+    filed_by: "123e4567-e89b-12d3-a456-426614174000"
+    respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+    amount: 2500
+    currency: "USD"
+    reference_id: "123e4567-e89b-12d3-a456-426614174002"
+    reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+
+create_dispute_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      dispute_type: "REVENUE_SPLIT"
+      filed_by: "123e4567-e89b-12d3-a456-426614174000"
+      respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 2500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+      status: "OPEN"
+      created_at: "2025-11-01T10:00:00Z"
+      response_due_at: "2025-11-08T10:00:00Z"
+
+# Step 2: List Disputes
+list_disputes_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/disputes?filed_by=123e4567-e89b-12d3-a456-426614174000
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_disputes_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174005"
+        dispute_type: "REVENUE_SPLIT"
+        filed_by: "123e4567-e89b-12d3-a456-426614174000"
+        respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+        amount: 2500
+        currency: "USD"
+        reference_id: "123e4567-e89b-12d3-a456-426614174002"
+        reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+        status: "OPEN"
+        created_at: "2025-11-01T10:00:00Z"
+        response_due_at: "2025-11-08T10:00:00Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false
+
+# Step 3: Get Dispute Details
+get_dispute_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/disputes/123e4567-e89b-12d3-a456-426614174005
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_dispute_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      dispute_type: "REVENUE_SPLIT"
+      filed_by: "123e4567-e89b-12d3-a456-426614174000"
+      respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 2500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+      status: "OPEN"
+      created_at: "2025-11-01T10:00:00Z"
+      response_due_at: "2025-11-08T10:00:00Z"
+
+# Step 4: Respondent Responds to Dispute
+respond_to_dispute_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/disputes/123e4567-e89b-12d3-a456-426614174005/respond
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    evidence:
+      - type: "TRANSACTION_LOG"
+        url: "https://storage.platform.com/evidence/transaction_log_123.pdf"
+      - type: "DOCUMENT"
+        url: "https://storage.platform.com/evidence/split_calculation_123.pdf"
+    resolution_proposal: "PARTIAL_REFUND"
+
+respond_to_dispute_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      dispute_type: "REVENUE_SPLIT"
+      filed_by: "123e4567-e89b-12d3-a456-426614174000"
+      respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 2500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+      status: "UNDER_REVIEW"
+      evidence:
+        - type: "TRANSACTION_LOG"
+          url: "https://storage.platform.com/evidence/transaction_log_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+        - type: "DOCUMENT"
+          url: "https://storage.platform.com/evidence/split_calculation_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+      resolution_proposal: "PARTIAL_REFUND"
+      created_at: "2025-11-01T10:00:00Z"
+      response_due_at: "2025-11-08T10:00:00Z"
+
+# Step 5: Dispute Escalation to Arbitration
+escalate_dispute_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/disputes/123e4567-e89b-12d3-a456-426614174005/escalate
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    reason: "Parties unable to reach agreement on resolution proposal"
+
+escalate_dispute_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440007
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      dispute_type: "REVENUE_SPLIT"
+      filed_by: "123e4567-e89b-12d3-a456-426614174000"
+      respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 2500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+      status: "ESCALATED_TO_ARBITRATION"
+      evidence:
+        - type: "TRANSACTION_LOG"
+          url: "https://storage.platform.com/evidence/transaction_log_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+        - type: "DOCUMENT"
+          url: "https://storage.platform.com/evidence/split_calculation_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+      resolution_proposal: "PARTIAL_REFUND"
+      created_at: "2025-11-01T10:00:00Z"
+      response_due_at: "2025-11-08T10:00:00Z"
+
+# Step 6: Arbitration Decision
+arbitration_decision_request:
+  method: POST
+  url: https://platform-website.com/admin/disputes/arbitrate
+  headers:
+    Authorization: Bearer arbitrator_token
+    Content-Type: application/json
+  body:
+    dispute_id: "123e4567-e89b-12d3-a456-426614174005"
+    decision: "PARTIAL_REFUND"
+    amount: 1250
+    reason: "Arbitrator determined 50% refund appropriate based on evidence"
+
+arbitration_decision_response:
+  status: 200
+  body:
+    message: "Dispute resolved with partial refund of 1250 USD"
+
+# Step 7: Final Dispute Status
+final_dispute_status_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/disputes/123e4567-e89b-12d3-a456-426614174005
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+final_dispute_status_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 994
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440008
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      dispute_type: "REVENUE_SPLIT"
+      filed_by: "123e4567-e89b-12d3-a456-426614174000"
+      respondent_id: "123e4567-e89b-12d3-a456-426614174001"
+      amount: 2500
+      currency: "USD"
+      reference_id: "123e4567-e89b-12d3-a456-426614174002"
+      reason: "Incorrect revenue split calculation for premium content purchase. Expected 85% but received 70%."
+      status: "RESOLVED"
+      resolution: "PARTIAL_REFUND"
+      evidence:
+        - type: "TRANSACTION_LOG"
+          url: "https://storage.platform.com/evidence/transaction_log_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+        - type: "DOCUMENT"
+          url: "https://storage.platform.com/evidence/split_calculation_123.pdf"
+          uploaded_by: "123e4567-e89b-12d3-a456-426614174001"
+          uploaded_at: "2025-11-01T10:05:00Z"
+      resolution_proposal: "PARTIAL_REFUND"
+      created_at: "2025-11-01T10:00:00Z"
+      response_due_at: "2025-11-08T10:00:00Z"
+      resolved_at: "2025-11-01T10:15:00Z"

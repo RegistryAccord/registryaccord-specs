@@ -1,0 +1,41 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://api.registryaccord.com/schemas/audits/dispute-outcome",
+"title": "Dispute Outcome",
+"description": "Resolution outcome for fairness disputes",
+"type": "object",
+"required": ["dispute_id", "status", "created_at"],
+"properties": {
+  "dispute_id": {
+    "type": "string",
+    "format": "uuid"
+  },
+  "status": {
+    "type": "string",
+    "enum": ["SUBMITTED", "UNDER_REVIEW", "RESOLVED", "ESCALATED"]
+  },
+  "created_at": {
+    "type": "string",
+    "format": "date-time"
+  },
+  "expected_resolution_date": {
+    "type": "string",
+    "format": "date-time"
+  },
+  "resolution": {
+    "type": "object",
+    "properties": {
+      "outcome": {
+        "type": "string",
+        "enum": ["UPHELD", "DISMISSED", "PARTIALLY_UPHELD"]
+      },
+      "resolution_date": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "summary": {
+        "type": "string"
+      }
+    }
+  }
+}

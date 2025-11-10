@@ -1,0 +1,62 @@
+test_suite: "Feed Generator - Ranking Algorithms"
+version: "1.0.0"
+tests:
+  - name: "Generate Personalized Feed with Custom Ranker"
+    description: "Generate a personalized feed using a custom ranking algorithm"
+    steps:
+      - request:
+          method: POST
+          path: /v1/feeds/query
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            query:
+              type: "personalized"
+              ranker: "custom-algorithm-v1"
+              limit: 20
+            context:
+              user_did: "did:ra:user-123"
+              interests: ["technology", "gaming"]
+        expected_response:
+          status: 200
+          body:
+            data:
+              - content_id: "content-1"
+                score: 0.95
+                ranker: "custom-algorithm-v1"
+                ranked_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              - content_id: "content-2"
+                score: 0.87
+                ranker: "custom-algorithm-v1"
+                ranked_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+            pagination:
+              next_cursor: "^[a-zA-Z0-9+/]+={0,2}$"
+              has_next_page: true
+
+  - name: "Explain Ranking Decision"
+    description: "Get explanation for why content was ranked in a specific position"
+    steps:
+      - request:
+          method: GET
+          path: /v1/feeds/explain/{content_id}
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          parameters:
+            ranker: "custom-algorithm-v1"
+        expected_response:
+          status: 200
+          body:
+            data:
+              content_id: "content-1"
+              rank: 5
+              signals:
+                - name: "user_interest_match"
+                  value: 0.8
+                  weight: 0.3
+                - name: "engagement_score"
+                  value: 0.9
+                  weight: 0.5
+                - name: "recency"
+                  value: 0.7
+                  weight: 0.2
+              explanation: "Ranked 5th due to strong user interest match and high engagement"

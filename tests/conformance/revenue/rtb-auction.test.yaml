@@ -1,0 +1,75 @@
+test_suite: "Revenue Services - RTB Auction"
+version: "1.0.0"
+tests:
+  - name: "Submit Real-time Bid"
+    description: "Submit a real-time bid for an ad impression"
+    steps:
+      - request:
+          method: POST
+          path: /v1/ads/auction
+          headers:
+            Authorization: "Bearer test-jwt-token"
+            Content-Type: "application/json"
+          body:
+            auction_id: "auction-123"
+            impression_id: "imp-456"
+            site:
+              domain: "example.com"
+              page: "https://example.com/article"
+            user:
+              id: "user-789"
+              ip: "192.168.1.1"
+            device:
+              ua: "Mozilla/5.0 ..."
+              ip: "192.168.1.1"
+            bid_request:
+              id: "bid-req-123"
+              imp:
+                - id: "1"
+                  banner:
+                    w: 300
+                    h: 250
+            content_classification:
+              content_id: "content-123"
+              classifications:
+                - category_id: "IAB1"
+                  category_name: "Arts & Entertainment"
+                  confidence: 0.95
+              brand_suitability: "LOW_RISK"
+        expected_response:
+          status: 200
+          body:
+            data:
+              bid_response:
+                id: "bid-resp-456"
+                seatbid:
+                  - seat: "advertiser-123"
+                    bid:
+                      - id: "bid-789"
+                        impid: "1"
+                        price: 150
+                        adid: "creative-123"
+                        nurl: "https://example.com/win-notice"
+                bidid: "bidder-123"
+
+  - name: "Process Auction Win with Differential Privacy"
+    description: "Process auction win with differential privacy logging"
+    steps:
+      - request:
+          method: POST
+          path: /v1/ads/auction/win
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            auction_id: "auction-123"
+            bid_id: "bid-789"
+            price: 150
+            privacy_budget_used: 0.01
+        expected_response:
+          status: 200
+          body:
+            data:
+              auction_id: "auction-123"
+              status: "win_processed"
+              privacy_budget_consumed: 0.01
+              logged_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

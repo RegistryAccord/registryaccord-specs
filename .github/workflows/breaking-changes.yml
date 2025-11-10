@@ -1,0 +1,69 @@
+name: Detect Breaking Changes
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'openapi/**/*.yaml'
+
+jobs:
+  detect-breaking-changes:
+    name: Check for API Breaking Changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install openapi-diff
+        run: npm install -g openapi-diff
+      
+      - name: Check for breaking changes
+        id: check
+        continue-on-error: true
+        run: |
+          services=("identity" "content" "payments" "storage" "feeds" "revenue" "analytics")
+          breaking_changes=false
+          
+          for service in "${services[@]}"; do
+            echo "Checking $service for breaking changes..."
+            if [ -f "base/openapi/$service/v1/openapi.yaml" ]; then
+              if openapi-diff "base/openapi/$service/v1/openapi.yaml" "openapi/$service/v1/openapi.yaml" --breaking-only; then
+                echo "✅ No breaking changes in $service"
+              else
+                echo "⚠️ Breaking changes detected in $service"
+                breaking_changes=true
+              fi
+            fi
+          done
+          
+          if [ "$breaking_changes" = true ]; then
+            echo "breaking=true" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "breaking=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Comment on PR
+        if: steps.check.outputs.breaking == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Breaking changes detected!**\n\nIf these changes are intentional:\n1. Update API version (e.g., 2025-11-01 → 2026-01-15)\n2. Add deprecation headers to old endpoints (RFC 8594)\n3. Create migration guide in `docs/migrations/`\n4. Update CHANGELOG with breaking changes section\n5. Ensure 90-day deprecation notice period'
+            })

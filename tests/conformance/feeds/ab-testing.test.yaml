@@ -1,0 +1,65 @@
+test_suite: "Feed Generator - A/B Testing"
+version: "1.0.0"
+tests:
+  - name: "Create A/B Test for Ranking Algorithm"
+    description: "Create an A/B test to compare ranking algorithms"
+    steps:
+      - request:
+          method: POST
+          path: /v1/feeds/experiments
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            name: "Ranking Algorithm Comparison"
+            description: "Compare default vs custom ranking algorithm"
+            variants:
+              - name: "control"
+                ranker: "default"
+                traffic_allocation: 50
+              - name: "treatment"
+                ranker: "custom-algorithm-v1"
+                traffic_allocation: 50
+            start_at: "2025-11-06T00:00:00Z"
+            end_at: "2025-11-13T00:00:00Z"
+        expected_response:
+          status: 201
+          body:
+            data:
+              id: "^[a-zA-Z0-9-]+$"
+              name: "Ranking Algorithm Comparison"
+              status: "active"
+              variants:
+                - name: "control"
+                  ranker: "default"
+                  traffic_allocation: 50
+                - name: "treatment"
+                  ranker: "custom-algorithm-v1"
+                  traffic_allocation: 50
+              start_at: "2025-11-06T00:00:00Z"
+              end_at: "2025-11-13T00:00:00Z"
+
+  - name: "Get A/B Test Results"
+    description: "Get results from an active A/B test"
+    steps:
+      - request:
+          method: GET
+          path: /v1/feeds/experiments/{experiment_id}/results
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              experiment_id: "^[a-zA-Z0-9-]+$"
+              status: "active"
+              results:
+                control:
+                  impressions: 10000
+                  clicks: 500
+                  ctr: 0.05
+                treatment:
+                  impressions: 10000
+                  clicks: 750
+                  ctr: 0.075
+              winner: "treatment"
+              confidence: 0.95

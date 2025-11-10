@@ -1,0 +1,41 @@
+{
+  "name": "@registryaccord/specs",
+  "version": "1.0.0",
+  "description": "RegistryAccord protocol specifications and schemas",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx @stoplight/spectral-cli lint openapi/identity/v1/openapi.yaml openapi/content/v1/openapi.yaml openapi/payments/v1/openapi.yaml openapi/storage/v1/openapi.yaml openapi/feeds/v1/openapi.yaml openapi/revenue/v1/openapi.yaml openapi/analytics/v1/openapi.yaml -r .spectral.yaml",
+    "lint:identity": "npx @stoplight/spectral-cli lint openapi/identity/v1/openapi.yaml -r .spectral.yaml",
+    "lint:content": "npx @stoplight/spectral-cli lint openapi/content/v1/openapi.yaml -r .spectral.yaml",
+    "lint:payments": "npx @stoplight/spectral-cli lint openapi/payments/v1/openapi.yaml -r .spectral.yaml",
+    "lint:storage": "npx @stoplight/spectral-cli lint openapi/storage/v1/openapi.yaml -r .spectral.yaml",
+    "lint:feeds": "npx @stoplight/spectral-cli lint openapi/feeds/v1/openapi.yaml -r .spectral.yaml",
+    "lint:revenue": "npx @stoplight/spectral-cli lint openapi/revenue/v1/openapi.yaml -r .spectral.yaml",
+    "lint:analytics": "npx @stoplight/spectral-cli lint openapi/analytics/v1/openapi.yaml -r .spectral.yaml",
+    "validate": "npm run lint",
+    "test": "npm run validate",
+    "validate:all": "./scripts/validate-all.sh"
+  },
+  "keywords": [
+    "registryaccord",
+    "specifications",
+    "openapi",
+    "api",
+    "identity",
+    "decentralized",
+    "webauthn",
+    "oauth2"
+  ],
+  "author": "RegistryAccord Authors",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.11.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RegistryAccord/registryaccord-specs"
+  }
+}

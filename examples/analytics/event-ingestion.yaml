@@ -1,0 +1,59 @@
+# Event Ingestion Example
+# This example demonstrates ingesting analytics events
+
+# Step 1: Ingest Events
+ingest_events_request:
+  method: POST
+  url: https://api.registryaccord.com/analytics/v1/events
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    events:
+      - id: "123e4567-e89b-12d3-a456-426614174000"
+        type: "page_view"
+        timestamp: "2025-10-15T10:00:00Z"
+        payload:
+          page_url: "https://example.com/products/tech-gadget"
+          page_title: "Tech Gadget - Example Store"
+        context:
+          user_id: "123e4567-e89b-12d3-a456-426614174001"
+          session_id: "123e4567-e89b-12d3-a456-426614174002"
+          ip_address: "192.168.1.100"
+          user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          referrer: "https://google.com/search?q=tech+gadget"
+      - id: "123e4567-e89b-12d3-a456-426614174003"
+        type: "product_view"
+        timestamp: "2025-10-15T10:00:30Z"
+        payload:
+          product_id: "prod-2025-fall-001"
+          product_name: "Tech Gadget Pro"
+          category: "Electronics"
+          price: 299.99
+        context:
+          user_id: "123e4567-e89b-12d3-a456-426614174001"
+          session_id: "123e4567-e89b-12d3-a456-426614174002"
+          ip_address: "192.168.1.100"
+          user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      - id: "123e4567-e89b-12d3-a456-426614174004"
+        type: "add_to_cart"
+        timestamp: "2025-10-15T10:01:15Z"
+        payload:
+          product_id: "prod-2025-fall-001"
+          quantity: 1
+          price: 299.99
+        context:
+          user_id: "123e4567-e89b-12d3-a456-426614174001"
+          session_id: "123e4567-e89b-12d3-a456-426614174002"
+          ip_address: "192.168.1.100"
+          user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+
+ingest_events_response:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000

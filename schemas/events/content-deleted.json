@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.registryaccord.com/schemas/events/content-deleted",
+  "title": "Content Deleted Event",
+  "type": "object",
+  "required": ["event_id", "event_type", "timestamp", "data"],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "content.deleted.v1"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data": {
+      "type": "object",
+      "required": ["content_id", "owner_id"],
+      "properties": {
+        "content_id": { "type": "string", "format": "uuid" },
+        "owner_id": { "type": "string", "format": "uuid" },
+        "deleted_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

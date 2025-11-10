@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.registryaccord.com/schemas/events/license-attached",
+  "title": "License Attached Event",
+  "type": "object",
+  "required": ["event_id", "event_type", "timestamp", "data"],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "const": "license.attached.v1"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data": {
+      "type": "object",
+      "required": ["content_id", "license_id", "license_type"],
+      "properties": {
+        "content_id": { "type": "string", "format": "uuid" },
+        "license_id": { "type": "string", "format": "uuid" },
+        "license_type": { 
+          "type": "string",
+          "enum": [
+            "CC0",
+            "CC_BY",
+            "CC_BY_SA",
+            "CC_BY_ND",
+            "CC_BY_NC",
+            "CC_BY_NC_SA",
+            "CC_BY_NC_ND",
+            "ALL_RIGHTS_RESERVED",
+            "CUSTOM"
+          ]
+        }
+      }
+    }
+  }
+}

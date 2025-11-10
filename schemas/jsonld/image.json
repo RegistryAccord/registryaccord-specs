@@ -1,0 +1,25 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ImageObject",
+  "name": "RegistryAccord Logo",
+  "description": "The official RegistryAccord logo",
+  "thumbnailUrl": "https://example.com/logo-thumb.jpg",
+  "contentUrl": "https://example.com/logo.png",
+  "uploadDate": "2025-11-06T11:28:00Z",
+  "author": {
+    "@type": "Person",
+    "name": "Design Team",
+    "@id": "ra:identity:789e0123-b45c-67d8-e901-234567890123"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "RegistryAccord"
+  },
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "exifData": {
+    "width": 1920,
+    "height": 1080,
+    "camera": "Canon EOS R5",
+    "lens": "RF 24-70mm f/2.8L IS USM"
+  }
+}

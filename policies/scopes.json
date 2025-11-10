@@ -1,0 +1,358 @@
+{
+  "description": "OAuth 2.0 scopes for the RegistryAccord services, following the Principle of Least Privilege (PoLP)",
+  "scopes": {
+    "identity:read": {
+      "description": "Read basic identity information (display_name, email, created_at, updated_at, is_active, is_verified)",
+      "operations": [
+        "GET /v1/identities/{id}"
+      ]
+    },
+    "identity:write": {
+      "description": "Create and update identity information",
+      "operations": [
+        "POST /v1/identities",
+        "PATCH /v1/identities/{id}"
+      ]
+    },
+    "identity:delete": {
+      "description": "Delete an identity",
+      "operations": [
+        "DELETE /v1/identities/{id}"
+      ]
+    },
+    "session:create": {
+      "description": "Create authentication sessions",
+      "operations": [
+        "POST /v1/sessions"
+      ]
+    },
+    "session:read": {
+      "description": "Read session information",
+      "operations": [
+        "GET /v1/sessions/{id}"
+      ]
+    },
+    "session:delete": {
+      "description": "Revoke sessions",
+      "operations": [
+        "DELETE /v1/sessions/{id}"
+      ]
+    },
+    "consent:read": {
+      "description": "Read consent records",
+      "operations": [
+        "GET /v1/consents",
+        "GET /v1/consents/{id}"
+      ]
+    },
+    "consent:write": {
+      "description": "Grant and update consent records",
+      "operations": [
+        "POST /v1/consents",
+        "PATCH /v1/consents/{id}"
+      ]
+    },
+    "consent:delete": {
+      "description": "Revoke consent records",
+      "operations": [
+        "DELETE /v1/consents/{id}"
+      ]
+    },
+    "token:read": {
+      "description": "Read token information",
+      "operations": [
+        "GET /v1/tokens/{id}"
+      ]
+    },
+    "token:write": {
+      "description": "Mint and refresh tokens",
+      "operations": [
+        "POST /v1/tokens",
+        "POST /v1/tokens/refresh"
+      ]
+    },
+    "token:delete": {
+      "description": "Revoke tokens",
+      "operations": [
+        "DELETE /v1/tokens/{id}"
+      ]
+    },
+    "token:verify": {
+      "description": "Verify token authenticity and scopes",
+      "operations": [
+        "POST /v1/tokens/verify"
+      ]
+    },
+    "audit:read": {
+      "description": "Read audit events",
+      "operations": [
+        "GET /v1/audit"
+      ]
+    },
+    "organization:read": {
+      "description": "Read organization information and members",
+      "operations": [
+        "GET /v1/organizations/{id}",
+        "GET /v1/organizations/{id}/members"
+      ]
+    },
+    "organization:write": {
+      "description": "Create and update organizations and members",
+      "operations": [
+        "POST /v1/organizations",
+        "PATCH /v1/organizations/{id}",
+        "POST /v1/organizations/{id}/members",
+        "PATCH /v1/organizations/{id}/members/{member_id}"
+      ]
+    },
+    "organization:delete": {
+      "description": "Delete organizations and members",
+      "operations": [
+        "DELETE /v1/organizations/{id}",
+        "DELETE /v1/organizations/{id}/members/{member_id}"
+      ]
+    },
+    "key:read": {
+      "description": "Read cryptographic keys",
+      "operations": [
+        "GET /v1/keys",
+        "GET /v1/keys/{id}"
+      ]
+    },
+    "key:write": {
+      "description": "Generate and rotate cryptographic keys",
+      "operations": [
+        "POST /v1/keys",
+        "POST /v1/keys/rotate"
+      ]
+    },
+    "key:delete": {
+      "description": "Revoke cryptographic keys",
+      "operations": [
+        "DELETE /v1/keys/{id}"
+      ]
+    },
+    "content:read": {
+      "description": "Read content information",
+      "operations": [
+        "GET /v1/content",
+        "GET /v1/content/{id}"
+      ]
+    },
+    "content:write": {
+      "description": "Create and update content",
+      "operations": [
+        "POST /v1/content",
+        "PATCH /v1/content/{id}"
+      ]
+    },
+    "content:delete": {
+      "description": "Delete content records and associated metadata",
+      "service": "content",
+      "level": "write"
+    },
+    "payment:read": {
+      "description": "Read payment information including intents, charges, and subscriptions",
+      "service": "payments",
+      "level": "read"
+    },
+    "payment:write": {
+      "description": "Create and process payments, including confirming payment intents and capturing charges",
+      "service": "payments",
+      "level": "write"
+    },
+    "payment:refund": {
+      "description": "Refund charges and process dispute-related refunds",
+      "service": "payments",
+      "level": "write"
+    },
+    "subscription:read": {
+      "description": "Read subscription information",
+      "service": "payments",
+      "level": "read"
+    },
+    "subscription:write": {
+      "description": "Create, update, and cancel subscriptions",
+      "service": "payments",
+      "level": "write"
+    },
+    "ledger:read": {
+      "description": "Read ledger entries and account balances for audit purposes",
+      "service": "payments",
+      "level": "read"
+    },
+    "payout:read": {
+      "description": "Read payout information",
+      "service": "payments",
+      "level": "read"
+    },
+    "payout:write": {
+      "description": "Create and process payouts",
+      "service": "payments",
+      "level": "write"
+    },
+    "payout:hold": {
+      "description": "Hold and release payouts for fraud review",
+      "service": "payments",
+      "level": "write"
+    },
+    "dispute:read": {
+      "description": "Read dispute information",
+      "service": "payments",
+      "level": "read"
+    },
+    "dispute:write": {
+      "description": "Create, respond to, and escalate disputes",
+      "service": "payments",
+      "level": "write"
+    },
+    "storage:read": {
+      "description": "Read storage objects",
+      "service": "storage",
+      "level": "read"
+    },
+    "storage:write": {
+      "description": "Upload objects",
+      "service": "storage",
+      "level": "write"
+    },
+    "storage:delete": {
+      "description": "Delete objects",
+      "service": "storage",
+      "level": "write"
+    },
+    "bucket:read": {
+      "description": "Read bucket information",
+      "service": "storage",
+      "level": "read"
+    },
+    "bucket:write": {
+      "description": "Create and manage buckets",
+      "service": "storage",
+      "level": "write"
+    },
+    "feed:read": {
+      "description": "Generate and read feeds",
+      "service": "feeds",
+      "level": "read"
+    },
+    "signal:read": {
+      "description": "Read ranking signals",
+      "service": "feeds",
+      "level": "read"
+    },
+    "signal:write": {
+      "description": "Register custom signals",
+      "service": "feeds",
+      "level": "write"
+    },
+    "experiment:read": {
+    },
+    "collection:read": {
+      "description": "Read collections",
+      "operations": [
+        "GET /v1/collections",
+        "GET /v1/collections/{id}"
+      ]
+    },
+    "collection:write": {
+      "description": "Manage collections",
+      "operations": [
+        "POST /v1/collections",
+        "PATCH /v1/collections/{id}",
+        "POST /v1/collections/{id}/items"
+      ]
+    },
+    "license:read": {
+      "description": "Read license information",
+      "operations": [
+        "GET /v1/content/{id}/licenses"
+      ]
+    },
+    "license:write": {
+      "description": "Attach and manage licenses",
+      "operations": [
+        "POST /v1/content/{id}/licenses",
+        "DELETE /v1/content/{id}/licenses/{license_id}"
+      ]
+    },
+    "event:subscribe": {
+      "description": "Subscribe to content lifecycle events",
+      "operations": [
+        "POST /v1/events/subscriptions",
+        "GET /v1/events/subscriptions",
+        "DELETE /v1/events/subscriptions/{id}"
+      ]
+    },
+    "campaign:read": {
+      "description": "Read advertising campaigns",
+      "service": "revenue",
+      "level": "read"
+    },
+    "campaign:write": {
+      "description": "Create and manage advertising campaigns",
+      "service": "revenue",
+      "level": "write"
+    },
+    "auction:participate": {
+      "description": "Participate in real-time bidding",
+      "service": "revenue",
+      "level": "write"
+    },
+    "report:read": {
+      "description": "Read advertising performance reports",
+      "service": "revenue",
+      "level": "read"
+    },
+    "budget:read": {
+      "description": "Read campaign budget status",
+      "service": "revenue",
+      "level": "read"
+    },
+    "budget:write": {
+      "description": "Adjust campaign budgets and process refunds",
+      "service": "revenue",
+      "level": "write"
+    },
+    "event:write": {
+      "description": "Ingest analytics events",
+      "service": "analytics",
+      "level": "write"
+    },
+    "metric:read": {
+      "description": "Query analytics metrics",
+      "service": "analytics",
+      "level": "read"
+    },
+    "schema:read": {
+      "description": "Read event schemas",
+      "service": "analytics",
+      "level": "read"
+    },
+    "schema:write": {
+      "description": "Register event schemas",
+      "service": "analytics",
+      "level": "write"
+    },
+    "export:read": {
+      "description": "Read data export jobs",
+      "service": "analytics",
+      "level": "read"
+    },
+    "export:write": {
+      "description": "Create data export jobs",
+      "service": "analytics",
+      "level": "write"
+    },
+    "privacy:read": {
+      "description": "Read privacy budget status",
+      "service": "analytics",
+      "level": "read"
+    },
+    "privacy:write": {
+      "description": "Adjust privacy budget",
+      "service": "analytics",
+      "level": "write"
+    }
+  }
+}

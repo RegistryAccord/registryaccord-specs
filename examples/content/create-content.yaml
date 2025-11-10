@@ -1,0 +1,125 @@
+# Create Content Example
+
+# Success Response (201 Created)
+request:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    content_type: "video/mp4"
+    title: "My First Video"
+    description: "This is my first video upload to RegistryAccord"
+    tags: ["tutorial", "introduction"]
+
+response:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/content/c7e8a9b0-1234-5678-90ab-cdef12345678
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    data:
+      id: c7e8a9b0-1234-5678-90ab-cdef12345678
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      content_type: video/mp4
+      title: My First Video
+      description: This is my first video upload to RegistryAccord
+      metadata: {}
+      current_version_id: 098f6bcd-4621-3373-8ade-4e8310c4c123
+      manifest_signature: ""
+      provenance_proof: ""
+      created_at: "2025-11-06T11:28:00Z"
+      updated_at: "2025-11-06T11:28:00Z"
+      is_deleted: false
+      tags:
+        - tutorial
+        - introduction
+
+# Validation Error (400 Bad Request)
+request_2:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    content_type: "invalid/type"
+    title: "A"
+
+response_2:
+  status: 400
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    error:
+      code: VALIDATION_FAILED
+      message: "Content type is invalid. Title must be at least 3 characters long."
+      correlationId: 550e8400-e29b-41d4-a716-446655440001
+
+# Unauthorized (401 Unauthorized)
+request_3:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content
+  headers:
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    content_type: "video/mp4"
+    title: "My Video"
+
+response_3:
+  status: 401
+  headers:
+    WWW-Authenticate: Bearer realm="registryaccord"
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    error:
+      code: AUTH_FAILED
+      message: "Authentication required"
+      correlationId: 550e8400-e29b-41d4-a716-446655440002
+
+# Rate Limit (429 Too Many Requests)
+request_4:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    content_type: "video/mp4"
+    title: "My Video"
+
+response_4:
+  status: 429
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 0
+    X-RateLimit-Reset: 60
+    Retry-After: 60
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    error:
+      code: RATE_LIMIT_EXCEEDED
+      message: "Rate limit exceeded. Try again in 60 seconds."
+      correlationId: 550e8400-e29b-41d4-a716-446655440003

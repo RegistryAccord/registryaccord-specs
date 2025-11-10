@@ -1,0 +1,26 @@
+extends: [[spectral:oas, all]]
+rules:
+  # === Core OpenAPI Compliance ===
+  oas3-valid-schema-example: error
+  operation-description: error
+  
+  # === Error Response Requirements ===
+  operation-4xx-response:
+    description: All operations must document 4xx error responses
+    severity: error
+    given: $.paths...responses
+    then:
+      - field: "400"
+        function: truthy
+      - field: "401"
+        function: truthy
+      - field: "403"
+        function: truthy
+  
+  operation-5xx-response:
+    description: All operations must document 5xx error responses
+    severity: error
+    given: $.paths...responses
+    then:
+      field: "500"
+      function: truthy
