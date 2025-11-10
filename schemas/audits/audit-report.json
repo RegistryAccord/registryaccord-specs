@@ -1,0 +1,55 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://api.registryaccord.com/schemas/audits/audit-report",
+"title": "Audit Report",
+"description": "Independent fairness audit report for rankers",
+"type": "object",
+"required": ["audit_id", "audit_date", "auditor_name", "findings"],
+"properties": {
+  "audit_id": {
+    "type": "string",
+    "format": "uuid"
+  },
+  "audit_date": {
+    "type": "string",
+    "format": "date-time"
+  },
+  "auditor_name": {
+    "type": "string",
+    "description": "Name of independent auditing organization"
+  },
+  "findings": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["category", "severity", "description"],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "DEMOGRAPHIC_PARITY",
+            "CONTENT_EQUITY",
+            "ENGAGEMENT_FAIRNESS",
+            "METHODOLOGY",
+            "DOCUMENTATION_COMPLIANCE"
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "remediation_status": {
+          "type": "string",
+          "enum": ["PENDING", "IN_PROGRESS", "COMPLETED"]
+        }
+      }
+    }
+  },
+  "next_audit_date": {
+    "type": "string",
+    "format": "date-time"
+  }
+}

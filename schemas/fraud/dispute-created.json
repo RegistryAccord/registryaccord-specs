@@ -1,0 +1,82 @@
+{
+  "$id": "https://registryaccord.com/schemas/fraud/dispute-created.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dispute Created Event",
+  "description": "Event payload for when a dispute is created, potentially indicating fraudulent activity",
+  "type": "object",
+  "required": [
+    "event",
+    "data"
+  ],
+  "properties": {
+    "event": {
+      "type": "string",
+      "const": "dispute.created"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "dispute_id",
+        "dispute_type",
+        "filed_by",
+        "amount",
+        "currency",
+        "reference_id",
+        "reason",
+        "timestamp"
+      ],
+      "properties": {
+        "dispute_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the dispute"
+        },
+        "dispute_type": {
+          "type": "string",
+          "enum": [
+            "REVENUE_SPLIT",
+            "PAYMENT_ERROR",
+            "UNAUTHORIZED_CHARGE",
+            "FRAUD_CLAIM"
+          ],
+          "description": "Type of dispute"
+        },
+        "filed_by": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Identity ID of dispute initiator"
+        },
+        "respondent_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Identity ID of respondent"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Disputed amount in smallest currency unit"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code"
+        },
+        "reference_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Reference to disputed transaction"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Detailed dispute reason"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the dispute was created"
+        }
+      }
+    }
+  }
+}

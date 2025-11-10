@@ -1,0 +1,80 @@
+# Feed Generation Example
+# This example demonstrates generating a personalized feed
+
+# Step 1: Generate Personalized Feed
+generate_feed_request:
+  method: POST
+  url: https://api.registryaccord.com/feeds/v1/feeds/query
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    user_id: "123e4567-e89b-12d3-a456-426614174000"
+    ranker: "ENGAGEMENT_BASED"
+    signals:
+      - "recency"
+      - "engagement"
+      - "social_graph"
+    limit: 20
+
+generate_feed_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    data:
+      - content_id: "123e4567-e89b-12d3-a456-426614174001"
+        score: 0.95
+        position: 1
+        explanation:
+          user_facing: "Popular with people you follow"
+      - content_id: "123e4567-e89b-12d3-a456-426614174002"
+        score: 0.87
+        position: 2
+        explanation:
+          user_facing: "Recently posted by creators you follow"
+      - content_id: "123e4567-e89b-12d3-a456-426614174003"
+        score: 0.82
+        position: 3
+        explanation:
+          user_facing: "Trending in your network"
+    cache_id: "123e4567-e89b-12d3-a456-426614174004"
+
+# Step 2: Retrieve Cached Feed
+get_cached_feed_request:
+  method: GET
+  url: https://api.registryaccord.com/feeds/v1/feeds/123e4567-e89b-12d3-a456-426614174004
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_cached_feed_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      - content_id: "123e4567-e89b-12d3-a456-426614174001"
+        score: 0.95
+        position: 1
+        explanation:
+          user_facing: "Popular with people you follow"
+      - content_id: "123e4567-e89b-12d3-a456-426614174002"
+        score: 0.87
+        position: 2
+        explanation:
+          user_facing: "Recently posted by creators you follow"
+      - content_id: "123e4567-e89b-12d3-a456-426614174003"
+        score: 0.82
+        position: 3
+        explanation:
+          user_facing: "Trending in your network"

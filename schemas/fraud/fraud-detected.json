@@ -1,0 +1,75 @@
+{
+  "$id": "https://registryaccord.com/schemas/fraud/fraud-detected.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fraud Detected Event",
+  "description": "Event payload for when fraudulent activity is detected in a payment or payout",
+  "type": "object",
+  "required": [
+    "event",
+    "data"
+  ],
+  "properties": {
+    "event": {
+      "type": "string",
+      "const": "fraud.detected"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "fraud_score",
+        "reason",
+        "recommended_action",
+        "timestamp"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the fraud detection event"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "PAYMENT",
+            "PAYOUT",
+            "SUBSCRIPTION",
+            "CHARGE"
+          ],
+          "description": "Type of transaction that triggered fraud detection"
+        },
+        "transaction_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the transaction that triggered fraud detection"
+        },
+        "fraud_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Fraud risk score (0 = low risk, 100 = high risk)"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Description of why fraud was detected"
+        },
+        "recommended_action": {
+          "type": "string",
+          "enum": [
+            "HOLD_FOR_REVIEW",
+            "REJECT",
+            "APPROVE",
+            "ESCALATE"
+          ],
+          "description": "Recommended action based on fraud analysis"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the fraud was detected"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+# A/B Testing Example
+# This example demonstrates creating and running an A/B test
+
+# Step 1: Create A/B Test
+create_experiment_request:
+  method: POST
+  url: https://api.registryaccord.com/feeds/v1/feeds/experiments
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    name: "Engagement-Based vs Topic-Relevance Ranking"
+    variants:
+      - variant_id: "control"
+        name: "Engagement-Based Ranking"
+        ranker: "ENGAGEMENT_BASED"
+        traffic_percentage: 50
+      - variant_id: "test"
+        name: "Topic-Relevance Ranking"
+        ranker: "CUSTOM"
+        custom_ranker_id: "123e4567-e89b-12d3-a456-426614174005"
+        traffic_percentage: 50
+    status: "RUNNING"
+
+create_experiment_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174009"
+      name: "Engagement-Based vs Topic-Relevance Ranking"
+      variants:
+        - variant_id: "control"
+          name: "Engagement-Based Ranking"
+          ranker: "ENGAGEMENT_BASED"
+          traffic_percentage: 50
+        - variant_id: "test"
+          name: "Topic-Relevance Ranking"
+          ranker: "CUSTOM"
+          custom_ranker_id: "123e4567-e89b-12d3-a456-426614174005"
+          traffic_percentage: 50
+      status: "RUNNING"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: List Experiments
+list_experiments_request:
+  method: GET
+  url: https://api.registryaccord.com/feeds/v1/feeds/experiments
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_experiments_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174009"
+        name: "Engagement-Based vs Topic-Relevance Ranking"
+        variants:
+          - variant_id: "control"
+            name: "Engagement-Based Ranking"
+            ranker: "ENGAGEMENT_BASED"
+            traffic_percentage: 50
+          - variant_id: "test"
+            name: "Topic-Relevance Ranking"
+            ranker: "CUSTOM"
+            custom_ranker_id: "123e4567-e89b-12d3-a456-426614174005"
+            traffic_percentage: 50
+        status: "RUNNING"
+        created_at: "2025-11-01T10:00:00Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false
+
+# Step 3: Get Experiment Results
+get_experiment_results_request:
+  method: GET
+  url: https://api.registryaccord.com/feeds/v1/feeds/experiments/123e4567-e89b-12d3-a456-426614174009/results
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_experiment_results_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440007
+  body:
+    data:
+      experiment_id: "123e4567-e89b-12d3-a456-426614174009"
+      start_time: "2025-11-01T10:00:00Z"
+      end_time: "2025-11-08T10:00:00Z"
+      variants:
+        - variant_id: "control"
+          name: "Engagement-Based Ranking"
+          metrics:
+            click_through_rate: 0.125
+            time_spent: 180.5
+            engagement_score: 0.75
+        - variant_id: "test"
+          name: "Topic-Relevance Ranking"
+          metrics:
+            click_through_rate: 0.142
+            time_spent: 210.3
+            engagement_score: 0.82
+      winner: "test"
+      confidence: 0.95

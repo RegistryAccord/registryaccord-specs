@@ -1,0 +1,78 @@
+# Metrics Querying Example
+# This example demonstrates querying analytics metrics
+
+# Step 1: Query Metrics
+query_metrics_request:
+  method: POST
+  url: https://api.registryaccord.com/analytics/v1/metrics/query
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    metrics:
+      - "page_views"
+      - "unique_visitors"
+      - "conversion_rate"
+      - "average_session_duration"
+    dimensions:
+      - "date"
+      - "page_path"
+      - "traffic_source"
+    filters:
+      date:
+        start: "2025-10-01"
+        end: "2025-10-15"
+      page_path:
+        - "/products/*"
+        - "/categories/electronics"
+      traffic_source:
+        - "google"
+        - "direct"
+    date_range:
+      start: "2025-10-01"
+      end: "2025-10-15"
+    granularity: "DAILY"
+
+query_metrics_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      metadata:
+        query_id: "123e4567-e89b-12d3-a456-426614174005"
+        execution_time_ms: 142
+        row_count: 45
+      data:
+        - dimensions:
+            date: "2025-10-15"
+            page_path: "/products/tech-gadget"
+            traffic_source: "google"
+          metrics:
+            page_views: 1250
+            unique_visitors: 842
+            conversion_rate: 0.032
+            average_session_duration: 187
+        - dimensions:
+            date: "2025-10-15"
+            page_path: "/products/tech-gadget"
+            traffic_source: "direct"
+          metrics:
+            page_views: 320
+            unique_visitors: 210
+            conversion_rate: 0.045
+            average_session_duration: 215
+        - dimensions:
+            date: "2025-10-15"
+            page_path: "/categories/electronics"
+            traffic_source: "google"
+          metrics:
+            page_views: 2100
+            unique_visitors: 1420
+            conversion_rate: 0.021
+            average_session_duration: 156

@@ -1,0 +1,786 @@
+openapi: 3.1.0
+info:
+  title: RegistryAccord Analytics API
+  version: 1.0.0
+  description: |
+    Event ingestion, metrics querying, and privacy-compliant analytics
+    with differential privacy guarantees.
+  contact:
+    name: RegistryAccord Maintainers
+    url: https://github.com/RegistryAccord/registryaccord-specs
+    email: specs@registryaccord.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Events
+    description: Event ingestion
+  - name: Metrics
+    description: Metrics querying
+  - name: Schemas
+    description: Schema registry
+  - name: Exports
+    description: Data export
+  - name: Privacy
+    description: Privacy budget management
+
+servers:
+  - url: https://api.registryaccord.dev/analytics
+    description: Development environment
+  - url: https://api.registryaccord.com/analytics
+    description: Production environment
+
+security:
+  - oauth2: []
+  - bearerAuth: []
+
+paths:
+  /v1/analytics/events:
+    post:
+      tags:
+        - Events
+      summary: Ingest events
+      description: Ingest analytics events
+      operationId: ingestEvents
+      security:
+        - oauth2:
+            - event:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - events
+              properties:
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Event'
+      responses:
+        '204':
+          description: Events ingested successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/analytics/metrics/query:
+    post:
+      tags:
+        - Metrics
+      summary: Query metrics
+      description: Query analytics metrics
+      operationId: queryMetrics
+      security:
+        - oauth2:
+            - metric:read
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricQuery'
+      responses:
+        '200':
+          description: Metrics query successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MetricResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/analytics/schemas:
+    post:
+      tags:
+        - Schemas
+      summary: Register schema
+      description: Register an event schema
+      operationId: registerSchema
+      security:
+        - oauth2:
+            - schema:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaDefinition'
+      responses:
+        '201':
+          description: Schema registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SchemaDefinition'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    get:
+      tags:
+        - Schemas
+      summary: List schemas
+      description: List registered event schemas
+      operationId: listSchemas
+      security:
+        - oauth2:
+            - schema:read
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+      responses:
+        '200':
+          description: Schemas retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SchemaDefinition'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/analytics/exports:
+    post:
+      tags:
+        - Exports
+      summary: Create export
+      description: Create a data export job
+      operationId: createExport
+      security:
+        - oauth2:
+            - export:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+      responses:
+        '201':
+          description: Export job created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ExportJob'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    get:
+      tags:
+        - Exports
+      summary: List exports
+      description: List data export jobs
+      operationId: listExports
+      security:
+        - oauth2:
+            - export:read
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+      responses:
+        '200':
+          description: Export jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExportJob'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/analytics/exports/{id}:
+    get:
+      tags:
+        - Exports
+      summary: Get export
+      description: Get details of a specific export job
+      operationId: getExport
+      security:
+        - oauth2:
+            - export:read
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Export job retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ExportJob'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+  /v1/analytics/privacy/budget:
+    get:
+      tags:
+        - Privacy
+      summary: Get privacy budget
+      description: Get current privacy budget status
+      operationId: getPrivacyBudget
+      security:
+        - oauth2:
+            - privacy:read
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Privacy budget retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PrivacyBudget'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    
+    post:
+      tags:
+        - Privacy
+      summary: Adjust privacy budget
+      description: Adjust privacy budget allocation
+      operationId: adjustPrivacyBudget
+      security:
+        - oauth2:
+            - privacy:write
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyBudgetAdjustment'
+      responses:
+        '200':
+          description: Privacy budget adjusted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PrivacyBudget'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+components:
+  schemas:
+    Event:
+      type: object
+      required: [id, type, timestamp, payload]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        payload:
+          type: object
+          description: Event-specific data
+          additionalProperties: true
+        context:
+          type: object
+          description: Common event context
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            session_id:
+              type: string
+              format: uuid
+            ip_address:
+              type: string
+              format: ipv4
+            user_agent:
+              type: string
+            referrer:
+              type: string
+              format: uri
+    
+    MetricQuery:
+      type: object
+      required: [metrics, dimensions, filters, date_range]
+      properties:
+        metrics:
+          type: array
+          items:
+            type: string
+          description: Metrics to query
+        dimensions:
+          type: array
+          items:
+            type: string
+          description: Dimensions to group by
+        filters:
+          type: object
+          description: Filters to apply
+          additionalProperties: true
+        date_range:
+          type: object
+          required: [start, end]
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        granularity:
+          type: string
+          enum:
+            - HOURLY
+            - DAILY
+            - WEEKLY
+            - MONTHLY
+          default: DAILY
+    
+    MetricResult:
+      type: object
+      required: [data, metadata]
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              dimensions:
+                type: object
+                additionalProperties: true
+              metrics:
+                type: object
+                additionalProperties:
+                  type: number
+        metadata:
+          type: object
+          properties:
+            query_id:
+              type: string
+              format: uuid
+            execution_time_ms:
+              type: integer
+            row_count:
+              type: integer
+    
+    SchemaDefinition:
+      type: object
+      required: [id, name, version, schema]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        version:
+          type: string
+          pattern: '^\d+\.\d+\.\d+$'
+        schema:
+          type: object
+          description: JSON Schema definition
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+    
+    ExportRequest:
+      type: object
+      required: [name, format, query]
+      properties:
+        name:
+          type: string
+        format:
+          type: string
+          enum:
+            - CSV
+            - JSON
+            - PARQUET
+        query:
+          $ref: '#/components/schemas/MetricQuery'
+        compression:
+          type: string
+          enum:
+            - GZIP
+            - NONE
+          default: NONE
+    
+    ExportJob:
+      type: object
+      required: [id, name, status, format, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PROCESSING
+            - COMPLETED
+            - FAILED
+        format:
+          type: string
+          enum:
+            - CSV
+            - JSON
+            - PARQUET
+        query:
+          $ref: '#/components/schemas/MetricQuery'
+        result_url:
+          type: string
+          format: uri
+          description: Pre-signed URL for result download
+        result_url_expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+    
+    PrivacyBudget:
+      type: object
+      required: [total_epsilon, total_delta, consumed_epsilon, consumed_delta, remaining_epsilon, remaining_delta]
+      properties:
+        total_epsilon:
+          type: number
+          description: Total epsilon budget
+        total_delta:
+          type: number
+          description: Total delta budget
+        consumed_epsilon:
+          type: number
+          description: Consumed epsilon budget
+        consumed_delta:
+          type: number
+          description: Consumed delta budget
+        remaining_epsilon:
+          type: number
+          description: Remaining epsilon budget
+        remaining_delta:
+          type: number
+          description: Remaining delta budget
+        last_updated:
+          type: string
+          format: date-time
+    
+    PrivacyBudgetAdjustment:
+      type: object
+      required: [epsilon, delta]
+      properties:
+        epsilon:
+          type: number
+          description: Epsilon to add to budget
+        delta:
+          type: number
+          description: Delta to add to budget
+        reason:
+          type: string
+          description: Reason for adjustment
+    
+    Pagination:
+      type: object
+      properties:
+        has_next_page:
+          type: boolean
+        has_prev_page:
+          type: boolean
+        next_cursor:
+          type: string
+        prev_cursor:
+          type: string
+    
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - correlationId
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional structured information about the error
+            correlationId:
+              type: string
+              format: uuid
+              description: Unique identifier for tracing errors across systems
+  
+  responses:
+    BadRequest:
+      description: Bad Request - The request was invalid or cannot be served
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Unauthorized:
+      description: Unauthorized - Authentication failed or not provided
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Forbidden:
+      description: Forbidden - The authenticated user does not have permission to access this resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Not Found - The requested resource could not be found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Conflict:
+      description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    TooManyRequests:
+      description: Too Many Requests - The user has sent too many requests in a given amount of time
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+    
+    InternalServerError:
+      description: Internal Server Error - The server encountered an unexpected condition
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    ServiceUnavailable:
+      description: Service Unavailable - The server is currently unable to handle the request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+  
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    After:
+      name: after
+      in: query
+      description: Cursor for forward pagination
+      required: false
+      schema:
+        type: string
+    
+    Before:
+      name: before
+      in: query
+      description: Cursor for backward pagination
+      required: false
+      schema:
+        type: string
+  
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.registryaccord.com/authorize
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            event:write: Ingest analytics events
+            metric:read: Query analytics metrics
+            schema:read: Read event schemas
+            schema:write: Register event schemas
+            export:read: Read data export jobs
+            export:write: Create data export jobs
+            privacy:read: Read privacy budget status
+            privacy:write: Adjust privacy budget
+        clientCredentials:
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            event:write: Ingest analytics events
+            metric:read: Query analytics metrics
+            schema:read: Read event schemas
+            schema:write: Register event schemas
+            export:read: Read data export jobs
+            export:write: Create data export jobs
+            privacy:read: Read privacy budget status
+            privacy:write: Adjust privacy budget
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

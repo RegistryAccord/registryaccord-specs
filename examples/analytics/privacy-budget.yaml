@@ -1,0 +1,115 @@
+# Privacy Budget Example
+# This example demonstrates privacy budget management with differential privacy
+
+# Step 1: Get Privacy Budget
+get_privacy_budget_request:
+  method: GET
+  url: https://api.registryaccord.com/analytics/v1/privacy/budget
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_privacy_budget_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      total_epsilon: 1.0
+      total_delta: 1e-5
+      consumed_epsilon: 0.25
+      consumed_delta: 2.5e-6
+      remaining_epsilon: 0.75
+      remaining_delta: 7.5e-6
+      last_updated: "2025-10-15T10:10:00Z"
+
+# Step 2: Adjust Privacy Budget
+adjust_privacy_budget_request:
+  method: POST
+  url: https://api.registryaccord.com/analytics/v1/privacy/budget
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    epsilon: 0.5
+    delta: 5e-6
+    reason: "Q4 marketing campaign analysis"
+
+adjust_privacy_budget_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      total_epsilon: 1.5
+      total_delta: 1.5e-5
+      consumed_epsilon: 0.25
+      consumed_delta: 2.5e-6
+      remaining_epsilon: 1.25
+      remaining_delta: 1.25e-5
+      last_updated: "2025-10-15T10:15:00Z"
+
+# Step 3: Query Metrics with Differential Privacy
+query_metrics_with_dp_request:
+  method: POST
+  url: https://api.registryaccord.com/analytics/v1/metrics/query
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+    RA-Privacy-Budget: "0.1,1e-6"
+  body:
+    metrics:
+      - "average_order_value"
+      - "unique_customers"
+    dimensions:
+      - "region"
+      - "product_category"
+    filters:
+      date:
+        start: "2025-10-01"
+        end: "2025-10-15"
+    date_range:
+      start: "2025-10-01"
+      end: "2025-10-15"
+    granularity: "DAILY"
+
+query_metrics_with_dp_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440006
+    RA-Privacy-Budget-Consumed: "0.1,1e-6"
+  body:
+    data:
+      metadata:
+        query_id: "123e4567-e89b-12d3-a456-426614174009"
+        execution_time_ms: 215
+        row_count: 12
+        privacy_applied: true
+        noise_mechanism: "laplace"
+      data:
+        - dimensions:
+            region: "North America"
+            product_category: "Electronics"
+          metrics:
+            average_order_value: 312.47
+            unique_customers: 1247
+        - dimensions:
+            region: "Europe"
+            product_category: "Electronics"
+          metrics:
+            average_order_value: 289.32
+            unique_customers: 982

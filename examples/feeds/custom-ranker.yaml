@@ -1,0 +1,104 @@
+# Custom Ranker Example
+# This example demonstrates registering and using a custom ranker
+
+# Step 1: Register Custom Ranker
+register_custom_ranker_request:
+  method: POST
+  url: https://api.registryaccord.com/feeds/v1/feeds/signals/custom
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    name: "topic_relevance"
+    description: "Rank content based on topic relevance to user interests"
+    implementation_url: "https://ranker.example.com/topic-relevance"
+
+register_custom_ranker_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174005"
+      name: "topic_relevance"
+      type: "CUSTOM"
+      description: "Rank content based on topic relevance to user interests"
+
+# Step 2: List Available Signals
+list_signals_request:
+  method: GET
+  url: https://api.registryaccord.com/feeds/v1/feeds/signals
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_signals_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      - id: "recency"
+        name: "Recency"
+        type: "RECENCY"
+        description: "Rank by creation time"
+      - id: "engagement"
+        name: "Engagement"
+        type: "ENGAGEMENT"
+        description: "Rank by likes, comments, shares"
+      - id: "social_graph"
+        name: "Social Graph"
+        type: "SOCIAL_GRAPH"
+        description: "Rank by relationship strength"
+      - id: "123e4567-e89b-12d3-a456-426614174005"
+        name: "topic_relevance"
+        type: "CUSTOM"
+        description: "Rank content based on topic relevance to user interests"
+
+# Step 3: Generate Feed with Custom Ranker
+generate_custom_feed_request:
+  method: POST
+  url: https://api.registryaccord.com/feeds/v1/feeds/query
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    user_id: "123e4567-e89b-12d3-a456-426614174000"
+    ranker: "CUSTOM"
+    custom_ranker_id: "123e4567-e89b-12d3-a456-426614174005"
+    signals:
+      - "123e4567-e89b-12d3-a456-426614174005"
+      - "engagement"
+    limit: 10
+
+generate_custom_feed_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      - content_id: "123e4567-e89b-12d3-a456-426614174006"
+        score: 0.92
+        position: 1
+        explanation:
+          user_facing: "Highly relevant to your interests"
+      - content_id: "123e4567-e89b-12d3-a456-426614174007"
+        score: 0.88
+        position: 2
+        explanation:
+          user_facing: "Matches topics you frequently engage with"
+    cache_id: "123e4567-e89b-12d3-a456-426614174008"

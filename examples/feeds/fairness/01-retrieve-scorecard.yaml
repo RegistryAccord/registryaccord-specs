@@ -1,0 +1,24 @@
+name: Retrieve Ranker Fairness Scorecard
+description: |
+  Public access to fairness scorecard for a certified ranker.
+  No authentication required for transparency.
+steps:
+  - request:
+      method: GET
+      path: /v1/feeds/scorecards/550e8400-e29b-41d4-a716-446655440000
+      headers:
+        RA-API-Version: "2025-11-01"
+    response:
+      status: 200
+      body:
+        data:
+          ranker_id: "550e8400-e29b-41d4-a716-446655440000"
+          last_audit_date: "2025-10-15T10:00:00Z"
+          next_audit_date: "2026-04-15T10:00:00Z"
+          fairness_scores:
+            demographic_parity: 92
+            content_equity: 88
+            engagement_fairness: 95
+          certification_status: "CERTIFIED"
+          violations: []
+          dispute_count: 2

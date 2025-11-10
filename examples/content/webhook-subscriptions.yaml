@@ -1,0 +1,128 @@
+# Webhook Subscriptions Example
+
+# Subscribe to content events
+request_1:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/events/subscriptions
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440050
+  body:
+    webhook_url: https://myapp.example.com/webhooks/registryaccord
+    event_types:
+      - CONTENT_CREATED
+      - CONTENT_UPDATED
+      - VERSION_CREATED
+      - LICENSE_ATTACHED
+    is_active: true
+
+response_1:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/events/subscriptions/s1t2u3v4-5678-90wx-yzab-cdefghijklmn
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440050
+  body:
+    data:
+      id: s1t2u3v4-5678-90wx-yzab-cdefghijklmn
+      subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+      webhook_url: https://myapp.example.com/webhooks/registryaccord
+      event_types:
+        - CONTENT_CREATED
+        - CONTENT_UPDATED
+        - VERSION_CREATED
+        - LICENSE_ATTACHED
+      is_active: true
+      created_at: "2025-11-06T14:00:00Z"
+
+# Receive webhook notifications
+webhook_notification:
+  method: POST
+  url: https://myapp.example.com/webhooks/registryaccord
+  headers:
+    Content-Type: application/json
+    X-RegistryAccord-Signature: sha256=9a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3
+    X-RegistryAccord-Timestamp: "2025-11-06T14:05:00Z"
+    X-RegistryAccord-Event: CONTENT_CREATED
+  body:
+    id: e1f2g3h4-5678-90ij-klmn-opqrstuvwx
+    event_type: CONTENT_CREATED
+    content_id: d1e2f3g4-5678-90hi-jklm-nopqrstuvwxy
+    actor_id: 123e4567-e89b-12d3-a456-426614174000
+    timestamp: "2025-11-06T14:05:00Z"
+    metadata:
+      title: My New Article
+      content_type: text/html
+
+# Webhook signature verification (HMAC-SHA256)
+verification_request:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/events/subscriptions/s1t2u3v4-5678-90wx-yzab-cdefghijklmn/verify
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440051
+  body:
+    test_event: CONTENT_CREATED
+
+verification_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440051
+  body:
+    verification_status: SUCCESS
+    signature_valid: true
+    timestamp_valid: true
+    test_event_delivered: true
+    delivery_time: "2025-11-06T14:05:01Z"
+
+# Unsubscribe
+request_2:
+  method: DELETE
+  url: https://api.registryaccord.com/content/v1/events/subscriptions/s1t2u3v4-5678-90wx-yzab-cdefghijklmn
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440052
+
+response_2:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440052
+
+# Verify unsubscription
+request_3:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/events/subscriptions/s1t2u3v4-5678-90wx-yzab-cdefghijklmn
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440053
+
+response_3:
+  status: 404
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440053
+  body:
+    error:
+      code: SUBSCRIPTION_NOT_FOUND
+      message: "Event subscription not found"
+      correlationId: 550e8400-e29b-41d4-a716-446655440053

@@ -1,0 +1,198 @@
+# Version Management Example
+
+# Create initial content
+request_1:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440010
+  body:
+    content_type: "image/jpeg"
+    title: "My Photo Album"
+    description: "A collection of my vacation photos"
+
+response_1:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440010
+  body:
+    data:
+      id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      content_type: image/jpeg
+      title: My Photo Album
+      description: A collection of my vacation photos
+      metadata: {}
+      current_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+      manifest_signature: ""
+      provenance_proof: ""
+      created_at: "2025-11-06T12:00:00Z"
+      updated_at: "2025-11-06T12:00:00Z"
+      is_deleted: false
+      tags: []
+
+# Create new version with parent reference
+request_2:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/versions
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440011
+  body:
+    parent_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+    hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    size_bytes: 2048000
+    storage_url: https://storage.example.com/bucket/image-v2.jpg
+    metadata:
+      exif:
+        camera: "Canon EOS R5"
+        lens: "RF 24-70mm f/2.8L IS USM"
+
+response_2:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/versions/z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440011
+  body:
+    data:
+      id: z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+      content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+      version_number: 2
+      parent_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+      hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      size_bytes: 2048000
+      storage_url: https://storage.example.com/bucket/image-v2.jpg
+      metadata:
+        exif:
+          camera: "Canon EOS R5"
+          lens: "RF 24-70mm f/2.8L IS USM"
+      created_at: "2025-11-06T12:05:00Z"
+      created_by: 123e4567-e89b-12d3-a456-426614174000
+
+# List versions with pagination
+request_3:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/versions?limit=10
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440012
+
+response_3:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440012
+  body:
+    data:
+      - id: z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+        content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+        version_number: 2
+        parent_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+        hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        size_bytes: 2048000
+        storage_url: https://storage.example.com/bucket/image-v2.jpg
+        metadata:
+          exif:
+            camera: "Canon EOS R5"
+            lens: "RF 24-70mm f/2.8L IS USM"
+        created_at: "2025-11-06T12:05:00Z"
+        created_by: 123e4567-e89b-12d3-a456-426614174000
+      - id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+        content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+        version_number: 1
+        parent_version_id: null
+        hash: d41d8cd98f00b204e9800998ecf8427e
+        size_bytes: 1024000
+        storage_url: https://storage.example.com/bucket/image-v1.jpg
+        metadata: {}
+        created_at: "2025-11-06T12:00:00Z"
+        created_by: 123e4567-e89b-12d3-a456-426614174000
+    pagination:
+      has_next_page: false
+      has_prev_page: false
+      next_cursor: null
+      prev_cursor: null
+
+# Get specific version
+request_4:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/versions/z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440013
+
+response_4:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440013
+  body:
+    data:
+      id: z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+      content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+      version_number: 2
+      parent_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+      hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      size_bytes: 2048000
+      storage_url: https://storage.example.com/bucket/image-v2.jpg
+      metadata:
+        exif:
+          camera: "Canon EOS R5"
+          lens: "RF 24-70mm f/2.8L IS USM"
+      created_at: "2025-11-06T12:05:00Z"
+      created_by: 123e4567-e89b-12d3-a456-426614174000
+
+# Version hash verification
+request_5:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/versions/z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440014
+
+response_5:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440014
+  body:
+    data:
+      id: z1y2x3w4-5678-90ef-ghij-klmnopqrstuv
+      content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+      version_number: 2
+      parent_version_id: v1w2x3y4-5678-90ef-ghij-klmnopqrstuv
+      hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      size_bytes: 2048000
+      storage_url: https://storage.example.com/bucket/image-v2.jpg
+      metadata:
+        exif:
+          camera: "Canon EOS R5"
+          lens: "RF 24-70mm f/2.8L IS USM"
+      created_at: "2025-11-06T12:05:00Z"
+      created_by: 123e4567-e89b-12d3-a456-426614174000

@@ -1,0 +1,25 @@
+name: Retrieve Dispute Statistics
+description: |
+  Public aggregated statistics on fairness disputes across all rankers.
+  Enables external oversight and transparency.
+steps:
+  - request:
+      method: GET
+      path: /v1/feeds/disputes/stats
+      headers:
+        RA-API-Version: "2025-11-01"
+    response:
+      status: 200
+      body:
+        data:
+          total_disputes: 147
+          disputes_by_type:
+            demographic_bias: 52
+            content_discrimination: 38
+            engagement_manipulation: 41
+            other: 16
+          average_resolution_time_days: 8.5
+          resolution_outcomes:
+            upheld: 63
+            dismissed: 71
+            partially_upheld: 13

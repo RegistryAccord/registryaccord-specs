@@ -1,0 +1,158 @@
+# Multipart Upload Example
+# This example demonstrates large file upload with resume capability
+
+# Step 1: Create Multipart Upload Session
+create_multipart_upload_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/uploads
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440001
+    Content-Type: application/json
+  body:
+    bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+    key: "videos/2025/11/large-content.mp4"
+    content_type: "video/mp4"
+    metadata:
+      title: "Large Content Video"
+      description: "High-definition premium content"
+      tags: ["premium", "hd", "video"]
+    storage_class: "STANDARD"
+
+create_multipart_upload_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174002"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+      key: "videos/2025/11/large-content.mp4"
+      upload_id: "upload_1234567890"
+      parts: []
+      status: "IN_PROGRESS"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: Upload First Part
+upload_part_1_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/uploads/123e4567-e89b-12d3-a456-426614174002/parts?part_number=1
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/octet-stream
+    Content-Length: 52428800
+  body: <binary_first_half>
+
+upload_part_1_response:
+  status: 200
+  headers:
+    ETag: "part1_etag_12345"
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+
+# Step 3: Upload Second Part
+upload_part_2_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/uploads/123e4567-e89b-12d3-a456-426614174002/parts?part_number=2
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/octet-stream
+    Content-Length: 52428800
+  body: <binary_second_half>
+
+upload_part_2_response:
+  status: 200
+  headers:
+    ETag: "part2_etag_67890"
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+
+# Step 4: Complete Multipart Upload
+complete_multipart_upload_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/uploads/123e4567-e89b-12d3-a456-426614174002/complete
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    parts:
+      - part_number: 1
+        etag: "part1_etag_12345"
+      - part_number: 2
+        etag: "part2_etag_67890"
+
+complete_multipart_upload_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+      key: "videos/2025/11/large-content.mp4"
+      size_bytes: 104857600
+      content_type: "video/mp4"
+      checksum:
+        md5: "e4d909c290d0fb1ca068ffaddf22cbd0"
+        sha256: "5d41402abc4b2a76b9719d911017c592"
+      metadata:
+        title: "Large Content Video"
+        description: "High-definition premium content"
+        tags: ["premium", "hd", "video"]
+      storage_class: "STANDARD"
+      presigned_url: null
+      presigned_url_expires_at: null
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 5: Verify Completed Upload
+verify_completed_upload_request:
+  method: GET
+  url: https://api.registryaccord.com/storage/v1/storage/objects/123e4567-e89b-12d3-a456-426614174003
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+verify_completed_upload_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+      key: "videos/2025/11/large-content.mp4"
+      size_bytes: 104857600
+      content_type: "video/mp4"
+      checksum:
+        md5: "e4d909c290d0fb1ca068ffaddf22cbd0"
+        sha256: "5d41402abc4b2a76b9719d911017c592"
+      metadata:
+        title: "Large Content Video"
+        description: "High-definition premium content"
+        tags: ["premium", "hd", "video"]
+      storage_class: "STANDARD"
+      presigned_url: null
+      presigned_url_expires_at: null
+      created_at: "2025-11-01T10:00:00Z"

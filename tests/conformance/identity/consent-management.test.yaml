@@ -1,0 +1,34 @@
+test_suite: "Identity Service - Consent Management"
+version: "1.0.0"
+tests:
+  - name: "Grant Consent"
+    description: "Grant consent for specific purposes"
+    steps:
+      - request:
+          method: POST
+          path: /v1/consents
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            purpose: "analytics"
+            granted: true
+        expected_response:
+          status: 201
+          body:
+            data:
+              id: "^[a-zA-Z0-9-]+$"
+              identity_id: "^[a-zA-Z0-9-]+$"
+              purpose: "analytics"
+              granted: true
+              granted_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Revoke Consent"
+    description: "Revoke previously granted consent"
+    steps:
+      - request:
+          method: DELETE
+          path: /v1/consents/{consent_id}
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 204

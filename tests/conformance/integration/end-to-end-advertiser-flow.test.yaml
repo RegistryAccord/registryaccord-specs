@@ -1,0 +1,101 @@
+test_suite: "Integration - End-to-End Advertiser Flow"
+version: "1.0.0"
+tests:
+  - name: "Complete Advertiser Workflow"
+    description: "Complete end-to-end workflow for an advertiser"
+    steps:
+      # Step 1: Create campaign
+      - request:
+          method: POST
+          path: /v1/ads/campaigns
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          body:
+            name: "Test Campaign"
+            budget: 100000
+            currency: "USD"
+            start_date: "2025-11-06"
+            end_date: "2025-11-13"
+        expected_response:
+          status: 201
+
+      # Step 2: Create audience segment
+      - request:
+          method: POST
+          path: /v1/ads/segments
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          body:
+            name: "Tech Enthusiasts"
+            criteria:
+              interests: ["technology", "gaming"]
+              demographics:
+                age_min: 18
+                age_max: 35
+        expected_response:
+          status: 201
+
+      # Step 3: Upload creative
+      - request:
+          method: POST
+          path: /v1/ads/creatives
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          body:
+            name: "Test Creative"
+            type: "banner"
+            size: "300x250"
+            content_url: "https://example.com/creative.jpg"
+        expected_response:
+          status: 201
+
+      # Step 4: Create line item
+      - request:
+          method: POST
+          path: /v1/ads/lineitems
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          body:
+            campaign_id: "campaign-123"
+            name: "Test Line Item"
+            segment_id: "segment-456"
+            creative_id: "creative-789"
+            bid_amount: 150
+            bid_type: "CPM"
+        expected_response:
+          status: 201
+
+      # Step 5: Monitor campaign performance
+      - request:
+          method: GET
+          path: /v1/ads/reports/campaigns/{campaign_id}
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          parameters:
+            start_date: "2025-11-06"
+            end_date: "2025-11-06"
+        expected_response:
+          status: 200
+          body:
+            data:
+              campaign_id: "campaign-123"
+              impressions: 10000
+              clicks: 500
+              ctr: 0.05
+              spend: 15000
+              currency: "USD"
+
+      # Step 6: Check brand safety compliance
+      - request:
+          method: POST
+          path: /v1/ads/adjacency-check
+          headers:
+            Authorization: "Bearer advertiser-jwt"
+          body:
+            advertiser_id: "advertiser-123"
+            content_id: "content-123"
+        expected_response:
+          status: 200
+          body:
+            data:
+              allowed: true

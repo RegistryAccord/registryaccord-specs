@@ -1,0 +1,149 @@
+name: OAuth2 Authorization Code Flow
+description: |
+  Complete OAuth2 authorization code flow demonstrating:
+  1. Authorization request (GET /authorize)
+  2. User consent
+  3. Authorization code callback
+  4. Token exchange (POST /v1/tokens)
+  5. Using access token
+  6. Token refresh (POST /v1/tokens/refresh)
+steps:
+  # Step 1: Authorization Request
+  - name: Authorization Request
+    description: Client redirects user to authorization server
+    request:
+      method: GET
+      url: https://auth.registryaccord.com/authorize
+      query_params:
+        response_type: code
+        client_id: s6BhdRkqt3
+        redirect_uri: https://client.example.com/callback
+        scope: identity:read identity:write
+        state: xyz
+    responses:
+      redirect:
+        status: 302
+        headers:
+          Location: https://client.example.com/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=xyz
+
+  # Step 2: User Consent (UI Interaction - not an API call)
+  - name: User Consent
+    description: User grants permission to the client application
+    type: ui_interaction
+    details: |
+      User sees consent screen showing:
+      - Application requesting access
+      - Scopes being requested
+      - Option to approve or deny
+
+  # Step 3: Authorization Code Callback
+  - name: Authorization Code Callback
+    description: Authorization server redirects user back to client with code
+    type: redirect
+    url: https://client.example.com/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=xyz
+    validation:
+      - check: state parameter matches original
+      - check: code parameter present
+
+  # Step 4: Token Exchange
+  - name: Token Exchange
+    description: Client exchanges authorization code for access token
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440001"
+        Content-Type: "application/x-www-form-urlencoded"
+        Authorization: "Basic czZCaGRSa3F0Mzo3RmpmcDBaQnIxS3REUmJuZlZkbUl3"
+      body: |
+        grant_type=authorization_code&
+        code=SplxlOBeZQQYbYS6WxSbIA&
+        redirect_uri=https://client.example.com/callback
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440001"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "999"
+          X-RateLimit-Reset: "1730885400"
+          Cache-Control: "no-store"
+          Pragma: "no-cache"
+        body:
+          access_token: "2YotnFZFEjr1zCsicMWpAA"
+          token_type: "Bearer"
+          expires_in: 3600
+          refresh_token: "tGzv3JOkF0XG5Qx2TlKWIA"
+          scope: "identity:read identity:write"
+
+  # Step 5: Using Access Token
+  - name: Using Access Token
+    description: Client uses access token to access protected resource
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/identities/me
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440002"
+        Authorization: "Bearer 2YotnFZFEjr1zCsicMWpAA"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440002"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "998"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "123e4567-e89b-12d3-a456-426614174000"
+          display_name: "Jane Doe"
+          email: "jane.doe@example.com"
+          created_at: "2025-11-06T10:43:00Z"
+          updated_at: "2025-11-06T10:43:00Z"
+          is_active: true
+          is_verified: true
+
+  # Step 6: Token Refresh
+  - name: Token Refresh
+    description: Client refreshes expired access token
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/tokens/refresh
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440003"
+        Content-Type: "application/json"
+      body:
+        refresh_token: "tGzv3JOkF0XG5Qx2TlKWIA"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440003"
+          X-RateLimit-Limit: "1000"
+          X-RateLimit-Remaining: "997"
+          X-RateLimit-Reset: "1730885400"
+          Cache-Control: "no-store"
+          Pragma: "no-cache"
+        body:
+          access_token: "NGUxZWI2YzQtYmI1Yi00YjE0LTgwOTYtZGVhYmY2YzQ2MTQ4"
+          token_type: "Bearer"
+          expires_in: 3600
+          refresh_token: "dFJkY3ZzNUp4bW9kVzFqWlhZbW9kVzFqWg"
+          scope: "identity:read identity:write"
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440003"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided refresh token is invalid or expired"
+          instance: "/v1/tokens/refresh"
+          trace_id: "550e8400-e29b-41d4-a716-446655440003"

@@ -1,0 +1,70 @@
+name: Create Identity
+description: |
+  Demonstrates the full flow of creating a new identity including
+  success response and common error scenarios.
+request:
+  method: POST
+  url: https://api.registryaccord.com/identity/v1/identities
+  headers:
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440000"
+    Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJpZGVudGl0eTp3cml0ZSIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    Content-Type: "application/json"
+  body:
+    display_name: "Jane Doe"
+    email: "jane.doe@example.com"
+    phone: "+14155551234"
+responses:
+  success:
+    status: 201
+    headers:
+      RA-API-Version: "2025-11-01"
+      X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440000"
+      X-RateLimit-Limit: "100"
+      X-RateLimit-Remaining: "99"
+      X-RateLimit-Reset: "1730885400"
+      Location: "https://api.registryaccord.com/identity/v1/identities/123e4567-e89b-12d3-a456-426614174000"
+    body:
+      id: "123e4567-e89b-12d3-a456-426614174000"
+      display_name: "Jane Doe"
+      email: "jane.doe@example.com"
+      phone: "+14155551234"
+      created_at: "2025-11-06T10:43:00Z"
+      updated_at: "2025-11-06T10:43:00Z"
+      is_active: true
+      is_verified: false
+  validation_error:
+    status: 400
+    headers:
+      RA-API-Version: "2025-11-01"
+      X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440000"
+    body:
+      type: "https://api.registryaccord.com/errors/validation_failed"
+      title: "Validation Failed"
+      status: 400
+      detail: "The 'email' field must be a valid email address"
+      instance: "/v1/identities"
+      trace_id: "550e8400-e29b-41d4-a716-446655440000"
+  unauthorized:
+    status: 401
+    body:
+      type: "https://api.registryaccord.com/errors/auth_failed"
+      title: "Authentication Failed"
+      status: 401
+      detail: "The provided JWT token has expired"
+      instance: "/v1/identities"
+      trace_id: "550e8400-e29b-41d4-a716-446655440000"
+  rate_limited:
+    status: 429
+    headers:
+      Retry-After: "60"
+      X-RateLimit-Limit: "100"
+      X-RateLimit-Remaining: "0"
+      X-RateLimit-Reset: "1730885460"
+    body:
+      type: "https://api.registryaccord.com/errors/rate_limited"
+      title: "Rate Limit Exceeded"
+      status: 429
+      detail: "You have exceeded the rate limit of 100 requests per minute. Please retry after 60 seconds."
+      instance: "/v1/identities"
+      trace_id: "550e8400-e29b-41d4-a716-446655440000"

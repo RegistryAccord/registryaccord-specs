@@ -1,0 +1,37 @@
+test_suite: "Storage Gateway - Pre-signed URLs"
+version: "1.0.0"
+tests:
+  - name: "Generate Pre-signed Upload URL"
+    description: "Generate a pre-signed URL for direct upload"
+    steps:
+      - request:
+          method: POST
+          path: /v1/storage/objects/upload-url
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            content_type: "image/jpeg"
+            content_length: 2097152
+        expected_response:
+          status: 200
+          body:
+            data:
+              url: "https://storage.example.com/pre-signed-upload-url"
+              method: "PUT"
+              expires_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Generate Pre-signed Download URL"
+    description: "Generate a pre-signed URL for direct download"
+    steps:
+      - request:
+          method: POST
+          path: /v1/storage/objects/{object_id}/download-url
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              url: "https://storage.example.com/pre-signed-download-url"
+              method: "GET"
+              expires_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

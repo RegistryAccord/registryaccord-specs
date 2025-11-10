@@ -1,0 +1,57 @@
+test_suite: "Revenue Services - Brand Safety"
+version: "1.0.0"
+tests:
+  - name: "Pre-bid Content Classification"
+    description: "Classify content for brand safety before bidding"
+    steps:
+      - request:
+          method: POST
+          path: /v1/ads/classify
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            content_id: "content-123"
+            content_text: "Sample content text for classification"
+            content_metadata:
+              title: "Sample Article"
+              description: "A sample article for testing"
+        expected_response:
+          status: 200
+          body:
+            data:
+              content_id: "content-123"
+              classifications:
+                - category_id: "IAB1"
+                  category_name: "Arts & Entertainment"
+                  confidence: 0.95
+                  tier: 1
+                - category_id: "IAB1-1"
+                  category_name: "Books & Literature"
+                  confidence: 0.85
+                  tier: 2
+              brand_suitability: "LOW_RISK"
+              needs_human_review: false
+              classified_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              classifier_version: "v1.2.3"
+
+  - name: "Check Advertiser Adjacency Controls"
+    description: "Check if content passes advertiser adjacency controls"
+    steps:
+      - request:
+          method: POST
+          path: /v1/ads/adjacency-check
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            advertiser_id: "advertiser-123"
+            content_id: "content-123"
+        expected_response:
+          status: 200
+          body:
+            data:
+              advertiser_id: "advertiser-123"
+              content_id: "content-123"
+              allowed: true
+              blocked_categories: []
+              blocked_content_types: []
+              checked_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

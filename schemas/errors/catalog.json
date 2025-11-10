@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.registryaccord.com/schemas/errors/catalog",
+  "title": "RegistryAccord Error Catalog",
+  "description": "Standardized error types following RFC 7807",
+  "type": "object",
+  "required": ["type", "title", "status", "detail", "instance", "trace_id"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "format": "uri",
+      "enum": [
+        "https://api.registryaccord.com/errors/auth_failed",
+        "https://api.registryaccord.com/errors/scope_denied",
+        "https://api.registryaccord.com/errors/limit_exceeded",
+        "https://api.registryaccord.com/errors/rate_limited",
+        "https://api.registryaccord.com/errors/validation_failed",
+        "https://api.registryaccord.com/errors/resource_not_found",
+        "https://api.registryaccord.com/errors/internal_error"
+      ]
+    },
+    "title": { "type": "string" },
+    "status": { "type": "integer", "minimum": 400, "maximum": 599 },
+    "detail": { "type": "string" },
+    "instance": { "type": "string", "format": "uri" },
+    "trace_id": { "type": "string", "format": "uuid" }
+  }
+}

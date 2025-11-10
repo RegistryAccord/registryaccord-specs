@@ -1,0 +1,290 @@
+name: Consent Management Workflow
+description: |
+  Complete consent workflow per Section 5.1:
+  1. Grant consent (POST /v1/consents) for each type:
+     - FUNCTIONAL
+     - ANALYTICS
+     - ADVERTISING
+     - CROSS_APP_SHARING
+  2. List consents (GET /v1/consents) with pagination
+  3. Revoke consent (DELETE /v1/consents/{id})
+  4. Document 24-hour propagation SLA
+steps:
+  # Step 1: Grant FUNCTIONAL Consent
+  - name: Grant Functional Consent
+    description: Grant consent for essential service functionality
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/consents
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440007"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OndyaXRlIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        consent_type: FUNCTIONAL
+        purpose: "Essential service functionality including account access and security features"
+        expires_in: 31536000
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440007"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "99"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          consent_type: FUNCTIONAL
+          purpose: "Essential service functionality including account access and security features"
+          granted_at: "2025-11-06T10:50:00Z"
+          expires_at: "2026-11-06T10:50:00Z"
+          revoked_at: null
+
+  # Step 2: Grant ANALYTICS Consent
+  - name: Grant Analytics Consent
+    description: Grant consent for usage analytics and metrics
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/consents
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440008"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OndyaXRlIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        consent_type: ANALYTICS
+        purpose: "Usage analytics and metrics to improve service quality"
+        expires_in: 31536000
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440008"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "98"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "b2c3d4e5-f6g7-8901-h2i3-j4k5l6m7n8o9"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          consent_type: ANALYTICS
+          purpose: "Usage analytics and metrics to improve service quality"
+          granted_at: "2025-11-06T10:51:00Z"
+          expires_at: "2026-11-06T10:51:00Z"
+          revoked_at: null
+
+  # Step 3: Grant ADVERTISING Consent
+  - name: Grant Advertising Consent
+    description: Grant consent for ad targeting and personalization
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/consents
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440009"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OndyaXRlIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        consent_type: ADVERTISING
+        purpose: "Ad targeting and personalization based on usage patterns"
+        expires_in: 31536000
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440009"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "97"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "c3d4e5f6-g7h8-9012-i3j4-k5l6m7n8o9p0"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          consent_type: ADVERTISING
+          purpose: "Ad targeting and personalization based on usage patterns"
+          granted_at: "2025-11-06T10:52:00Z"
+          expires_at: "2026-11-06T10:52:00Z"
+          revoked_at: null
+
+  # Step 4: Grant CROSS_APP_SHARING Consent
+  - name: Grant Cross-App Sharing Consent
+    description: Grant consent for data sharing across RA apps
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/consents
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440010"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OndyaXRlIiwiaWF0IjoxNzMwODgxODAwLCJleHAiOjE3MzA4ODU0MDB9.signature"
+        Content-Type: "application/json"
+      body:
+        identity_id: "123e4567-e89b-12d3-a456-426614174000"
+        consent_type: CROSS_APP_SHARING
+        purpose: "Data sharing across RegistryAccord applications for seamless experience"
+        expires_in: 31536000
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440010"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "96"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          id: "d4e5f6g7-h8i9-0123-j4k5-l6m7n8o9p0q1"
+          identity_id: "123e4567-e89b-12d3-a456-426614174000"
+          consent_type: CROSS_APP_SHARING
+          purpose: "Data sharing across RegistryAccord applications for seamless experience"
+          granted_at: "2025-11-06T10:53:00Z"
+          expires_at: "2026-11-06T10:53:00Z"
+          revoked_at: null
+
+  # Step 5: List Consents
+  - name: List Consents
+    description: List all consents for an identity with pagination
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/consents?limit=10
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440011"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OnJlYWQiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440011"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "95"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data:
+            - id: "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: FUNCTIONAL
+              purpose: "Essential service functionality including account access and security features"
+              granted_at: "2025-11-06T10:50:00Z"
+              expires_at: "2026-11-06T10:50:00Z"
+              revoked_at: null
+            - id: "b2c3d4e5-f6g7-8901-h2i3-j4k5l6m7n8o9"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: ANALYTICS
+              purpose: "Usage analytics and metrics to improve service quality"
+              granted_at: "2025-11-06T10:51:00Z"
+              expires_at: "2026-11-06T10:51:00Z"
+              revoked_at: null
+            - id: "c3d4e5f6-g7h8-9012-i3j4-k5l6m7n8o9p0"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: ADVERTISING
+              purpose: "Ad targeting and personalization based on usage patterns"
+              granted_at: "2025-11-06T10:52:00Z"
+              expires_at: "2026-11-06T10:52:00Z"
+              revoked_at: null
+            - id: "d4e5f6g7-h8i9-0123-j4k5-l6m7n8o9p0q1"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: CROSS_APP_SHARING
+              purpose: "Data sharing across RegistryAccord applications for seamless experience"
+              granted_at: "2025-11-06T10:53:00Z"
+              expires_at: "2026-11-06T10:53:00Z"
+              revoked_at: null
+          pagination:
+            has_next_page: false
+            next_cursor: null
+
+  # Step 6: Revoke Consent
+  - name: Revoke Analytics Consent
+    description: Revoke consent for analytics (24hr propagation SLA)
+    request:
+      method: DELETE
+      url: https://api.registryaccord.com/identity/v1/consents/b2c3d4e5-f6g7-8901-h2i3-j4k5l6m7n8o9
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440012"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OmRlbGV0ZSIsImlhdCI6MTczMDg4MTgwMCwiZXhwIjoxNzMwODg1NDAwfQ.signature"
+    responses:
+      success:
+        status: 204
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440012"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "94"
+          X-RateLimit-Reset: "1730885400"
+
+  # Step 7: Verify Revocation
+  - name: Verify Consent Revocation
+    description: Verify consent has been revoked (may take up to 24 hours to propagate)
+    request:
+      method: GET
+      url: https://api.registryaccord.com/identity/v1/consents?limit=10
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440013"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwic2NvcGUiOiJjb25zZW50OnJlYWQiLCJpYXQiOjE3MzA4ODE4MDAsImV4cCI6MTczMDg4NTQwMH0.signature"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440013"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "93"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          data:
+            - id: "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: FUNCTIONAL
+              purpose: "Essential service functionality including account access and security features"
+              granted_at: "2025-11-06T10:50:00Z"
+              expires_at: "2026-11-06T10:50:00Z"
+              revoked_at: null
+            - id: "c3d4e5f6-g7h8-9012-i3j4-k5l6m7n8o9p0"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: ADVERTISING
+              purpose: "Ad targeting and personalization based on usage patterns"
+              granted_at: "2025-11-06T10:52:00Z"
+              expires_at: "2026-11-06T10:52:00Z"
+              revoked_at: null
+            - id: "d4e5f6g7-h8i9-0123-j4k5-l6m7n8o9p0q1"
+              identity_id: "123e4567-e89b-12d3-a456-426614174000"
+              consent_type: CROSS_APP_SHARING
+              purpose: "Data sharing across RegistryAccord applications for seamless experience"
+              granted_at: "2025-11-06T10:53:00Z"
+              expires_at: "2026-11-06T10:53:00Z"
+              revoked_at: null
+          pagination:
+            has_next_page: false
+            next_cursor: null
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440013"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "The provided JWT token has expired"
+          instance: "/v1/consents"
+          trace_id: "550e8400-e29b-41d4-a716-446655440013"
+      forbidden:
+        status: 403
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440013"
+        body:
+          type: "https://api.registryaccord.com/errors/scope_denied"
+          title: "Scope Denied"
+          status: 403
+          detail: "The requested operation requires 'consent:read' scope"
+          instance: "/v1/consents"
+          trace_id: "550e8400-e29b-41d4-a716-446655440013"

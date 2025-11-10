@@ -1,0 +1,131 @@
+# License Management Example
+
+# Attach Creative Commons license
+request_1:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/licenses
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440030
+  body:
+    license_type: CC_BY
+    license_url: https://creativecommons.org/licenses/by/4.0/
+
+response_1:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/licenses/l1m2n3o4-5678-90ef-ghij-klmnopqrstuv
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440030
+  body:
+    data:
+      id: l1m2n3o4-5678-90ef-ghij-klmnopqrstuv
+      content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+      license_type: CC_BY
+      license_url: https://creativecommons.org/licenses/by/4.0/
+      granted_by: 123e4567-e89b-12d3-a456-426614174000
+      granted_at: "2025-11-06T13:00:00Z"
+      expires_at: null
+
+# Attach custom license
+request_2:
+  method: POST
+  url: https://api.registryaccord.com/content/v1/content/b2c3d4e5-6789-01fg-hijk-lmnopqrstuvw/licenses
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Content-Type: application/json
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440031
+  body:
+    license_type: CUSTOM
+    terms: "This content may only be used for educational purposes with proper attribution. Commercial use requires explicit permission."
+    expires_at: "2026-11-06T13:00:00Z"
+
+response_2:
+  status: 201
+  headers:
+    Location: https://api.registryaccord.com/content/v1/content/b2c3d4e5-6789-01fg-hijk-lmnopqrstuvw/licenses/m2n3o4p5-6789-01fg-hijk-lmnopqrstuvw
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440031
+  body:
+    data:
+      id: m2n3o4p5-6789-01fg-hijk-lmnopqrstuvw
+      content_id: b2c3d4e5-6789-01fg-hijk-lmnopqrstuvw
+      license_type: CUSTOM
+      terms: "This content may only be used for educational purposes with proper attribution. Commercial use requires explicit permission."
+      granted_by: 123e4567-e89b-12d3-a456-426614174000
+      granted_at: "2025-11-06T13:05:00Z"
+      expires_at: "2026-11-06T13:00:00Z"
+
+# List licenses
+request_3:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/licenses
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440032
+
+response_3:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440032
+  body:
+    data:
+      - id: l1m2n3o4-5678-90ef-ghij-klmnopqrstuv
+        content_id: a1b2c3d4-5678-90ef-ghij-klmnopqrstuv
+        license_type: CC_BY
+        license_url: https://creativecommons.org/licenses/by/4.0/
+        granted_by: 123e4567-e89b-12d3-a456-426614174000
+        granted_at: "2025-11-06T13:00:00Z"
+        expires_at: null
+
+# Remove license
+request_4:
+  method: DELETE
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/licenses/l1m2n3o4-5678-90ef-ghij-klmnopqrstuv
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440033
+
+response_4:
+  status: 204
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440033
+
+# Verify license removal
+request_5:
+  method: GET
+  url: https://api.registryaccord.com/content/v1/content/a1b2c3d4-5678-90ef-ghij-klmnopqrstuv/licenses
+  headers:
+    Authorization: Bearer eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCIsImtpZCI6ImtleS0xIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440034
+
+response_5:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: 2025-11-01
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440034
+  body:
+    data: []

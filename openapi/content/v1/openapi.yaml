@@ -1,0 +1,2104 @@
+openapi: 3.1.0
+info:
+  title: RegistryAccord Content Registry API
+  version: 1.0.0
+  description: |
+    Content lifecycle management with versioning, provenance, rights management,
+    and integrity verification for the RegistryAccord protocol.
+    
+    ## Key Features
+    - Stable content IDs with immutable identifiers
+    - Version/lineage tracking with parent references
+    - Rich metadata schemas (JSON-LD)
+    - Cryptographic content provenance
+    - Signed manifests for integrity verification
+    - Takedown abuse prevention with appeals
+    
+    ## Content Integrity
+    - Immutable version hashes prevent tampering
+    - Cryptographic proofs link content to creator identity
+    - Third-party verification support
+    
+    ## Consistency Model
+    - Strong consistency on writes
+    - Eventual consistency on indexes
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  contact:
+    name: RegistryAccord Maintainers
+    url: https://github.com/RegistryAccord/registryaccord-specs
+    email: specs@registryaccord.com
+servers:
+  - url: https://api.registryaccord.dev/content
+    description: Development environment
+  - url: https://api.registryaccord.com/content
+    description: Production environment
+security:
+  - oauth2: []
+  - bearerAuth: []
+paths:
+  /v1/content:
+    post:
+      tags:
+        - Content
+      summary: Create new content
+      description: Creates a new content object with initial metadata and version.
+      operationId: createContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentCreateRequest'
+      responses:
+        '201':
+          description: Content created successfully
+          headers:
+            Location:
+              description: URL of the newly created content
+              schema:
+                type: string
+                format: uri
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:write
+    get:
+      tags:
+        - Content
+      summary: List content
+      description: Retrieves a paginated list of content objects.
+      operationId: listContent
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - name: owner_id
+          in: query
+          description: Filter by owner identity ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: content_type
+          in: query
+          description: Filter by content type
+          required: false
+          schema:
+            type: string
+        - name: tag
+          in: query
+          description: Filter by tag
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content list retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:read
+  
+  /v1/content/{id}:
+    get:
+      tags:
+        - Content
+      summary: Get content
+      description: Retrieves a specific content object by ID.
+      operationId: getContent
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Content retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:read
+    patch:
+      tags:
+        - Content
+      summary: Update content
+      description: Updates metadata for a specific content object.
+      operationId: updateContent
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentUpdateRequest'
+      responses:
+        '200':
+          description: Content updated successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:write
+    delete:
+      tags:
+        - Content
+      summary: Delete content
+      description: Soft deletes a content object.
+      operationId: deleteContent
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Content deleted successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:delete
+  
+  /v1/content/{id}/versions:
+    get:
+      tags:
+        - Versions
+      summary: List content versions
+      description: Retrieves a paginated list of versions for a specific content object.
+      operationId: listContentVersions
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+      responses:
+        '200':
+          description: Content versions list retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentVersionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:read
+    post:
+      tags:
+        - Versions
+      summary: Create new content version
+      description: Creates a new version of a content object.
+      operationId: createContentVersion
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentVersionCreateRequest'
+      responses:
+        '201':
+          description: Content version created successfully
+          headers:
+            Location:
+              description: URL of the newly created content version
+              schema:
+                type: string
+                format: uri
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentVersion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:version
+  
+  /v1/content/{id}/licenses:
+    post:
+      tags:
+        - Licenses
+      summary: Attach license to content
+      description: Attaches a license to a content object.
+      operationId: attachLicense
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LicenseCreateRequest'
+      responses:
+        '201':
+          description: License attached successfully
+          headers:
+            Location:
+              description: URL of the newly created license
+              schema:
+                type: string
+                format: uri
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/License'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - license:write
+    get:
+      tags:
+        - Licenses
+      summary: List content licenses
+      description: Retrieves a list of licenses attached to a content object.
+      operationId: listContentLicenses
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Content licenses list retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - license:read
+  
+  /v1/content/{id}/licenses/{license_id}:
+    delete:
+      tags:
+        - Licenses
+      summary: Remove license from content
+      description: Removes a license from a content object.
+      operationId: removeLicense
+      parameters:
+        - name: id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: license_id
+          in: path
+          description: License ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: License removed successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - content:read
+  
+  /v1/events/subscriptions:
+    post:
+      tags:
+        - Events
+      summary: Subscribe to content events
+      description: Creates a subscription to receive webhook notifications for content lifecycle events.
+      operationId: createEventSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventSubscriptionCreateRequest'
+      responses:
+        '201':
+          description: Event subscription created successfully
+          headers:
+            Location:
+              description: URL of the newly created subscription
+              schema:
+                type: string
+                format: uri
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - event:subscribe
+    get:
+      tags:
+        - Events
+      summary: List event subscriptions
+      description: Retrieves a paginated list of event subscriptions.
+      operationId: listEventSubscriptions
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+      responses:
+        '200':
+          description: Event subscriptions list retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSubscriptionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - event:subscribe
+  
+  /v1/events/subscriptions/{id}:
+    delete:
+      tags:
+        - Events
+      summary: Unsubscribe from content events
+      description: Deletes an event subscription.
+      operationId: deleteEventSubscription
+      parameters:
+        - name: id
+          in: path
+          description: Subscription ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Event subscription deleted successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - event:subscribe
+  
+  /v1/collections:
+    post:
+      tags:
+        - Collections
+      summary: Create collection
+      description: Creates a new collection.
+      operationId: createCollection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCreateRequest'
+      responses:
+        '201':
+          description: Collection created successfully
+          headers:
+            Location:
+              description: URL of the newly created collection
+              schema:
+                type: string
+                format: uri
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:write
+    get:
+      tags:
+        - Collections
+      summary: List collections
+      description: Retrieves a paginated list of collections.
+      operationId: listCollections
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - name: owner_id
+          in: query
+          description: Filter by owner identity ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Collections list retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:read
+  
+  /v1/collections/{id}:
+    get:
+      tags:
+        - Collections
+      summary: Get collection
+      description: Retrieves a specific collection by ID.
+      operationId: getCollection
+      parameters:
+        - name: id
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Collection retrieved successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:read
+    patch:
+      tags:
+        - Collections
+      summary: Update collection
+      description: Updates a collection's metadata.
+      operationId: updateCollection
+      parameters:
+        - name: id
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionUpdateRequest'
+      responses:
+        '200':
+          description: Collection updated successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:write
+  
+  /v1/collections/{id}/items:
+    post:
+      tags:
+        - Collections
+      summary: Add content to collection
+      description: Adds one or more content items to a collection.
+      operationId: addContentToCollection
+      parameters:
+        - name: id
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionItemsAddRequest'
+      responses:
+        '200':
+          description: Content items added to collection successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:write
+  
+  /v1/collections/{id}/items/{content_id}:
+    delete:
+      tags:
+        - Collections
+      summary: Remove content from collection
+      description: Removes a content item from a collection.
+      operationId: removeContentFromCollection
+      parameters:
+        - name: id
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: content_id
+          in: path
+          description: Content ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Content item removed from collection successfully
+          headers:
+            X-RateLimit-Limit:
+              description: Request limit per hour
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: Requests remaining in current hour
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              description: Seconds until limit reset
+              schema:
+                type: integer
+            RA-API-Version:
+              description: API version
+              schema:
+                type: string
+                example: "2025-11-01"
+            X-Correlation-ID:
+              description: Unique request identifier for tracing
+              schema:
+                type: string
+                format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+        - oauth2:
+            - collection:write
+components:
+  schemas:
+    Content:
+      type: object
+      required: [id, owner_id, content_type, created_at, updated_at, current_version_id]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Stable, immutable content identifier
+          example: "c7e8a9b0-1234-5678-90ab-cdef12345678"
+        owner_id:
+          type: string
+          format: uuid
+          description: Identity ID of content creator
+        content_type:
+          type: string
+          description: MIME type or content type identifier
+          example: "video/mp4"
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+          maxLength: 5000
+        metadata:
+          type: object
+          description: JSON-LD metadata conforming to schema.org or custom schemas
+          additionalProperties: true
+        current_version_id:
+          type: string
+          format: uuid
+          description: ID of the current/latest version
+        manifest_signature:
+          type: string
+          description: Cryptographic signature of content manifest
+        provenance_proof:
+          type: string
+          description: Cryptographic proof linking content to creator identity
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-11-06T11:28:00Z"
+        updated_at:
+          type: string
+          format: date-time
+        is_deleted:
+          type: boolean
+          default: false
+          description: Soft delete flag
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+    
+    ContentVersion:
+      type: object
+      required: [id, content_id, version_number, hash, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique version identifier
+        content_id:
+          type: string
+          format: uuid
+          description: Parent content ID
+        version_number:
+          type: integer
+          minimum: 1
+          description: Sequential version number
+        parent_version_id:
+          type: [string, 'null']
+          format: uuid
+          description: Previous version ID for lineage tracking
+        hash:
+          type: string
+          description: Immutable content hash (SHA-256)
+          pattern: '^[a-f0-9]{64}$'
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        size_bytes:
+          type: integer
+          minimum: 0
+          description: Content size in bytes
+        storage_url:
+          type: string
+          format: uri
+          description: Reference to storage location
+        metadata:
+          type: object
+          description: Version-specific metadata
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+          description: Identity ID of version creator
+    
+    Collection:
+      type: object
+      required: [id, owner_id, name, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+        is_public:
+          type: boolean
+          default: false
+        item_count:
+          type: integer
+          minimum: 0
+          description: Number of content items in collection
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    License:
+      type: object
+      required: [id, content_id, license_type, granted_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        content_id:
+          type: string
+          format: uuid
+        license_type:
+          type: string
+          enum:
+            - CC0
+            - CC_BY
+            - CC_BY_SA
+            - CC_BY_ND
+            - CC_BY_NC
+            - CC_BY_NC_SA
+            - CC_BY_NC_ND
+            - ALL_RIGHTS_RESERVED
+            - CUSTOM
+          description: License type following Creative Commons standards
+        license_url:
+          type: string
+          format: uri
+          description: URL to full license text
+        terms:
+          type: string
+          description: Custom license terms (for CUSTOM type)
+        granted_by:
+          type: string
+          format: uuid
+          description: Identity ID of licensor
+        granted_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: [string, 'null']
+          format: date-time
+    
+    ContentEvent:
+      type: object
+      required: [id, event_type, content_id, timestamp]
+      properties:
+        id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+          enum:
+            - CONTENT_CREATED
+            - CONTENT_UPDATED
+            - CONTENT_DELETED
+            - VERSION_CREATED
+            - LICENSE_ATTACHED
+            - LICENSE_REMOVED
+            - COLLECTION_ADDED
+            - COLLECTION_REMOVED
+        content_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+          format: uuid
+          description: Identity ID of actor who triggered event
+        metadata:
+          type: object
+          description: Event-specific metadata
+        timestamp:
+          type: string
+          format: date-time
+    
+    EventSubscription:
+      type: object
+      required: [id, subscriber_id, webhook_url, event_types, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        subscriber_id:
+          type: string
+          format: uuid
+          description: Identity ID of subscriber
+        webhook_url:
+          type: string
+          format: uri
+          description: URL to receive webhook events
+        webhook_secret:
+          type: string
+          description: Secret for HMAC-SHA256 signature verification
+        event_types:
+          type: array
+          items:
+            type: string
+            enum:
+              - CONTENT_CREATED
+              - CONTENT_UPDATED
+              - CONTENT_DELETED
+              - VERSION_CREATED
+              - LICENSE_ATTACHED
+              - LICENSE_REMOVED
+          minItems: 1
+        is_active:
+          type: boolean
+          default: true
+        created_at:
+          type: string
+          format: date-time
+    
+    ContentCreateRequest:
+      type: object
+      required: [content_type]
+      properties:
+        content_type:
+          type: string
+          description: MIME type or content type identifier
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+          maxLength: 5000
+        metadata:
+          type: object
+          description: Initial metadata for the content
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+    
+    ContentUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+          maxLength: 5000
+        metadata:
+          type: object
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+    
+    ContentVersionCreateRequest:
+      type: object
+      required: [hash]
+      properties:
+        parent_version_id:
+          type: string
+          format: uuid
+          description: Previous version ID for lineage tracking
+        hash:
+          type: string
+          description: Immutable content hash (SHA-256)
+          pattern: '^[a-f0-9]{64}$'
+        size_bytes:
+          type: integer
+          minimum: 0
+        storage_url:
+          type: string
+          format: uri
+        metadata:
+          type: object
+    
+    CollectionCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+        is_public:
+          type: boolean
+          default: false
+    
+    CollectionUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+        is_public:
+          type: boolean
+    
+    CollectionItemsAddRequest:
+      type: object
+      required: [content_ids]
+      properties:
+        content_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+    
+    LicenseCreateRequest:
+      type: object
+      required: [license_type]
+      properties:
+        license_type:
+          type: string
+          enum:
+            - CC0
+            - CC_BY
+            - CC_BY_SA
+            - CC_BY_ND
+            - CC_BY_NC
+            - CC_BY_NC_SA
+            - CC_BY_NC_ND
+            - ALL_RIGHTS_RESERVED
+            - CUSTOM
+        license_url:
+          type: string
+          format: uri
+        terms:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+    
+    EventSubscriptionCreateRequest:
+      type: object
+      required: [webhook_url, event_types]
+      properties:
+        webhook_url:
+          type: string
+          format: uri
+        event_types:
+          type: array
+          items:
+            type: string
+            enum:
+              - CONTENT_CREATED
+              - CONTENT_UPDATED
+              - CONTENT_DELETED
+              - VERSION_CREATED
+              - LICENSE_ATTACHED
+              - LICENSE_REMOVED
+          minItems: 1
+        is_active:
+          type: boolean
+          default: true
+    
+    ContentListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Content'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    ContentVersionListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentVersion'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    CollectionListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    LicenseListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/License'
+    
+    EventSubscriptionListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventSubscription'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    
+    Pagination:
+      type: object
+      required: [has_next_page, has_prev_page]
+      properties:
+        has_next_page:
+          type: boolean
+        has_prev_page:
+          type: boolean
+        next_cursor:
+          type: [string, 'null']
+        prev_cursor:
+          type: [string, 'null']
+    
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, correlationId]
+          properties:
+            code:
+              type: string
+              description: RegistryAccord-specific error code
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional structured information about the error
+            correlationId:
+              type: string
+              format: uuid
+              description: Unique identifier for tracing errors across systems
+  responses:
+    BadRequest:
+      description: Bad Request - The request was invalid or cannot be served
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    Unauthorized:
+      description: Unauthorized - Authentication failed or not provided
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        WWW-Authenticate:
+          description: Authentication challenge
+          schema:
+            type: string
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    Forbidden:
+      description: Forbidden - The authenticated user does not have permission to access this resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    NotFound:
+      description: Not Found - The requested resource could not be found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    Conflict:
+      description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    UnprocessableEntity:
+      description: Unprocessable Entity - The request was well-formed but was unable to be followed due to semantic errors
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    TooManyRequests:
+      description: Too Many Requests - The user has sent too many requests in a given amount of time
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    InternalServerError:
+      description: Internal Server Error - The server encountered an unexpected condition
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+    
+    ServiceUnavailable:
+      description: Service Unavailable - The server is currently unable to handle the request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests remaining in current hour
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Seconds until limit reset
+          schema:
+            type: integer
+        Retry-After:
+          description: Seconds to wait before making another request
+          schema:
+            type: integer
+        RA-API-Version:
+          description: API version
+          schema:
+            type: string
+            example: "2025-11-01"
+        X-Correlation-ID:
+          description: Unique request identifier for tracing
+          schema:
+            type: string
+            format: uuid
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    After:
+      name: after
+      in: query
+      description: Cursor for forward pagination
+      required: false
+      schema:
+        type: string
+    
+    Before:
+      name: before
+      in: query
+      description: Cursor for backward pagination
+      required: false
+      schema:
+        type: string
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.registryaccord.com/authorize
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            content:read: Read content information
+            content:write: Create and update content
+            content:delete: Delete content
+            content:version: Manage content versions
+            collection:read: Read collections
+            collection:write: Manage collections
+            license:read: Read license information
+            license:write: Attach and manage licenses
+            event:subscribe: Subscribe to content lifecycle events
+        clientCredentials:
+          tokenUrl: https://auth.registryaccord.com/token
+          scopes:
+            service:content: Service-to-service content operations
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

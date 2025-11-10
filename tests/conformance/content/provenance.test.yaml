@@ -1,0 +1,38 @@
+test_suite: "Content Registry - Provenance"
+version: "1.0.0"
+tests:
+  - name: "Content Provenance Verification"
+    description: "Verify cryptographic proof linking content to creator identity"
+    steps:
+      - request:
+          method: GET
+          path: /v1/content/{content_id}/provenance
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              content_id: "^[a-zA-Z0-9-]+$"
+              creator_did: "did:ra:[a-zA-Z0-9-]+"
+              signature: "^[a-zA-Z0-9+/]+={0,2}$"
+              signed_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              integrity_hash: "sha256:[a-f0-9]{64}"
+
+  - name: "Provenance Chain Validation"
+    description: "Validate provenance chain for content versions"
+    steps:
+      - request:
+          method: GET
+          path: /v1/content/{content_id}/versions/{version_id}/provenance
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              - content_id: "^[a-zA-Z0-9-]+$"
+                version_id: "^[a-zA-Z0-9-]+$"
+                creator_did: "did:ra:[a-zA-Z0-9-]+"
+                signature: "^[a-zA-Z0-9+/]+={0,2}$"
+                signed_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

@@ -1,0 +1,60 @@
+name: Create Release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate all specifications
+        run: npm run validate:all
+      
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Extract CHANGELOG for this version
+        id: changelog
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          awk "/## \[$VERSION\]/,/^## \[/" CHANGELOG.md | head -n -1 | tail -n +2 > release-notes.md || echo "No CHANGELOG entry found" > release-notes.md
+      
+      - name: Generate OpenAPI bundle
+        run: |
+          mkdir -p dist
+          for service in identity content payments storage feeds revenue analytics; do
+            cp "openapi/$service/v1/openapi.yaml" "dist/$service-v1-openapi.yaml"
+          done
+          tar -czf dist/openapi-specifications.tar.gz dist/*.yaml
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: RegistryAccord v${{ steps.version.outputs.VERSION }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') }}
+          files: |
+            dist/*.yaml
+            dist/openapi-specifications.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

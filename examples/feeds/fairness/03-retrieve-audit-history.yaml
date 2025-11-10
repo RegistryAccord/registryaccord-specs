@@ -1,0 +1,34 @@
+name: Retrieve Audit History
+description: |
+  Access historical audit reports for a ranker to understand
+  fairness compliance over time.
+steps:
+  - request:
+      method: GET
+      path: /v1/feeds/audits/550e8400-e29b-41d4-a716-446655440000
+      headers:
+        RA-API-Version: "2025-11-01"
+    response:
+      status: 200
+      body:
+        data:
+          ranker_id: "550e8400-e29b-41d4-a716-446655440000"
+          audits:
+            - audit_id: "a1b2c3d4-5678-90ab-cdef-1234567890ab"
+              audit_date: "2025-10-15T10:00:00Z"
+              auditor_name: "Algorithmic Fairness Institute"
+              findings:
+                - category: "DEMOGRAPHIC_PARITY"
+                  severity: "LOW"
+                  description: "Minor disparity detected in age group 18-24 representation."
+                  remediation_status: "COMPLETED"
+              next_audit_date: "2026-04-15T10:00:00Z"
+            - audit_id: "b2c3d4e5-6789-01bc-def0-234567890abc"
+              audit_date: "2025-04-15T10:00:00Z"
+              auditor_name: "Algorithmic Fairness Institute"
+              findings:
+                - category: "CONTENT_EQUITY"
+                  severity: "MEDIUM"
+                  description: "Video content systematically ranked higher than text content with equivalent engagement."
+                  remediation_status: "COMPLETED"
+              next_audit_date: "2025-10-15T10:00:00Z"

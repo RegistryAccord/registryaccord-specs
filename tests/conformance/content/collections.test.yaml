@@ -1,0 +1,44 @@
+test_suite: "Content Registry - Collections"
+version: "1.0.0"
+tests:
+  - name: "Create Collection"
+    description: "Create a new content collection"
+    steps:
+      - request:
+          method: POST
+          path: /v1/collections
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            name: "Test Collection"
+            description: "A collection for testing"
+            visibility: "public"
+        expected_response:
+          status: 201
+          body:
+            data:
+              id: "^[a-zA-Z0-9-]+$"
+              name: "Test Collection"
+              description: "A collection for testing"
+              visibility: "public"
+              owner_did: "did:ra:[a-zA-Z0-9-]+"
+              created_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Add Content to Collection"
+    description: "Add content items to an existing collection"
+    steps:
+      - request:
+          method: POST
+          path: /v1/collections/{collection_id}/items
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            content_ids:
+              - "content-1"
+              - "content-2"
+        expected_response:
+          status: 200
+          body:
+            data:
+              added: 2
+              collection_id: "^[a-zA-Z0-9-]+$"

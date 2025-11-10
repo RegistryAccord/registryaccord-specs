@@ -1,0 +1,43 @@
+test_suite: "Content Registry - Versioning"
+version: "1.0.0"
+tests:
+  - name: "Create Content Version"
+    description: "Create a new version of existing content"
+    steps:
+      - request:
+          method: POST
+          path: /v1/content/{content_id}/versions
+          headers:
+            Authorization: "Bearer test-jwt-token"
+          body:
+            parent_version_id: "version-1"
+            content: "Updated content data"
+        expected_response:
+          status: 201
+          body:
+            data:
+              id: "^[a-zA-Z0-9-]+$"
+              content_id: "^[a-zA-Z0-9-]+$"
+              version: 2
+              parent_version_id: "version-1"
+              created_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "List Content Versions"
+    description: "List all versions of a content item"
+    steps:
+      - request:
+          method: GET
+          path: /v1/content/{content_id}/versions
+          headers:
+            Authorization: "Bearer test-jwt-token"
+        expected_response:
+          status: 200
+          body:
+            data:
+              - id: "version-1"
+                version: 1
+                created_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              - id: "version-2"
+                version: 2
+                parent_version_id: "version-1"
+                created_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"

@@ -1,0 +1,66 @@
+test_suite: "Analytics Service - Event Ingestion"
+version: "1.0.0"
+tests:
+  - name: "Ingest User Engagement Event"
+    description: "Ingest a user engagement event with purpose limitation"
+    steps:
+      - request:
+          method: POST
+          path: /v1/events
+          headers:
+            Authorization: "Bearer test-jwt-token"
+            Content-Type: "application/json"
+          body:
+            events:
+              - event_id: "event-123"
+                event_type: "user_engagement"
+                user_did: "did:ra:user-123"
+                content_id: "content-456"
+                timestamp: "2025-11-06T10:30:00Z"
+                properties:
+                  action: "view"
+                  duration: 120
+                purpose: "analytics"
+                privacy_tags:
+                  - "engagement"
+                  - "content"
+        expected_response:
+          status: 202
+          body:
+            data:
+              accepted: 1
+              rejected: 0
+              processed_at: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+
+  - name: "Ingest Event with Invalid Purpose"
+    description: "Reject event that violates purpose limitation"
+    steps:
+      - request:
+          method: POST
+          path: /v1/events
+          headers:
+            Authorization: "Bearer test-jwt-token"
+            Content-Type: "application/json"
+          body:
+            events:
+              - event_id: "event-456"
+                event_type: "user_engagement"
+                user_did: "did:ra:user-123"
+                content_id: "content-456"
+                timestamp: "2025-11-06T10:30:00Z"
+                properties:
+                  action: "view"
+                  duration: 120
+                purpose: "profiling"  # Not allowed for this data
+                privacy_tags:
+                  - "engagement"
+                  - "content"
+        expected_response:
+          status: 400
+          body:
+            error:
+              type: "https://api.registryaccord.com/errors/purpose-limitation-violation"
+              title: "Purpose Limitation Violation"
+              status: 400
+              detail: "Event purpose 'profiling' not allowed for this data"
+              trace_id: "^[a-zA-Z0-9-]+$"

@@ -1,0 +1,162 @@
+# Payout with Hold Example
+# This example demonstrates the payout process with fraud review hold
+
+# Step 1: Create Payout
+create_payout_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payouts
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440002
+    Content-Type: application/json
+  body:
+    recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+    amount: 50000
+    currency: "USD"
+    payout_method: "BANK_TRANSFER"
+    destination_account: "bank_account_12345"
+    metadata:
+      payout_reason: "Monthly creator earnings"
+      period: "2025-10"
+
+create_payout_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174004"
+      recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+      amount: 50000
+      currency: "USD"
+      status: "PENDING"
+      payout_method: "BANK_TRANSFER"
+      destination_account: "bank_account_12345"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: Fraud Detection Webhook (Simulated)
+fraud_detection_webhook:
+  method: POST
+  url: https://platform-website.com/webhooks/fraud
+  headers:
+    Authorization: Bearer webhook_secret
+    Content-Type: application/json
+  body:
+    event: "payout.fraud_detected"
+    data:
+      payout_id: "123e4567-e89b-12d3-a456-426614174004"
+      fraud_score: 75
+      reason: "Unusual payout pattern detected"
+      recommended_action: "HOLD_FOR_REVIEW"
+
+# Step 3: Hold Payout for Review
+hold_payout_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payouts/123e4567-e89b-12d3-a456-426614174004/hold
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    hold_reason: "FRAUD_REVIEW"
+    hold_until: "2025-11-08T10:00:00Z"
+
+hold_payout_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174004"
+      recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+      amount: 50000
+      currency: "USD"
+      status: "HELD_FOR_REVIEW"
+      hold_reason: "FRAUD_REVIEW"
+      hold_until: "2025-11-08T10:00:00Z"
+      payout_method: "BANK_TRANSFER"
+      destination_account: "bank_account_12345"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 4: Check Payout Status
+get_payout_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/payouts/123e4567-e89b-12d3-a456-426614174004
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_payout_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174004"
+      recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+      amount: 50000
+      currency: "USD"
+      status: "HELD_FOR_REVIEW"
+      hold_reason: "FRAUD_REVIEW"
+      hold_until: "2025-11-08T10:00:00Z"
+      payout_method: "BANK_TRANSFER"
+      destination_account: "bank_account_12345"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 5: Manual Review and Release
+manual_review_request:
+  method: POST
+  url: https://platform-website.com/admin/payouts/review
+  headers:
+    Authorization: Bearer admin_token
+    Content-Type: application/json
+  body:
+    payout_id: "123e4567-e89b-12d3-a456-426614174004"
+    action: "APPROVE"
+    notes: "Reviewed and approved after manual verification"
+
+manual_review_response:
+  status: 200
+  body:
+    message: "Payout approved successfully"
+
+# Step 6: Release Payout
+release_payout_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payouts/123e4567-e89b-12d3-a456-426614174004/release
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+release_payout_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174004"
+      recipient_id: "123e4567-e89b-12d3-a456-426614174000"
+      amount: 50000
+      currency: "USD"
+      status: "PROCESSING"
+      payout_method: "BANK_TRANSFER"
+      destination_account: "bank_account_12345"
+      created_at: "2025-11-01T10:00:00Z"
+      completed_at: null

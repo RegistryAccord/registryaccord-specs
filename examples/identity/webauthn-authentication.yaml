@@ -1,0 +1,136 @@
+name: WebAuthn Authentication Flow
+description: |
+  WebAuthn/Passkey flow demonstrating:
+  1. Registration initiation
+  2. Passkey creation
+  3. Authentication challenge
+  4. Session creation (POST /v1/sessions)
+  5. Credential verification
+steps:
+  # Step 1: Registration Initiation
+  - name: Begin Registration
+    description: Start WebAuthn registration process
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/identities
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440004"
+        Content-Type: "application/json"
+      body:
+        display_name: "John Smith"
+        email: "john.smith@example.com"
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440004"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "99"
+          X-RateLimit-Reset: "1730885400"
+          Location: "https://api.registryaccord.com/identity/v1/identities/987f6543-e21b-43d5-a678-123456789000"
+        body:
+          id: "987f6543-e21b-43d5-a678-123456789000"
+          display_name: "John Smith"
+          email: "john.smith@example.com"
+          created_at: "2025-11-06T10:45:00Z"
+          updated_at: "2025-11-06T10:45:00Z"
+          is_active: true
+          is_verified: false
+
+  # Step 2: Passkey Creation (Client-side)
+  - name: Create Passkey
+    description: Client creates WebAuthn credential
+    type: client_side_operation
+    details: |
+      Browser/Client performs:
+      1. navigator.credentials.create() with PublicKeyCredentialCreationOptions
+      2. User interacts with authenticator (biometric, PIN, etc.)
+      3. Credential is created and stored locally
+
+  # Step 3: Authentication Challenge
+  - name: Begin Authentication
+    description: Request authentication challenge for existing identity
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/sessions
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440005"
+        Content-Type: "application/json"
+      body:
+        identity_id: "987f6543-e21b-43d5-a678-123456789000"
+    responses:
+      success:
+        status: 200
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440005"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "98"
+          X-RateLimit-Reset: "1730885400"
+        body:
+          challenge: "5b3e4a1c2d9f8e7d6c5b4a3e2d1c0b9a8f7e6d5c4b3a2e1d0f9e8d7c6b5a4e3d"
+          user_id: "987f6543-e21b-43d5-a678-123456789000"
+          timeout: 60000
+          rp_id: "registryaccord.com"
+
+  # Step 4: Session Creation
+  - name: Complete Authentication
+    description: Complete WebAuthn authentication and create session
+    request:
+      method: POST
+      url: https://api.registryaccord.com/identity/v1/sessions
+      headers:
+        RA-API-Version: "2025-11-01"
+        X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440006"
+        Content-Type: "application/json"
+      body:
+        identity_id: "987f6543-e21b-43d5-a678-123456789000"
+        credential_id: "dGhpcyBpcyBhIHNhbXBsZSBjcmVkZW50aWFsIGlk"
+        client_data_json: "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiNWIzZTRhMWMyZDlmOGU3ZDZjNWI0YTNlMmQxYzBiOWE4ZjdlNmQ1YzRiM2EyZTFkMGY5ZThkN2M2YjVhNGUzZCIsIm9yaWdpbiI6Imh0dHBzOi8vYXBpLnJlZ2lzdHJ5YWNjb3JkLmNvbSJ9"
+        authenticator_data: "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAACRg"
+        signature: "MEUCIQC7f6H6J3K9H5K2N7M8P9Q0R1S2T3U4V5W6X7Y8Z9a0b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5A6B7C8D9E0F1G2H3I4J5K6L7M8N9O0P1Q2R3S4T5U6V7W8X9Y0Z1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7A8B9C0D1E2F3G4H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X9Y0Z1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7A8B9C0D1E2F3G4H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X9Y0Z1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7A8"
+
+  # Step 5: Credential Verification
+  - name: Verify Credential
+    description: Server verifies the WebAuthn credential
+    type: server_side_operation
+    details: |
+      Server performs:
+      1. Verify clientDataJSON integrity
+      2. Verify signature against stored public key
+      3. Check authenticator data flags
+      4. Validate challenge matches session
+      5. Create authenticated session
+    responses:
+      success:
+        status: 201
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440006"
+          X-RateLimit-Limit: "100"
+          X-RateLimit-Remaining: "97"
+          X-RateLimit-Reset: "1730885400"
+          Set-Cookie: "session=abc123; Path=/; HttpOnly; Secure; SameSite=Strict"
+        body:
+          id: "550e8400-e29b-41d4-a716-446655440006"
+          identity_id: "987f6543-e21b-43d5-a678-123456789000"
+          created_at: "2025-11-06T10:46:00Z"
+          expires_at: "2025-11-06T11:46:00Z"
+          last_accessed_at: "2025-11-06T10:46:00Z"
+          user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          ip_address: "192.168.1.100"
+      unauthorized:
+        status: 401
+        headers:
+          RA-API-Version: "2025-11-01"
+          X-Correlation-ID: "550e8400-e29b-41d4-a716-446655440006"
+        body:
+          type: "https://api.registryaccord.com/errors/auth_failed"
+          title: "Authentication Failed"
+          status: 401
+          detail: "Invalid WebAuthn credential or signature verification failed"
+          instance: "/v1/sessions"
+          trace_id: "550e8400-e29b-41d4-a716-446655440006"

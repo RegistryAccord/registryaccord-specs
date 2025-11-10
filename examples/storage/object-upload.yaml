@@ -1,0 +1,100 @@
+# Object Upload Example
+# This example demonstrates direct upload with pre-signed URL
+
+# Step 1: Initiate Object Upload
+initiate_upload_request:
+  method: POST
+  url: https://api.registryaccord.com/storage/v1/storage/objects
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
+    Content-Type: application/json
+  body:
+    bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+    key: "videos/2025/11/creator-content.mp4"
+    content_type: "video/mp4"
+    size_bytes: 104857600
+    metadata:
+      title: "Creator Content Video"
+      description: "Premium creator content for subscribers"
+      tags: ["premium", "video", "content"]
+    storage_class: "STANDARD"
+
+initiate_upload_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174001"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+      key: "videos/2025/11/creator-content.mp4"
+      size_bytes: 104857600
+      content_type: "video/mp4"
+      checksum:
+        md5: "e4d909c290d0fb1ca068ffaddf22cbd0"
+        sha256: "5d41402abc4b2a76b9719d911017c592"
+      metadata:
+        title: "Creator Content Video"
+        description: "Premium creator content for subscribers"
+        tags: ["premium", "video", "content"]
+      storage_class: "STANDARD"
+      presigned_url: "https://storage-provider.com/bucket/videos/2025/11/creator-content.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA..."
+      presigned_url_expires_at: "2025-11-01T11:00:00Z"
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: Upload Object Using Pre-signed URL
+upload_object_request:
+  method: PUT
+  url: https://storage-provider.com/bucket/videos/2025/11/creator-content.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA...
+  headers:
+    Content-Type: video/mp4
+    Content-Length: 104857600
+    Content-MD5: e4d909c290d0fb1ca068ffaddf22cbd0
+  body: <binary_video_data>
+
+upload_object_response:
+  status: 200
+  headers:
+    ETag: "5d41402abc4b2a76b9719d911017c592"
+    Content-Length: 0
+
+# Step 3: Verify Object Upload
+verify_upload_request:
+  method: GET
+  url: https://api.registryaccord.com/storage/v1/storage/objects/123e4567-e89b-12d3-a456-426614174001
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+verify_upload_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174001"
+      bucket_id: "123e4567-e89b-12d3-a456-426614174000"
+      key: "videos/2025/11/creator-content.mp4"
+      size_bytes: 104857600
+      content_type: "video/mp4"
+      checksum:
+        md5: "e4d909c290d0fb1ca068ffaddf22cbd0"
+        sha256: "5d41402abc4b2a76b9719d911017c592"
+      metadata:
+        title: "Creator Content Video"
+        description: "Premium creator content for subscribers"
+        tags: ["premium", "video", "content"]
+      storage_class: "STANDARD"
+      presigned_url: null
+      presigned_url_expires_at: null
+      created_at: "2025-11-01T10:00:00Z"

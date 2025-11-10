@@ -1,0 +1,77 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://api.registryaccord.com/schemas/audits/fairness-scorecard",
+"title": "Fairness Scorecard",
+"description": "Public fairness scorecard for certified rankers",
+"type": "object",
+"required": ["ranker_id", "last_audit_date", "certification_status"],
+"properties": {
+  "ranker_id": {
+    "type": "string",
+    "format": "uuid",
+    "description": "Unique identifier for the ranker"
+  },
+  "last_audit_date": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Date of most recent audit"
+  },
+  "next_audit_date": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Scheduled date for next audit"
+  },
+  "fairness_scores": {
+    "type": "object",
+    "properties": {
+      "demographic_parity": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Score indicating demographic fairness (0-100)"
+      },
+      "content_equity": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Score indicating content type equity (0-100)"
+      },
+      "engagement_fairness": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Score indicating engagement proxy fairness (0-100)"
+      }
+    }
+  },
+  "certification_status": {
+    "type": "string",
+    "enum": ["CERTIFIED", "SUSPENDED", "REVOKED", "PENDING_AUDIT"],
+    "description": "Current certification status"
+  },
+  "violations": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["violation_date", "violation_type", "resolution_status"],
+      "properties": {
+        "violation_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "violation_type": {
+          "type": "string"
+        },
+        "resolution_status": {
+          "type": "string",
+          "enum": ["RESOLVED", "PENDING", "APPEALED"]
+        }
+      }
+    }
+  },
+  "dispute_count": {
+    "type": "integer",
+    "minimum": 0,
+    "description": "Number of active disputes"
+  }
+}

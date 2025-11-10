@@ -1,0 +1,175 @@
+# Subscription Management Example
+# This example demonstrates the complete lifecycle of a subscription
+
+# Step 1: Create Subscription
+create_subscription_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payments/subscriptions
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Idempotency-Key: 550e8400-e29b-41d4-a716-446655440001
+    Content-Type: application/json
+  body:
+    subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+    plan_id: "premium_monthly"
+    amount: 999
+    currency: "USD"
+    interval: "MONTHLY"
+    metadata:
+      plan_name: "Premium Monthly"
+      features: ["hd_video", "offline_access", "priority_support"]
+
+create_subscription_response:
+  status: 201
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 999
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+      plan_id: "premium_monthly"
+      amount: 999
+      currency: "USD"
+      interval: "MONTHLY"
+      status: "ACTIVE"
+      current_period_start: "2025-11-01T00:00:00Z"
+      current_period_end: "2025-11-30T23:59:59Z"
+      cancel_at_period_end: false
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 2: List Subscriptions
+list_subscriptions_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/payments/subscriptions?subscriber_id=123e4567-e89b-12d3-a456-426614174000
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+list_subscriptions_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 998
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440002
+  body:
+    data:
+      - id: "123e4567-e89b-12d3-a456-426614174003"
+        subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+        plan_id: "premium_monthly"
+        amount: 999
+        currency: "USD"
+        interval: "MONTHLY"
+        status: "ACTIVE"
+        current_period_start: "2025-11-01T00:00:00Z"
+        current_period_end: "2025-11-30T23:59:59Z"
+        cancel_at_period_end: false
+        created_at: "2025-11-01T10:00:00Z"
+    pagination:
+      has_next_page: false
+      has_prev_page: false
+
+# Step 3: Get Subscription Details
+get_subscription_request:
+  method: GET
+  url: https://api.registryaccord.com/payments/v1/payments/subscriptions/123e4567-e89b-12d3-a456-426614174003
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+
+get_subscription_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 997
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440003
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+      plan_id: "premium_monthly"
+      amount: 999
+      currency: "USD"
+      interval: "MONTHLY"
+      status: "ACTIVE"
+      current_period_start: "2025-11-01T00:00:00Z"
+      current_period_end: "2025-11-30T23:59:59Z"
+      cancel_at_period_end: false
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 4: Update Subscription Plan
+update_subscription_request:
+  method: PATCH
+  url: https://api.registryaccord.com/payments/v1/payments/subscriptions/123e4567-e89b-12d3-a456-426614174003
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    plan_id: "premium_annual"
+    amount: 9999
+    currency: "USD"
+    interval: "YEARLY"
+
+update_subscription_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 996
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440004
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+      plan_id: "premium_annual"
+      amount: 9999
+      currency: "USD"
+      interval: "YEARLY"
+      status: "ACTIVE"
+      current_period_start: "2025-11-01T00:00:00Z"
+      current_period_end: "2026-10-31T23:59:59Z"
+      cancel_at_period_end: false
+      created_at: "2025-11-01T10:00:00Z"
+
+# Step 5: Cancel Subscription at Period End
+cancel_subscription_request:
+  method: POST
+  url: https://api.registryaccord.com/payments/v1/payments/subscriptions/123e4567-e89b-12d3-a456-426614174003/cancel
+  headers:
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    RA-API-Version: "2025-11-01"
+    Content-Type: application/json
+  body:
+    cancel_at_period_end: true
+
+cancel_subscription_response:
+  status: 200
+  headers:
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Remaining: 995
+    X-RateLimit-Reset: 3600
+    RA-API-Version: "2025-11-01"
+    X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440005
+  body:
+    data:
+      id: "123e4567-e89b-12d3-a456-426614174003"
+      subscriber_id: "123e4567-e89b-12d3-a456-426614174000"
+      plan_id: "premium_annual"
+      amount: 9999
+      currency: "USD"
+      interval: "YEARLY"
+      status: "ACTIVE"
+      current_period_start: "2025-11-01T00:00:00Z"
+      current_period_end: "2026-10-31T23:59:59Z"
+      cancel_at_period_end: true
+      created_at: "2025-11-01T10:00:00Z"

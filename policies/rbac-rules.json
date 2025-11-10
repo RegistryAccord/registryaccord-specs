@@ -1,0 +1,102 @@
+{
+  "description": "Role-Based Access Control (RBAC) rules for the RegistryAccord Identity Service",
+  "roles": {
+    "user": {
+      "description": "Standard user with access to their own identity and resources",
+      "scopes": [
+        "identity:read",
+        "identity:write",
+        "session:create",
+        "session:read",
+        "session:delete",
+        "consent:read",
+        "consent:write",
+        "consent:delete",
+        "token:read",
+        "token:write",
+        "token:delete",
+        "token:verify"
+      ]
+    },
+    "admin": {
+      "description": "Administrative user with broader access to manage identities and audit trails",
+      "scopes": [
+        "identity:read",
+        "identity:write",
+        "identity:delete",
+        "session:read",
+        "session:delete",
+        "consent:read",
+        "consent:write",
+        "consent:delete",
+        "token:read",
+        "token:write",
+        "token:delete",
+        "token:verify",
+        "audit:read",
+        "organization:read",
+        "organization:write",
+        "organization:delete",
+        "key:read",
+        "key:write",
+        "key:delete"
+      ]
+    },
+    "service": {
+      "description": "Service account with programmatic access to core functionality",
+      "scopes": [
+        "identity:read",
+        "session:create",
+        "session:read",
+        "token:read",
+        "token:write",
+        "token:verify",
+        "audit:read"
+      ]
+    },
+    "auditor": {
+      "description": "Auditor with read-only access to audit trails and compliance data",
+      "scopes": [
+        "identity:read",
+        "session:read",
+        "consent:read",
+        "token:read",
+        "audit:read",
+        "organization:read",
+        "key:read"
+      ]
+    }
+  },
+  "role_mappings": {
+    "user": {
+      "description": "Applied to standard authenticated users",
+      "conditions": [
+        "has_valid_session",
+        "is_account_owner"
+      ]
+    },
+    "admin": {
+      "description": "Applied to administrative users",
+      "conditions": [
+        "has_valid_session",
+        "is_administrator",
+        "has_admin_group_membership"
+      ]
+    },
+    "service": {
+      "description": "Applied to service accounts",
+      "conditions": [
+        "has_valid_client_credentials",
+        "is_service_account"
+      ]
+    },
+    "auditor": {
+      "description": "Applied to compliance and audit personnel",
+      "conditions": [
+        "has_valid_session",
+        "is_auditor",
+        "has_audit_role"
+      ]
+    }
+  }
+}
