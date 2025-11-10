@@ -27,14 +27,25 @@ for service in "${services[@]}"; do
   echo -n "  Validating $service service... "
   # Add debugging output
   echo "DEBUG: Validating $service service" >&2
-  if npm run lint:$service > /dev/null 2>&1; then
+  
+  # Capture output and exit code separately
+  OUTPUT_FILE=$(mktemp)
+  npm run lint:$service > "$OUTPUT_FILE" 2>&1
+  EXIT_CODE=$?
+  
+  if [ $EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}✓${NC}"
     ((PASSED_SERVICES++))
     echo "DEBUG: $service service validation passed" >&2
   else
     echo -e "${RED}✗${NC}"
-    echo "DEBUG: $service service validation failed" >&2
+    echo "DEBUG: $service service validation failed with exit code $EXIT_CODE" >&2
+    echo "DEBUG: Output:" >&2
+    cat "$OUTPUT_FILE" >&2
   fi
+  
+  # Clean up
+  rm -f "$OUTPUT_FILE"
 done
 
 echo ""
