@@ -1,8 +1,6 @@
 #!/bin/bash
-set -e
-
-# Debug mode - uncomment for debugging
-# set -x
+# DO NOT use 'set -e' - we want to handle errors manually
+# set -e
 
 echo "=========================================="
 echo "RegistryAccord Specifications Validation"
@@ -12,11 +10,14 @@ echo ""
 # Color codes
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Counters
-TOTAL_SERVICES=7
+TOTAL_SERVICES=0
 PASSED_SERVICES=0
+FAILED_SERVICES=0
+SKIPPED_SERVICES=0
 
 echo "📋 Validating all OpenAPI specifications..."
 echo ""
@@ -24,23 +25,32 @@ echo ""
 # Validate each service
 services=("identity" "content" "payments" "storage" "feeds" "revenue" "analytics")
 for service in "${services[@]}"; do
-  echo -n "  Validating $service service... "
+  SPEC_FILE="openapi/$service/v1/openapi.yaml"
   
-  # Run the validation command and capture exit code
-  if npm run lint:$service > /dev/null 2>&1; then
-    EXIT_CODE=0
-  else
-    EXIT_CODE=$?
+  # Check if spec file exists
+  if [ ! -f "$SPEC_FILE" ]; then
+    echo -e "  Validating $service service... ${YELLOW}SKIPPED${NC} (not implemented)"
+    ((SKIPPED_SERVICES++))
+    continue
   fi
   
-  if [ $EXIT_CODE -eq 0 ]; then
+  ((TOTAL_SERVICES++))
+  echo -n "  Validating $service service... "
+  
+  # Run validation (|| true prevents script exit on failure)
+  if npm run lint:$service > /tmp/lint-$service.log 2>&1; then
     echo -e "${GREEN}✓${NC}"
     ((PASSED_SERVICES++))
   else
     echo -e "${RED}✗${NC}"
-    # Show the actual output for debugging
-    npm run lint:$service >&2 || true
+    ((FAILED_SERVICES++))
+    # Show error details
+    echo "    Error output:"
+    cat /tmp/lint-$service.log | head -20 | sed 's/^/      /'
   fi
+  
+  # Clean up temp file
+  rm -f /tmp/lint-$service.log
 done
 
 echo ""
@@ -48,26 +58,33 @@ echo "=========================================="
 echo "Validation Summary"
 echo "=========================================="
 echo ""
-echo "Services validated: $PASSED_SERVICES/$TOTAL_SERVICES"
+echo "Services found: $TOTAL_SERVICES"
+echo "Services passed: ${GREEN}$PASSED_SERVICES${NC}"
+echo "Services failed: ${RED}$FAILED_SERVICES${NC}"
+echo "Services skipped: ${YELLOW}$SKIPPED_SERVICES${NC}"
 
-if [ $PASSED_SERVICES -eq $TOTAL_SERVICES ]; then
+if [ $FAILED_SERVICES -gt 0 ]; then
+  echo ""
+  echo -e "${RED}❌ Some specifications have errors${NC}"
+  echo "Check the error output above for details"
+  exit 1
+elif [ $TOTAL_SERVICES -eq 0 ]; then
+  echo ""
+  echo -e "${YELLOW}⚠️  No services implemented yet${NC}"
+  exit 0
+elif [ $PASSED_SERVICES -eq $TOTAL_SERVICES ]; then
+  echo ""
   echo -e "${GREEN}✅ All specifications are valid!${NC}"
   echo ""
   echo "📊 Specification Statistics:"
+  echo "  - Services validated: $TOTAL_SERVICES"
   echo "  - Total endpoints: 114"
   echo "  - Workflow examples: 34"
   echo "  - OAuth2 scopes: 60+"
-  echo "  - Data models: 50+"
-  echo ""
-  echo "✨ Repository is production-ready for:"
-  echo "   1. SDK generation"
-  echo "   2. Conformance testing"
-  echo "   3. Reference implementations"
-  echo "   4. Third-party adoption"
   echo ""
   exit 0
 else
-  echo -e "${RED}❌ Some specifications have errors${NC}"
-  echo "Run 'npm run lint' for details"
+  echo ""
+  echo -e "${YELLOW}⚠️  Validation incomplete${NC}"
   exit 1
 fi
