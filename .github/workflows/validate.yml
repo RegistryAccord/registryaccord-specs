@@ -1,9 +1,9 @@
 name: Validate Specifications
 on:
   push:
-    branches: [main, develop]
+    branches: ['*']
   pull_request:
-    branches: [main, develop]
+    branches: ['*']
   workflow_dispatch: # Allow manual trigger
 
 jobs:
