@@ -1,7 +1,7 @@
 name: Detect Breaking Changes
 on:
   pull_request:
-    branches: [main, develop]
+    branches: ['*']
     paths:
       - 'openapi/**/*.yaml'
 
