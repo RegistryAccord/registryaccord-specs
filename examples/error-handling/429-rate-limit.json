@@ -1,0 +1,15 @@
+{
+    "type": "https://registryaccord.org/errors/rate-limit/quota-exceeded",
+    "title": "Rate Limit Exceeded",
+    "status": 429,
+    "detail": "Request quota exceeded. Current limit: 60 requests per minute. Retry after 45 seconds.",
+    "instance": "/v1/feeds/query",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440004",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "retry_after_seconds": 45,
+    "rate_limit": {
+        "limit": 60,
+        "remaining": 0,
+        "reset_at": "2025-11-18T06:01:00Z"
+    }
+}

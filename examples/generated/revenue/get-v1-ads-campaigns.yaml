@@ -1,0 +1,28 @@
+service: revenue
+path: /v1/ads/campaigns
+method: GET
+summary: List campaigns
+request:
+  queryParams:
+    advertiser_id: 123e4567-e89b-12d3-a456-426614174000
+    status: DRAFT
+response:
+  status: "200"
+  description: Campaigns retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      advertiser_id: 123e4567-e89b-12d3-a456-426614174000
+      start_date: string-value
+      end_date: string-value
+      budget:
+      status:
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor: string-value
+      prev_cursor: string-value

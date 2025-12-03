@@ -1,0 +1,138 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Structured Logging Standards",
+    "version": "2025-11-01",
+    "description": "Standard log format for all RegistryAccord services",
+    "format": "JSON",
+    "required_fields": [
+        "timestamp",
+        "level",
+        "service",
+        "trace_id",
+        "message"
+    ],
+    "optional_fields": [
+        "user_id",
+        "org_id",
+        "request_id",
+        "duration_ms",
+        "error",
+        "http_method",
+        "http_path",
+        "http_status",
+        "span_id"
+    ],
+    "log_levels": {
+        "DEBUG": "Detailed information for diagnosing problems",
+        "INFO": "Confirmation that things are working as expected",
+        "WARN": "Indication that something unexpected happened",
+        "ERROR": "A serious problem that requires attention",
+        "FATAL": "The application is about to crash"
+    },
+    "schema": {
+        "type": "object",
+        "required": [
+            "timestamp",
+            "level",
+            "service",
+            "trace_id",
+            "message"
+        ],
+        "properties": {
+            "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp with Z timezone"
+            },
+            "level": {
+                "type": "string",
+                "enum": [
+                    "DEBUG",
+                    "INFO",
+                    "WARN",
+                    "ERROR",
+                    "FATAL"
+                ]
+            },
+            "service": {
+                "type": "string",
+                "description": "Service name (e.g., identity-service)"
+            },
+            "trace_id": {
+                "type": "string",
+                "description": "W3C trace ID (32 hex characters)"
+            },
+            "span_id": {
+                "type": "string",
+                "description": "W3C span ID (16 hex characters)"
+            },
+            "user_id": {
+                "type": "string",
+                "description": "Authenticated user ID (if applicable)"
+            },
+            "org_id": {
+                "type": "string",
+                "description": "Organization ID (if applicable)"
+            },
+            "request_id": {
+                "type": "string",
+                "description": "Correlation ID (UUID v4)"
+            },
+            "message": {
+                "type": "string",
+                "description": "Human-readable log message"
+            },
+            "http_method": {
+                "type": "string",
+                "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE"
+                ]
+            },
+            "http_path": {
+                "type": "string",
+                "description": "API endpoint path"
+            },
+            "http_status": {
+                "type": "integer",
+                "description": "HTTP status code"
+            },
+            "duration_ms": {
+                "type": "number",
+                "description": "Request duration in milliseconds"
+            },
+            "error": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "stack": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "example": {
+        "timestamp": "2025-11-18T06:00:00.123Z",
+        "level": "INFO",
+        "service": "identity-service",
+        "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+        "span_id": "00f067aa0ba902b7",
+        "user_id": "usr_abc123",
+        "org_id": "org_xyz789",
+        "request_id": "550e8400-e29b-41d4-a716-446655440000",
+        "message": "User authenticated successfully",
+        "http_method": "POST",
+        "http_path": "/v1/identity/sessions",
+        "http_status": 201,
+        "duration_ms": 45
+    }
+}

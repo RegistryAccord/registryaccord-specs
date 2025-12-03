@@ -1,0 +1,20 @@
+service: revenue
+path: /v1/ads/segments
+method: POST
+summary: Create segment
+request:
+  body:
+    name: string-value
+    description: string-value
+    criteria: {}
+response:
+  status: "201"
+  description: Segment created successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      description: string-value
+      criteria: {}
+      size: 1
+      created_at:

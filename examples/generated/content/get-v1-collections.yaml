@@ -1,0 +1,31 @@
+service: content
+path: /v1/collections
+method: GET
+summary: List collections
+request:
+  queryParams:
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Collections list retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      description: string-value
+      is_public: false
+      created_at:
+      updated_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

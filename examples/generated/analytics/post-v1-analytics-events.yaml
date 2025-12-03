@@ -1,0 +1,20 @@
+service: analytics
+path: /v1/analytics/events
+method: POST
+summary: Ingest events
+request:
+  body:
+    events:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      type: string-value
+      timestamp: '2025-11-06T12:00:00Z'
+      payload: {}
+      context:
+        user_id: 123e4567-e89b-12d3-a456-426614174000
+        session_id: 123e4567-e89b-12d3-a456-426614174000
+        ip_address: string-value
+        user_agent: string-value
+        referrer: https://api.registryaccord.com/resource/123
+response:
+  status: "204"
+  description: Events ingested successfully

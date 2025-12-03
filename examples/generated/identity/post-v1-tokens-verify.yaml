@@ -1,0 +1,19 @@
+service: identity
+path: /v1/tokens/verify
+method: POST
+summary: Verify token
+request:
+  body:
+    token: string-value
+response:
+  status: "200"
+  description: Token verified successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+  body:
+    data:
+      valid: true
+      identity_id: 123e4567-e89b-12d3-a456-426614174000

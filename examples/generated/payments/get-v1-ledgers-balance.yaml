@@ -1,0 +1,23 @@
+service: payments
+path: /v1/ledgers/balance
+method: GET
+summary: Get account balance
+request:
+  queryParams:
+    account_id: string-value
+response:
+  status: "200"
+  description: Account balance retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+      account_id: string-value
+      balance: 1
+      currency: "^[A-Z]{3}$"
+      updated_at: '2025-11-06T12:00:00Z'

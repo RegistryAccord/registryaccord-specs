@@ -4,6 +4,12 @@
 
 Accepted
 
+## Summary
+
+The Payments Service maintains all financial activity using a double-entry ledger. Every transaction posts balanced debit and credit entries across creator, platform, escrow, payout, or liability accounts so balances remain mathematically sound, disputes have full history, and programmable revenue splits are auditable.
+
+This approach provides the rigor required for revenue sharing, payout holds, refunds, and compliance reporting across the decentralized ecosystem.
+
 ## Context
 
 The Payments & Payouts service requires a robust accounting system to maintain financial integrity, ensure auditability, and support dispute resolution. Traditional single-entry systems are insufficient for tracking the complex flow of funds in a platform that handles revenue splits, refunds, and payouts.
@@ -82,13 +88,37 @@ Each ledger entry will contain:
 - **Implementation Effort**: Significant initial development investment
 - **Operational Overhead**: Requires understanding of double-entry principles
 
-## Implementation Plan
+## Implementation
 
-1. **Ledger Service**: Create dedicated ledger service with REST API
-2. **Entry Creation**: Automatically generate debit/credit pairs for transactions
-3. **Balance Calculation**: Implement efficient balance aggregation queries
-4. **Audit Endpoints**: Provide ledger querying for compliance and dispute resolution
-5. **Monitoring**: Add metrics for ledger integrity verification
+### Ledger Schema & Endpoints
+
+- `LedgerEntry` schema (in `openapi/payments/v1/openapi.yaml`) includes `transaction_id`, `account_id`, `amount` (integer cents), `currency`, `type` (DEBIT/CREDIT), and `balance_after` for audit trails.
+- `/v1/ledgers` supports filtering by `account_id`, date range, and pagination to stream entries.
+- `/v1/ledgers/balance` returns current balances for any account.
+
+### Double-Entry Enforcement
+
+- Payment flows (intents, captures, refunds, payouts) emit ledger transactions where debits equal credits.
+- Split rules (`SplitRule` schema) describe programmable revenue allocations (%, min amounts) and drive ledger postings.
+- Validation layer rejects any transaction where total debits ≠ credits.
+
+### Precision & Currency Handling
+
+- All monetary fields stored as integers in smallest currency unit (ISO 4217) to avoid floating-point drift.
+- Currency code required on every entry; balances aggregated per currency.
+
+### Disputes & Audits
+
+- `/v1/disputes` references `transaction_id` so investigators can trace ledger entries.
+- SQL queries and monitoring jobs verify each `transaction_id` nets to zero and flag anomalies.
+- Audit logs exported via `/v1/ledgers/export` (NDJSON) for regulators.
+
+### Implementation Status
+
+- ✅ Ledger schemas/endpoints defined across Payments spec.
+- ✅ Spectral rules ensure all money fields use integer cents.
+- ✅ Example workflows (payments, payouts, refunds) include ledger snippets.
+- ✅ Conformance tests assert debit/credit totals match for sample transactions.
 
 ## Validation
 

@@ -4,6 +4,10 @@
 
 Accepted
 
+## Summary
+
+RegistryAccord requires semi-annual independent fairness audits for all widely deployed feed ranking algorithms (rankers). Audits assess demographic bias, content equity, and compliance with published documentation, with results exposed via public scorecards. This framework enforces algorithmic accountability, funds audits through a neutral pool, and provides a structured dispute process.
+
 ## Context
 
 The RegistryAccord ecosystem supports pluggable ranking algorithms and feed generators, allowing third-party builders to develop custom rankers. This flexibility creates a potential conflict of interest when builders control both the audience app and the ranking algorithm.
@@ -204,9 +208,55 @@ We will implement a mandatory, independent fairness audit framework for all cert
 
 **Rejected:** Would deter builders, enable gaming and spam
 
-## Implementation Notes
+## Implementation
 
-Implementation details to be determined based on ongoing development and community feedback.
+### Fairness Scorecard API
+
+**Public scorecard (`GET /v1/feeds/scorecards/{ranker_id}`):** Returns certification status, last/next audit dates, fairness scores (demographic parity, content equity), violation history, and dispute counts.
+
+**Audit history (`GET /v1/feeds/audits/{ranker_id}`):** Lists historical audits with auditor info, result (PASSED/FAILED/CONDITIONAL), findings, and report URLs.
+
+### Dispute Submission & Statistics
+
+**Submit dispute (`POST /v1/feeds/disputes`):** Allows creators/users/auditors/advocates to file fairness complaints with evidence. Response includes dispute ID, status, acknowledgment SLA (2 days), and resolution SLA (10 days Tier 1).
+
+**Dispute stats (`GET /v1/feeds/disputes/stats`):** Public aggregates showing counts by ranker/outcome and average resolution time.
+
+### Audit Fund Transparency
+
+**Audit fund status (`GET /v1/feeds/audit-fund/status`):** Publishes fund size, revenue percentage (1-3%), allocations per audit, pending audits, and last review date.
+
+### Auditor Registry & Certification Flow
+
+**Auditor list (`GET /v1/feeds/auditors`):** Public registry including accreditation, active/completed audits, enforcing independence rules (max 3-year tenure, 1-year cooling-off, no financial ties).
+
+**Certification workflow:** Ranker owners submit via `/v1/feeds/certification`, auditors get NDA-bound access to ranker logic, audit results update scorecards, statuses (PENDING, CERTIFIED, SUSPENDED, REVOKED) enforced based on findings.
+
+### Violation Handling & Reporting
+
+- Violations tracked via scorecards; progressive penalties (warning, suspension, revocation) enforced per Section 9.4.
+- Transparency reports (`GET /v1/feeds/transparency-reports`) published quarterly with dispute volume, outcomes, certification changes, and fund usage.
+
+### Implementation Status
+
+- ✅ Scorecard, audit history, dispute submission/stats, audit fund, and auditor registry endpoints defined in `openapi/feeds/v1/openapi.yaml`.
+- ✅ Schemas stored under `schemas/audits/fairness-audit.json`.
+- ✅ Three-tier dispute SLAs documented in `SPECS_REQUIREMENTS.md` §6.4.
+- ✅ Certification statuses enumerated (CERTIFIED, SUSPENDED, REVOKED, PENDING) with fairness metrics.
+
+### Certification & Enforcement Process
+
+1. Ranker submits for certification; RA governance assigns independent auditor.
+2. Auditor reviews signals, datasets, experiments; report published via audit history endpoint.
+3. Scorecards updated with results; dispute API enables remediation requests.
+4. Repeat every six months; emergency audits triggered via governance vote.
+
+### Audit Fund Operations
+
+- Governance board allocates 1-3% platform revenue; allocations and spending published via audit-fund endpoint.
+- Supports emergency audits, ombudsperson investigations, and dispute mediation costs.
+
+## Related Decisions
 
 ## Related Decisions
 

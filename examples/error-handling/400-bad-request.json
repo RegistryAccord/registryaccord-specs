@@ -1,0 +1,21 @@
+{
+    "type": "https://registryaccord.org/errors/validation/invalid-request",
+    "title": "Invalid Request",
+    "status": 400,
+    "detail": "The request body contains validation errors. See 'errors' field for details.",
+    "instance": "/v1/content",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "errors": [
+        {
+            "field": "title",
+            "message": "Title is required and cannot be empty",
+            "code": "required_field_missing"
+        },
+        {
+            "field": "content_type",
+            "message": "Invalid content_type. Must be one of: article, video, image",
+            "code": "invalid_enum_value"
+        }
+    ]
+}

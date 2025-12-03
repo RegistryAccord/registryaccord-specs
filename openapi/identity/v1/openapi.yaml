@@ -2,6 +2,10 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Identity Service API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Portable, user-centric identity layer with authentication, authorization,
     consent management, and audit capabilities for the RegistryAccord protocol.
@@ -26,28 +30,28 @@ info:
     url: https://github.com/RegistryAccord/registryaccord-specs
     email: specs@registryaccord.com
 servers:
-  - url: https://api.registryaccord.dev/identity
-    description: Development environment
-  - url: https://api.registryaccord.com/identity
-    description: Production environment
+- url: https://api.registryaccord.dev/identity
+  description: Development environment
+- url: https://api.registryaccord.com/identity
+  description: Production environment
 tags:
-  - name: Identities
-    description: Identity management operations
-  - name: Sessions
-    description: Session management operations
-  - name: Tokens
-    description: Token management operations
-  - name: Organizations
-    description: Organization management operations
-  - name: Consents
-    description: Consent management operations
-  - name: Keys
-    description: Key management operations
-  - name: Audit
-    description: Audit event operations
+- name: Audit
+  description: Audit event operations
+- name: Consents
+  description: Consent management operations
+- name: Identities
+  description: Identity management operations
+- name: Keys
+  description: Key management operations
+- name: Organizations
+  description: Organization management operations
+- name: Sessions
+  description: Session management operations
+- name: Tokens
+  description: Token management operations
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   # Identity Management
@@ -57,36 +61,38 @@ paths:
       description: Create a new identity record
       operationId: createIdentity
       tags:
-        - Identities
+      - Identities
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IdentityCreateRequest'
+              $ref: "#/components/schemas/IdentityCreateRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/IdentityCreated'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/IdentityCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
   /v1/identities/{id}:
     get:
@@ -94,119 +100,125 @@ paths:
       description: Retrieve an identity by ID
       operationId: getIdentity
       tags:
-        - Identities
+      - Identities
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Identity identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Identity identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
-          $ref: '#/components/responses/IdentityResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/IdentityResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:read
+      - oauth2:
+        - identity:read
 
     patch:
       summary: Update identity
       description: Update an existing identity record
       operationId: updateIdentity
       tags:
-        - Identities
+      - Identities
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Identity identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Identity identifier
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IdentityUpdateRequest'
+              $ref: "#/components/schemas/IdentityUpdateRequest"
       responses:
-        '200':
-          $ref: '#/components/responses/IdentityResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/IdentityResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
     delete:
       summary: Delete identity
       description: Delete an identity (RTBF, 30-day cascade)
       operationId: deleteIdentity
       tags:
-        - Identities
+      - Identities
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Identity identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Identity identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:delete
+      - oauth2:
+        - identity:delete
 
   # Session Management
   /v1/sessions:
@@ -215,35 +227,37 @@ paths:
       description: Create a new session (WebAuthn flow)
       operationId: createSession
       tags:
-        - Sessions
+      - Sessions
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionCreateRequest'
+              $ref: "#/components/schemas/SessionCreateRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/SessionCreated'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/SessionCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - bearerAuth: []
+      - bearerAuth: []
 
   /v1/sessions/{id}:
     get:
@@ -251,74 +265,78 @@ paths:
       description: Retrieve session details by ID
       operationId: getSession
       tags:
-        - Sessions
+      - Sessions
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Session identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Session identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
-          $ref: '#/components/responses/SessionResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/SessionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:read
+      - oauth2:
+        - identity:read
 
     delete:
       summary: End session
       description: End an active session
       operationId: endSession
       tags:
-        - Sessions
+      - Sessions
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Session identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Session identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
   # Token Management
   /v1/tokens:
@@ -327,36 +345,38 @@ paths:
       description: Mint a new access token
       operationId: mintToken
       tags:
-        - Tokens
+      - Tokens
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenMintRequest'
+              $ref: "#/components/schemas/TokenMintRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/TokenMinted'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/TokenMinted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
   /v1/tokens/verify:
     post:
@@ -364,35 +384,37 @@ paths:
       description: Verify a token's validity
       operationId: verifyToken
       tags:
-        - Tokens
+      - Tokens
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenVerifyRequest'
+              $ref: "#/components/schemas/TokenVerifyRequest"
       responses:
-        '200':
-          $ref: '#/components/responses/TokenVerified'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/TokenVerified"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - bearerAuth: []
+      - bearerAuth: []
 
   /v1/tokens/refresh:
     post:
@@ -400,35 +422,37 @@ paths:
       description: Refresh an existing token
       operationId: refreshToken
       tags:
-        - Tokens
+      - Tokens
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenRefreshRequest'
+              $ref: "#/components/schemas/TokenRefreshRequest"
       responses:
-        '200':
-          $ref: '#/components/responses/TokenRefreshed'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/TokenRefreshed"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - bearerAuth: []
+      - bearerAuth: []
 
   /v1/tokens/{id}:
     delete:
@@ -436,37 +460,39 @@ paths:
       description: Revoke a token
       operationId: revokeToken
       tags:
-        - Tokens
+      - Tokens
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Token identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Token identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
   # Organization Management
   /v1/orgs:
@@ -475,67 +501,71 @@ paths:
       description: List organizations (paginated)
       operationId: listOrganizations
       tags:
-        - Organizations
+      - Organizations
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
-          $ref: '#/components/responses/OrganizationList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/OrganizationList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - org:read
+      - oauth2:
+        - org:read
 
     post:
       summary: Create organization
       description: Create a new organization
       operationId: createOrganization
       tags:
-        - Organizations
+      - Organizations
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrganizationCreateRequest'
+              $ref: "#/components/schemas/OrganizationCreateRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/OrganizationCreated'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/OrganizationCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - org:write
+      - oauth2:
+        - org:write
 
   /v1/orgs/{id}:
     get:
@@ -543,82 +573,86 @@ paths:
       description: Retrieve an organization by ID
       operationId: getOrganization
       tags:
-        - Organizations
+      - Organizations
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Organization identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Organization identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
-          $ref: '#/components/responses/OrganizationResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/OrganizationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - org:read
+      - oauth2:
+        - org:read
 
     patch:
       summary: Update organization
       description: Update an existing organization
       operationId: updateOrganization
       tags:
-        - Organizations
+      - Organizations
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Organization identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Organization identifier
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrganizationUpdateRequest'
+              $ref: "#/components/schemas/OrganizationUpdateRequest"
       responses:
-        '200':
-          $ref: '#/components/responses/OrganizationResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/OrganizationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - org:write
+      - oauth2:
+        - org:write
 
   # Consent Management
   /v1/consents:
@@ -627,67 +661,71 @@ paths:
       description: Grant consent
       operationId: grantConsent
       tags:
-        - Consents
+      - Consents
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsentGrantRequest'
+              $ref: "#/components/schemas/ConsentGrantRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/ConsentGranted'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/ConsentGranted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - consent:write
+      - oauth2:
+        - consent:write
 
     get:
       summary: List consents
       description: List consents (paginated)
       operationId: listConsents
       tags:
-        - Consents
+      - Consents
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
-          $ref: '#/components/responses/ConsentList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/ConsentList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - consent:read
+      - oauth2:
+        - consent:read
 
   /v1/consents/{id}:
     delete:
@@ -695,37 +733,39 @@ paths:
       description: Revoke consent (24hr SLA)
       operationId: revokeConsent
       tags:
-        - Consents
+      - Consents
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Consent identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Consent identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - consent:delete
+      - oauth2:
+        - consent:delete
 
   # Key Management
   /v1/keys:
@@ -734,67 +774,71 @@ paths:
       description: Create a new keypair
       operationId: createKey
       tags:
-        - Keys
+      - Keys
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KeyCreateRequest'
+              $ref: "#/components/schemas/KeyCreateRequest"
       responses:
-        '201':
-          $ref: '#/components/responses/KeyCreated'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "201":
+          $ref: "#/components/responses/KeyCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
     get:
       summary: List keys
       description: List keys (paginated)
       operationId: listKeys
       tags:
-        - Keys
+      - Keys
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
-          $ref: '#/components/responses/KeyList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/KeyList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:read
+      - oauth2:
+        - identity:read
 
   /v1/keys/{id}:
     delete:
@@ -802,37 +846,39 @@ paths:
       description: Revoke a key
       operationId: revokeKey
       tags:
-        - Keys
+      - Keys
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - name: id
-          in: path
-          required: true
-          description: Key identifier
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - name: id
+        in: path
+        required: true
+        description: Key identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - identity:write
+      - oauth2:
+        - identity:write
 
   # Audit
   /v1/audit:
@@ -841,54 +887,56 @@ paths:
       description: Query audit events (paginated)
       operationId: queryAuditEvents
       tags:
-        - Audit
+      - Audit
       parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-        - $ref: '#/components/parameters/CorrelationId'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: start_time
-          in: query
-          description: Start time for audit events
-          schema:
-            type: string
-            format: date-time
-        - name: end_time
-          in: query
-          description: End time for audit events
-          schema:
-            type: string
-            format: date-time
-        - name: identity_id
-          in: query
-          description: Filter by identity ID
-          schema:
-            type: string
-            format: uuid
-        - name: event_type
-          in: query
-          description: Filter by event type
-          schema:
-            type: string
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: "#/components/parameters/ApiVersion"
+      - $ref: "#/components/parameters/CorrelationId"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: start_time
+        in: query
+        description: Start time for audit events
+        schema:
+          type: string
+          format: date-time
+      - name: end_time
+        in: query
+        description: End time for audit events
+        schema:
+          type: string
+          format: date-time
+      - name: identity_id
+        in: query
+        description: Filter by identity ID
+        schema:
+          type: string
+          format: uuid
+      - name: event_type
+        in: query
+        description: Filter by event type
+        schema:
+          type: string
       responses:
-        '200':
-          $ref: '#/components/responses/AuditEventList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "200":
+          $ref: "#/components/responses/AuditEventList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
       security:
-        - oauth2:
-            - audit:read
+      - oauth2:
+        - audit:read
 
 components:
   parameters:
@@ -901,7 +949,7 @@ components:
         type: string
         pattern: '^\d{4}-\d{2}-\d{2}$'
         example: "2025-11-01"
-    
+
     CorrelationId:
       name: X-Correlation-ID
       in: header
@@ -910,7 +958,7 @@ components:
       schema:
         type: string
         format: uuid
-    
+
     Limit:
       name: limit
       in: query
@@ -920,21 +968,39 @@ components:
         minimum: 1
         maximum: 100
         default: 50
-    
+
     After:
       name: after
       in: query
       description: Cursor for forward pagination
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
       description: Cursor for backward pagination
       schema:
         type: string
-  
+
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2
@@ -962,7 +1028,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT access tokens
-  
+
   schemas:
     # Identity Schemas
     Identity:
@@ -998,7 +1064,7 @@ components:
         is_verified:
           type: boolean
           default: false
-    
+
     IdentityCreateRequest:
       type: object
       required: [display_name]
@@ -1015,7 +1081,7 @@ components:
         avatar_url:
           type: string
           format: uri
-    
+
     IdentityUpdateRequest:
       type: object
       properties:
@@ -1033,7 +1099,7 @@ components:
           format: uri
         is_active:
           type: boolean
-    
+
     # Session Schemas
     Session:
       type: object
@@ -1061,7 +1127,7 @@ components:
         ip_address:
           type: string
           format: ipv4
-    
+
     SessionCreateRequest:
       type: object
       required: [identity_id]
@@ -1074,7 +1140,7 @@ components:
         ip_address:
           type: string
           format: ipv4
-    
+
     # Token Schemas
     Token:
       type: object
@@ -1100,9 +1166,9 @@ components:
           type: string
           format: date-time
         revoked_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     TokenMintRequest:
       type: object
       required: [identity_id, scopes]
@@ -1117,21 +1183,21 @@ components:
         expires_in:
           type: integer
           description: Token expiration time in seconds
-    
+
     TokenVerifyRequest:
       type: object
       required: [token]
       properties:
         token:
           type: string
-    
+
     TokenRefreshRequest:
       type: object
       required: [refresh_token]
       properties:
         refresh_token:
           type: string
-    
+
     # Organization Schemas
     Organization:
       type: object
@@ -1157,7 +1223,7 @@ components:
         is_active:
           type: boolean
           default: true
-    
+
     OrganizationCreateRequest:
       type: object
       required: [name]
@@ -1170,7 +1236,7 @@ components:
         website:
           type: string
           format: uri
-    
+
     OrganizationUpdateRequest:
       type: object
       properties:
@@ -1184,7 +1250,7 @@ components:
           format: uri
         is_active:
           type: boolean
-    
+
     # Consent Schemas
     Consent:
       type: object
@@ -1197,33 +1263,33 @@ components:
           type: string
           format: uuid
         consent_type:
-          $ref: '#/components/schemas/ConsentType'
+          $ref: "#/components/schemas/ConsentType"
         purpose:
           type: string
         granted_at:
           type: string
           format: date-time
         expires_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
         revoked_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     ConsentType:
       type: string
       enum:
-        - FUNCTIONAL
-        - ANALYTICS
-        - ADVERTISING
-        - CROSS_APP_SHARING
+      - FUNCTIONAL
+      - ANALYTICS
+      - ADVERTISING
+      - CROSS_APP_SHARING
       description: |
         Granular consent taxonomy:
         - FUNCTIONAL: Essential service functionality
         - ANALYTICS: Usage analytics and metrics
         - ADVERTISING: Ad targeting and personalization
         - CROSS_APP_SHARING: Data sharing across RA apps
-    
+
     ConsentGrantRequest:
       type: object
       required: [identity_id, consent_type]
@@ -1232,13 +1298,13 @@ components:
           type: string
           format: uuid
         consent_type:
-          $ref: '#/components/schemas/ConsentType'
+          $ref: "#/components/schemas/ConsentType"
         purpose:
           type: string
         expires_in:
           type: integer
           description: Consent expiration time in seconds
-    
+
     # Key Schemas
     Key:
       type: object
@@ -1259,12 +1325,12 @@ components:
           type: string
           format: date-time
         expires_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
         revoked_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     KeyCreateRequest:
       type: object
       required: [identity_id, public_key]
@@ -1280,7 +1346,7 @@ components:
         expires_in:
           type: integer
           description: Key expiration time in seconds
-    
+
     # Audit Schemas
     AuditEvent:
       type: object
@@ -1312,17 +1378,17 @@ components:
         metadata:
           type: object
           additionalProperties: true
-    
+
     # Pagination Schemas
     Pagination:
       type: object
       required: [has_next_page]
       properties:
         next_cursor:
-          type: [string, 'null']
+          type: [string, "null"]
         has_next_page:
           type: boolean
-    
+
     # Problem Details Schema (RFC 7807)
     ProblemDetails:
       type: object
@@ -1349,7 +1415,7 @@ components:
           type: string
           format: uuid
           description: Correlation ID for request tracing
-  
+
   responses:
     # Identity Responses
     IdentityCreated:
@@ -1378,8 +1444,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Identity'
-    
+                $ref: "#/components/schemas/Identity"
+
     IdentityResponse:
       description: Identity retrieved successfully
       headers:
@@ -1399,6 +1465,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1406,8 +1476,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Identity'
-    
+                $ref: "#/components/schemas/Identity"
+
     # Session Responses
     SessionCreated:
       description: Session created successfully
@@ -1435,8 +1505,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Session'
-    
+                $ref: "#/components/schemas/Session"
+
     SessionResponse:
       description: Session retrieved successfully
       headers:
@@ -1456,6 +1526,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1463,8 +1537,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Session'
-    
+                $ref: "#/components/schemas/Session"
+
     # Token Responses
     TokenMinted:
       description: Token minted successfully
@@ -1492,8 +1566,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Token'
-    
+                $ref: "#/components/schemas/Token"
+
     TokenVerified:
       description: Token verified successfully
       headers:
@@ -1527,7 +1601,7 @@ components:
                   identity_id:
                     type: string
                     format: uuid
-    
+
     TokenRefreshed:
       description: Token refreshed successfully
       headers:
@@ -1554,8 +1628,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Token'
-    
+                $ref: "#/components/schemas/Token"
+
     # Organization Responses
     OrganizationList:
       description: Organizations retrieved successfully
@@ -1576,6 +1650,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1585,10 +1663,10 @@ components:
               data:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  $ref: "#/components/schemas/Organization"
               pagination:
-                $ref: '#/components/schemas/Pagination'
-    
+                $ref: "#/components/schemas/Pagination"
+
     OrganizationCreated:
       description: Organization created successfully
       headers:
@@ -1615,8 +1693,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Organization'
-    
+                $ref: "#/components/schemas/Organization"
+
     OrganizationResponse:
       description: Organization retrieved successfully
       headers:
@@ -1636,6 +1714,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1643,8 +1725,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Organization'
-    
+                $ref: "#/components/schemas/Organization"
+
     # Consent Responses
     ConsentGranted:
       description: Consent granted successfully
@@ -1672,8 +1754,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Consent'
-    
+                $ref: "#/components/schemas/Consent"
+
     ConsentList:
       description: Consents retrieved successfully
       headers:
@@ -1693,6 +1775,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1702,10 +1788,10 @@ components:
               data:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Consent'
+                  $ref: "#/components/schemas/Consent"
               pagination:
-                $ref: '#/components/schemas/Pagination'
-    
+                $ref: "#/components/schemas/Pagination"
+
     # Key Responses
     KeyCreated:
       description: Key created successfully
@@ -1733,8 +1819,8 @@ components:
             required: [data]
             properties:
               data:
-                $ref: '#/components/schemas/Key'
-    
+                $ref: "#/components/schemas/Key"
+
     KeyList:
       description: Keys retrieved successfully
       headers:
@@ -1754,6 +1840,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1763,10 +1853,10 @@ components:
               data:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Key'
+                  $ref: "#/components/schemas/Key"
               pagination:
-                $ref: '#/components/schemas/Pagination'
-    
+                $ref: "#/components/schemas/Pagination"
+
     # Audit Responses
     AuditEventList:
       description: Audit events retrieved successfully
@@ -1787,6 +1877,10 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1796,10 +1890,10 @@ components:
               data:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AuditEvent'
+                  $ref: "#/components/schemas/AuditEvent"
               pagination:
-                $ref: '#/components/schemas/Pagination'
-    
+                $ref: "#/components/schemas/Pagination"
+
     # Standard Error Responses (RFC 7807)
     BadRequest:
       description: Bad Request - Invalid input
@@ -1820,10 +1914,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/validation_failed"
             title: "Validation Failed"
@@ -1831,7 +1929,7 @@ components:
             detail: "The 'email' field must be a valid email address"
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     Unauthorized:
       description: Unauthorized - Authentication failed
       headers:
@@ -1851,10 +1949,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/auth_failed"
             title: "Authentication Failed"
@@ -1862,7 +1964,7 @@ components:
             detail: "The provided JWT token has expired"
             instance: "https://api.registryaccord.com/identity/v1/identities/123"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     Forbidden:
       description: Forbidden - Insufficient permissions
       headers:
@@ -1882,10 +1984,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/scope_denied"
             title: "Scope Denied"
@@ -1893,7 +1999,7 @@ components:
             detail: "The requested operation requires 'identity:write' scope"
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     NotFound:
       description: Not Found - Resource does not exist
       headers:
@@ -1913,10 +2019,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/resource_not_found"
             title: "Resource Not Found"
@@ -1924,7 +2034,7 @@ components:
             detail: "The requested identity was not found"
             instance: "https://api.registryaccord.com/identity/v1/identities/123"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     UnprocessableEntity:
       description: Unprocessable Entity - Request well-formed but semantically invalid
       headers:
@@ -1947,7 +2057,7 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/validation_failed"
             title: "Validation Failed"
@@ -1955,7 +2065,7 @@ components:
             detail: "The provided identity data violates business rules"
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     TooManyRequests:
       description: Too Many Requests - Rate limit exceeded
       headers:
@@ -1975,10 +2085,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/rate_limited"
             title: "Rate Limited"
@@ -1986,7 +2100,7 @@ components:
             detail: "Too many requests. Please try again later."
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     InternalServerError:
       description: Internal Server Error - Unexpected condition
       headers:
@@ -2006,10 +2120,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/internal_error"
             title: "Internal Server Error"
@@ -2017,7 +2135,7 @@ components:
             detail: "An unexpected error occurred. Please try again later."
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     ServiceUnavailable:
       description: Service Unavailable - Temporary overload
       headers:
@@ -2037,10 +2155,14 @@ components:
           schema:
             type: integer
           description: Unix timestamp when rate limit resets
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: "#/components/schemas/ProblemDetails"
           example:
             type: "https://api.registryaccord.com/errors/internal_error"
             title: "Service Unavailable"
@@ -2048,7 +2170,7 @@ components:
             detail: "Service temporarily unavailable. Please try again later."
             instance: "https://api.registryaccord.com/identity/v1/identities"
             trace_id: "550e8400-e29b-41d4-a716-446655440000"
-    
+
     NoContent:
       description: No Content - Successful operation with no response body
       headers:
@@ -2071,4 +2193,4 @@ components:
       content:
         application/json:
           schema:
-            type: [object, 'null']
+            type: [object, "null"]

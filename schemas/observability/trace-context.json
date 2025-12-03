@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "W3C Trace Context Standards",
+    "version": "2025-11-01",
+    "description": "W3C Trace Context header requirements for distributed tracing",
+    "standard": "W3C Trace Context",
+    "specification_url": "https://www.w3.org/TR/trace-context/",
+    "headers": {
+        "traceparent": {
+            "name": "traceparent",
+            "format": "00-{trace-id}-{span-id}-{trace-flags}",
+            "required": true,
+            "propagation": "all downstream services",
+            "example": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+            "trace_id_length": 32,
+            "trace_id_format": "32 hex characters",
+            "span_id_length": 16,
+            "span_id_format": "16 hex characters",
+            "version": "00",
+            "regex": "^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$"
+        },
+        "tracestate": {
+            "name": "tracestate",
+            "format": "key1=value1,key2=value2",
+            "required": false,
+            "propagation": "all downstream services",
+            "example": "rojo=00f067aa0ba902b7,congo=t61rcWkgMzE",
+            "max_length": 512,
+            "description": "Vendor-specific trace context (optional)"
+        }
+    },
+    "correlation_id": {
+        "header": "X-Correlation-ID",
+        "format": "UUID v4",
+        "required": true,
+        "generated_by": "client or API gateway",
+        "example": "550e8400-e29b-41d4-a716-446655440000",
+        "propagation": "all services and error responses",
+        "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "implementation_notes": [
+        "All API requests must accept and propagate traceparent header",
+        "Services should generate new span IDs for each operation",
+        "Correlation ID must be included in all log entries",
+        "Trace context must be preserved across async operations (webhooks, queues)"
+    ]
+}

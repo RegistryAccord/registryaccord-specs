@@ -1,0 +1,21 @@
+service: analytics
+path: /v1/analytics/schemas
+method: GET
+summary: List schemas
+response:
+  status: "200"
+  description: Schemas retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      version: '^\d+\.\d+\.\d+$'
+      schema: {}
+      created_at: '2025-11-06T12:00:00Z'
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor: string-value
+      prev_cursor: string-value

@@ -1,0 +1,25 @@
+service: feeds
+path: /v1/feeds/experiments
+method: GET
+summary: List experiments
+response:
+  status: "200"
+  description: A/B tests retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      variants:
+      - variant_id: string-value
+        name: string-value
+        ranker: string-value
+        traffic_percentage: 0
+      status: DRAFT
+      created_at: '2025-11-06T12:00:00Z'
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor: string-value
+      prev_cursor: string-value

@@ -1,0 +1,24 @@
+service: storage
+path: /v1/storage/buckets
+method: POST
+summary: Create bucket
+request:
+  body:
+    name: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+    provider: S3
+    region: string-value
+    encryption:
+      enabled: true
+      kms_key_id: string-value
+response:
+  status: "201"
+  description: Bucket created successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      provider: S3
+      region: string-value
+      created_at:

@@ -1,0 +1,29 @@
+service: analytics
+path: /v1/analytics/exports/{id}
+method: GET
+summary: Get export
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Export job retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      status: PENDING
+      format: CSV
+      query:
+        metrics:
+        - string-value
+        dimensions:
+        - string-value
+        filters: {}
+        date_range:
+          start: string-value
+          end: string-value
+        granularity: DAILY
+      created_at:

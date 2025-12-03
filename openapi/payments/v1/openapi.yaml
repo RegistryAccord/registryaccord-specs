@@ -2,10 +2,14 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Payments & Payouts API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Secure payment processing with programmable revenue sharing, fraud detection,
     and dispute resolution for the RegistryAccord protocol.
-    
+
     ## Key Features
     - **Payment intents** for secure, PCI-compliant payment flows
     - **Programmable split rules** for revenue sharing
@@ -13,19 +17,19 @@ info:
     - **Fraud detection hooks** with pre-settlement alerts
     - **Payment holds** for fraud review periods
     - **Dispute resolution** with defined SLAs and arbitration escalation
-    
+
     ## Security Features
     - Idempotency keys prevent duplicate charges
     - Precision-safe math (currency as integers in smallest unit)
     - PCI compliance delegated to PSPs (Stripe, Adyen, etc.)
     - HMAC-SHA256 webhook signatures
-    
+
     ## Fraud Protection
     - Pre-settlement fraud detection webhooks
     - Payment hold APIs for suspicious activity
     - Configurable fraud scoring thresholds
     - Integration with external fraud detection services
-    
+
     ## Dispute Resolution
     - Creator-initiated disputes for revenue splits
     - Platform response within 7 business days
@@ -40,43 +44,46 @@ info:
     email: specs@registryaccord.com
 
 servers:
-  - url: https://api.registryaccord.dev/payments
-    description: Development environment
-  - url: https://api.registryaccord.com/payments
-    description: Production environment
+- url: https://api.registryaccord.dev/payments
+  description: Development environment
+- url: https://api.registryaccord.com/payments
+  description: Production environment
 
 tags:
-  - name: Payment Intents
-    description: Manage payment intents for processing payments
-  - name: Charges
-    description: Handle charges and refunds
-  - name: Subscriptions
-    description: Manage recurring billing subscriptions
-  - name: Ledgers
-    description: Access double-entry ledger accounting records
-  - name: Payouts
-    description: Process creator and merchant payouts
-  - name: Disputes
-    description: Handle payment disputes and resolution
+- name: Charges
+  description: Handle charges and refunds
+- name: Disputes
+  description: Handle payment disputes and resolution
+- name: Ledgers
+  description: Access double-entry ledger accounting records
+- name: Payment Intents
+  description: Manage payment intents for processing payments
+- name: Payouts
+  description: Process creator and merchant payouts
+- name: Subscriptions
+  description: Manage recurring billing subscriptions
 
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   /v1/payments/intents:
     post:
       tags:
-        - Payment Intents
+      - Payment Intents
       summary: Create payment intent
       description: Create a new payment intent for processing a payment
       operationId: createPaymentIntent
       security:
-        - oauth2:
-            - payment:write
-        - bearerAuth: []
+      - oauth2:
+        - payment:write
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -84,8 +91,8 @@ paths:
             schema:
               type: object
               required:
-                - amount
-                - currency
+              - amount
+              - currency
               properties:
                 amount:
                   type: integer
@@ -94,7 +101,7 @@ paths:
                   example: 10000
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                   example: "USD"
                 description:
@@ -107,122 +114,134 @@ paths:
                 payment_method:
                   type: string
                   enum:
-                    - CARD
-                    - BANK_TRANSFER
-                    - WALLET
-                    - CRYPTO
+                  - CARD
+                  - BANK_TRANSFER
+                  - WALLET
+                  - CRYPTO
                 split_rules:
                   type: array
                   description: Revenue split rules
                   items:
-                    $ref: '#/components/schemas/SplitRule'
+                    $ref: "#/components/schemas/SplitRule"
       responses:
-        '201':
+        "201":
           description: Payment intent created successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PaymentIntent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/PaymentIntent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/intents/{id}:
     get:
       tags:
-        - Payment Intents
+      - Payment Intents
       summary: Get payment intent
       description: Retrieve a payment intent by ID
       operationId: getPaymentIntent
       security:
-        - oauth2:
-            - payment:read
-        - bearerAuth: []
+      - oauth2:
+        - payment:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payment intent ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Payment intent retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PaymentIntent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/PaymentIntent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     patch:
       tags:
-        - Payment Intents
+      - Payment Intents
       summary: Update payment intent
       description: Update a payment intent by ID
       operationId: updatePaymentIntent
       security:
-        - oauth2:
-            - payment:write
-        - bearerAuth: []
+      - oauth2:
+        - payment:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payment intent ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -241,63 +260,67 @@ paths:
                   type: array
                   description: Revenue split rules
                   items:
-                    $ref: '#/components/schemas/SplitRule'
+                    $ref: "#/components/schemas/SplitRule"
       responses:
-        '200':
+        "200":
           description: Payment intent updated successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PaymentIntent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/PaymentIntent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/intents/{id}/confirm:
     post:
       tags:
-        - Payment Intents
+      - Payment Intents
       summary: Confirm payment intent
       description: Confirm a payment intent to process the payment
       operationId: confirmPaymentIntent
       security:
-        - oauth2:
-            - payment:write
-        - bearerAuth: []
+      - oauth2:
+        - payment:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payment intent ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -309,58 +332,61 @@ paths:
                   type: object
                   description: Payment method specific details
       responses:
-        '200':
+        "200":
           description: Payment intent confirmed successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PaymentIntent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/PaymentIntent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/charges:
     post:
       tags:
-        - Charges
+      - Charges
       summary: Create charge
       description: Create a new charge
       operationId: createCharge
       security:
-        - oauth2:
-            - payment:write
-        - bearerAuth: []
+      - oauth2:
+        - payment:write
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -368,9 +394,9 @@ paths:
             schema:
               type: object
               required:
-                - amount
-                - currency
-                - payment_intent_id
+              - amount
+              - currency
+              - payment_intent_id
               properties:
                 amount:
                   type: integer
@@ -379,7 +405,7 @@ paths:
                   example: 10000
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                   example: "USD"
                 payment_intent_id:
@@ -391,117 +417,129 @@ paths:
                   description: Additional metadata
                   additionalProperties: true
       responses:
-        '201':
+        "201":
           description: Charge created successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Charge'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Charge"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/charges/{id}:
     get:
       tags:
-        - Charges
+      - Charges
       summary: Get charge
       description: Retrieve a charge by ID
       operationId: getCharge
       security:
-        - oauth2:
-            - payment:read
-        - bearerAuth: []
+      - oauth2:
+        - payment:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Charge ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Charge retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Charge'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Charge"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/charges/{id}/capture:
     post:
       tags:
-        - Charges
+      - Charges
       summary: Capture charge
       description: Capture an authorized charge
       operationId: captureCharge
       security:
-        - oauth2:
-            - payment:write
-        - bearerAuth: []
+      - oauth2:
+        - payment:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Charge ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -514,63 +552,67 @@ paths:
                   minimum: 0
                   description: Amount to capture (if different from authorized amount)
       responses:
-        '200':
+        "200":
           description: Charge captured successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Charge'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Charge"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/charges/{id}/refund:
     post:
       tags:
-        - Charges
+      - Charges
       summary: Refund charge
       description: Refund a charge
       operationId: refundCharge
       security:
-        - oauth2:
-            - payment:refund
-        - bearerAuth: []
+      - oauth2:
+        - payment:refund
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Charge ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -586,58 +628,61 @@ paths:
                   type: string
                   description: Reason for refund
       responses:
-        '200':
+        "200":
           description: Charge refunded successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Charge'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Charge"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/subscriptions:
     post:
       tags:
-        - Subscriptions
+      - Subscriptions
       summary: Create subscription
       description: Create a new subscription
       operationId: createSubscription
       security:
-        - oauth2:
-            - subscription:write
-        - bearerAuth: []
+      - oauth2:
+        - subscription:write
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -645,11 +690,11 @@ paths:
             schema:
               type: object
               required:
-                - subscriber_id
-                - plan_id
-                - amount
-                - currency
-                - interval
+              - subscriber_id
+              - plan_id
+              - amount
+              - currency
+              - interval
               properties:
                 subscriber_id:
                   type: string
@@ -664,101 +709,108 @@ paths:
                   description: Recurring amount in smallest currency unit
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                 interval:
                   type: string
                   enum:
-                    - DAILY
-                    - WEEKLY
-                    - MONTHLY
-                    - YEARLY
+                  - DAILY
+                  - WEEKLY
+                  - MONTHLY
+                  - YEARLY
                 metadata:
                   type: object
                   description: Additional metadata
                   additionalProperties: true
       responses:
-        '201':
+        "201":
           description: Subscription created successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscription'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     get:
       tags:
-        - Subscriptions
+      - Subscriptions
       summary: List subscriptions
       description: List subscriptions with pagination
       operationId: listSubscriptions
       security:
-        - oauth2:
-            - subscription:read
-        - bearerAuth: []
+      - oauth2:
+        - subscription:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: subscriber_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by subscriber ID
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: string
-            enum:
-              - ACTIVE
-              - PAST_DUE
-              - CANCELED
-              - PAUSED
-          description: Filter by subscription status
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: subscriber_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by subscriber ID
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - PAST_DUE
+          - CANCELED
+          - PAUSED
+        description: Filter by subscription status
       responses:
-        '200':
+        "200":
           description: Subscriptions retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -767,93 +819,105 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Subscription'
+                      $ref: "#/components/schemas/Subscription"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/subscriptions/{id}:
     get:
       tags:
-        - Subscriptions
+      - Subscriptions
       summary: Get subscription
       description: Retrieve a subscription by ID
       operationId: getSubscription
       security:
-        - oauth2:
-            - subscription:read
-        - bearerAuth: []
+      - oauth2:
+        - subscription:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Subscription ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Subscription retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscription'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     patch:
       tags:
-        - Subscriptions
+      - Subscriptions
       summary: Update subscription
       description: Update a subscription by ID
       operationId: updateSubscription
       security:
-        - oauth2:
-            - subscription:write
-        - bearerAuth: []
+      - oauth2:
+        - subscription:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Subscription ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -870,75 +934,79 @@ paths:
                   description: Recurring amount in smallest currency unit
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                 interval:
                   type: string
                   enum:
-                    - DAILY
-                    - WEEKLY
-                    - MONTHLY
-                    - YEARLY
+                  - DAILY
+                  - WEEKLY
+                  - MONTHLY
+                  - YEARLY
                 metadata:
                   type: object
                   description: Additional metadata
                   additionalProperties: true
       responses:
-        '200':
+        "200":
           description: Subscription updated successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscription'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payments/subscriptions/{id}/cancel:
     post:
       tags:
-        - Subscriptions
+      - Subscriptions
       summary: Cancel subscription
       description: Cancel a subscription
       operationId: cancelSubscription
       security:
-        - oauth2:
-            - subscription:write
-        - bearerAuth: []
+      - oauth2:
+        - subscription:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Subscription ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -951,104 +1019,111 @@ paths:
                   default: true
                   description: Cancel at the end of the current period
       responses:
-        '200':
+        "200":
           description: Subscription canceled successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscription'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/ledgers:
     get:
       tags:
-        - Ledgers
+      - Ledgers
       summary: List ledger entries
       description: List ledger entries with pagination
       operationId: listLedgerEntries
       security:
-        - oauth2:
-            - ledger:read
-        - bearerAuth: []
+      - oauth2:
+        - ledger:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: account_id
-          in: query
-          required: false
-          schema:
-            type: string
-          description: Filter by account ID
-        - name: entry_type
-          in: query
-          required: false
-          schema:
-            type: string
-            enum:
-              - PAYMENT_RECEIVED
-              - PAYOUT_SENT
-              - FEE_COLLECTED
-              - REFUND_ISSUED
-              - SPLIT_DISTRIBUTED
-          description: Filter by entry type
-        - name: start_date
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-          description: Filter by start date
-        - name: end_date
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-          description: Filter by end date
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: account_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by account ID
+      - name: entry_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - PAYMENT_RECEIVED
+          - PAYOUT_SENT
+          - FEE_COLLECTED
+          - REFUND_ISSUED
+          - SPLIT_DISTRIBUTED
+        description: Filter by entry type
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter by start date
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter by end date
       responses:
-        '200':
+        "200":
           description: Ledger entries retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1057,108 +1132,123 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LedgerEntry'
+                      $ref: "#/components/schemas/LedgerEntry"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/ledgers/{id}:
     get:
       tags:
-        - Ledgers
+      - Ledgers
       summary: Get ledger entry
       description: Retrieve a ledger entry by ID
       operationId: getLedgerEntry
       security:
-        - oauth2:
-            - ledger:read
-        - bearerAuth: []
+      - oauth2:
+        - ledger:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Ledger entry ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Ledger entry retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/LedgerEntry'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/ledgers/balance:
     get:
       tags:
-        - Ledgers
+      - Ledgers
       summary: Get account balance
       description: Get the current balance for an account
       operationId: getAccountBalance
       security:
-        - oauth2:
-            - ledger:read
-        - bearerAuth: []
+      - oauth2:
+        - ledger:read
+      - bearerAuth: []
       parameters:
-        - name: account_id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: Account ID to get balance for
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: account_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Account ID to get balance for
       responses:
-        '200':
+        "200":
           description: Account balance retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1174,37 +1264,40 @@ paths:
                         description: Current balance in smallest currency unit
                       currency:
                         type: string
-                        pattern: '^[A-Z]{3}$'
+                        pattern: "^[A-Z]{3}$"
                         description: ISO 4217 currency code
                       updated_at:
                         type: string
                         format: date-time
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payouts:
     post:
       tags:
-        - Payouts
+      - Payouts
       summary: Create payout
       description: Create a new payout
       operationId: createPayout
       security:
-        - oauth2:
-            - payout:write
-        - bearerAuth: []
+      - oauth2:
+        - payout:write
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -1212,9 +1305,9 @@ paths:
             schema:
               type: object
               required:
-                - recipient_id
-                - amount
-                - currency
+              - recipient_id
+              - amount
+              - currency
               properties:
                 recipient_id:
                   type: string
@@ -1226,14 +1319,14 @@ paths:
                   description: Amount in smallest currency unit
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                 payout_method:
                   type: string
                   enum:
-                    - BANK_TRANSFER
-                    - WALLET
-                    - CHECK
+                  - BANK_TRANSFER
+                  - WALLET
+                  - CHECK
                 destination_account:
                   type: string
                   description: Destination account identifier
@@ -1242,89 +1335,96 @@ paths:
                   description: Additional metadata
                   additionalProperties: true
       responses:
-        '201':
+        "201":
           description: Payout created successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Payout'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Payout"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     get:
       tags:
-        - Payouts
+      - Payouts
       summary: List payouts
       description: List payouts with pagination
       operationId: listPayouts
       security:
-        - oauth2:
-            - payout:read
-        - bearerAuth: []
+      - oauth2:
+        - payout:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: recipient_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by recipient ID
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: string
-            enum:
-              - PENDING
-              - HELD_FOR_REVIEW
-              - PROCESSING
-              - COMPLETED
-              - FAILED
-              - CANCELED
-          description: Filter by payout status
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: recipient_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by recipient ID
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - PENDING
+          - HELD_FOR_REVIEW
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+          - CANCELED
+        description: Filter by payout status
       responses:
-        '200':
+        "200":
           description: Payouts retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1333,94 +1433,106 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Payout'
+                      $ref: "#/components/schemas/Payout"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payouts/{id}:
     get:
       tags:
-        - Payouts
+      - Payouts
       summary: Get payout
       description: Retrieve a payout by ID
       operationId: getPayout
       security:
-        - oauth2:
-            - payout:read
-        - bearerAuth: []
+      - oauth2:
+        - payout:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payout ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Payout retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Payout'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Payout"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payouts/{id}/hold:
     post:
       tags:
-        - Payouts
+      - Payouts
       summary: Hold payout
       description: Hold a payout for fraud review
       operationId: holdPayout
       security:
-        - oauth2:
-            - payout:hold
-        - bearerAuth: []
+      - oauth2:
+        - payout:hold
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payout ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -1428,126 +1540,133 @@ paths:
             schema:
               type: object
               required:
-                - hold_reason
+              - hold_reason
               properties:
                 hold_reason:
                   type: string
                   enum:
-                    - FRAUD_REVIEW
-                    - COMPLIANCE_CHECK
-                    - MANUAL_REVIEW
-                    - DISPUTE_PENDING
+                  - FRAUD_REVIEW
+                  - COMPLIANCE_CHECK
+                  - MANUAL_REVIEW
+                  - DISPUTE_PENDING
                 hold_until:
                   type: string
                   format: date-time
                   description: Automatic release timestamp
       responses:
-        '200':
+        "200":
           description: Payout held successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Payout'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Payout"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/payouts/{id}/release:
     post:
       tags:
-        - Payouts
+      - Payouts
       summary: Release payout
       description: Release a held payout
       operationId: releasePayout
       security:
-        - oauth2:
-            - payout:hold
-        - bearerAuth: []
+      - oauth2:
+        - payout:hold
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Payout ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Payout released successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Payout'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Payout"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/disputes:
     post:
       tags:
-        - Disputes
+      - Disputes
       summary: Create dispute
       description: Create a new dispute for contested split
       operationId: createDispute
       security:
-        - oauth2:
-            - dispute:write
-        - bearerAuth: []
+      - oauth2:
+        - dispute:write
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -1555,20 +1674,20 @@ paths:
             schema:
               type: object
               required:
-                - dispute_type
-                - filed_by
-                - amount
-                - currency
-                - reference_id
-                - reason
+              - dispute_type
+              - filed_by
+              - amount
+              - currency
+              - reference_id
+              - reason
               properties:
                 dispute_type:
                   type: string
                   enum:
-                    - REVENUE_SPLIT
-                    - PAYMENT_ERROR
-                    - UNAUTHORIZED_CHARGE
-                    - FRAUD_CLAIM
+                  - REVENUE_SPLIT
+                  - PAYMENT_ERROR
+                  - UNAUTHORIZED_CHARGE
+                  - FRAUD_CLAIM
                 filed_by:
                   type: string
                   format: uuid
@@ -1583,7 +1702,7 @@ paths:
                   description: Disputed amount
                 currency:
                   type: string
-                  pattern: '^[A-Z]{3}$'
+                  pattern: "^[A-Z]{3}$"
                   description: ISO 4217 currency code
                 reference_id:
                   type: string
@@ -1594,96 +1713,103 @@ paths:
                   maxLength: 2000
                   description: Detailed dispute reason
       responses:
-        '201':
+        "201":
           description: Dispute created successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Dispute'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Dispute"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     get:
       tags:
-        - Disputes
+      - Disputes
       summary: List disputes
       description: List disputes with pagination
       operationId: listDisputes
       security:
-        - oauth2:
-            - dispute:read
-        - bearerAuth: []
+      - oauth2:
+        - dispute:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: filed_by
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by dispute initiator
-        - name: respondent_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by respondent
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: string
-            enum:
-              - OPEN
-              - UNDER_REVIEW
-              - AWAITING_RESPONSE
-              - ESCALATED_TO_ARBITRATION
-              - RESOLVED
-              - CLOSED
-          description: Filter by dispute status
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: filed_by
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by dispute initiator
+      - name: respondent_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by respondent
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - OPEN
+          - UNDER_REVIEW
+          - AWAITING_RESPONSE
+          - ESCALATED_TO_ARBITRATION
+          - RESOLVED
+          - CLOSED
+        description: Filter by dispute status
       responses:
-        '200':
+        "200":
           description: Disputes retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1692,94 +1818,105 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Dispute'
+                      $ref: "#/components/schemas/Dispute"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/disputes/{id}:
     get:
       tags:
-        - Disputes
+      - Disputes
       summary: Get dispute
       description: Retrieve a dispute by ID
       operationId: getDispute
       security:
-        - oauth2:
-            - dispute:read
-        - bearerAuth: []
+      - oauth2:
+        - dispute:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Dispute ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Dispute retrieved successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Dispute'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Dispute"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/disputes/{id}/respond:
     post:
       tags:
-        - Disputes
+      - Disputes
       summary: Respond to dispute
       description: Respond to a dispute
       operationId: respondToDispute
       security:
-        - oauth2:
-            - dispute:write
-        - bearerAuth: []
+      - oauth2:
+        - dispute:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -1787,90 +1924,93 @@ paths:
             schema:
               type: object
               required:
-                - evidence
+              - evidence
               properties:
                 evidence:
                   type: array
                   items:
                     type: object
                     required:
-                      - type
-                      - url
+                    - type
+                    - url
                     properties:
                       type:
                         type: string
                         enum:
-                          - DOCUMENT
-                          - TRANSACTION_LOG
-                          - COMMUNICATION
+                        - DOCUMENT
+                        - TRANSACTION_LOG
+                        - COMMUNICATION
                       url:
                         type: string
                         format: uri
                 resolution_proposal:
                   type: string
                   enum:
-                    - ACCEPTED
-                    - REJECTED
-                    - PARTIAL_REFUND
-                    - SPLIT_ADJUSTED
+                  - ACCEPTED
+                  - REJECTED
+                  - PARTIAL_REFUND
+                  - SPLIT_ADJUSTED
       responses:
-        '200':
+        "200":
           description: Dispute response submitted successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Dispute'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Dispute"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/disputes/{id}/escalate:
     post:
       tags:
-        - Disputes
+      - Disputes
       summary: Escalate dispute
       description: Escalate a dispute to arbitration
       operationId: escalateDispute
       security:
-        - oauth2:
-            - dispute:write
-        - bearerAuth: []
+      - oauth2:
+        - dispute:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -1882,42 +2022,42 @@ paths:
                   type: string
                   description: Reason for escalation
       responses:
-        '200':
+        "200":
           description: Dispute escalated successfully
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/parameters/X-RateLimit-Limit'
+              $ref: "#/components/parameters/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/parameters/X-RateLimit-Remaining'
+              $ref: "#/components/parameters/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/parameters/X-RateLimit-Reset'
+              $ref: "#/components/parameters/X-RateLimit-Reset"
             RA-API-Version:
-              $ref: '#/components/parameters/RA-API-Version'
+              $ref: "#/components/parameters/RA-API-Version"
             X-Correlation-ID:
-              $ref: '#/components/parameters/X-Correlation-ID'
+              $ref: "#/components/parameters/X-Correlation-ID"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Dispute'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+                    $ref: "#/components/schemas/Dispute"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
 components:
   schemas:
@@ -1935,7 +2075,7 @@ components:
           example: 10000
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
           description: ISO 4217 currency code
           example: "USD"
         description:
@@ -1948,24 +2088,24 @@ components:
         payment_method:
           type: string
           enum:
-            - CARD
-            - BANK_TRANSFER
-            - WALLET
-            - CRYPTO
+          - CARD
+          - BANK_TRANSFER
+          - WALLET
+          - CRYPTO
         split_rules:
           type: array
           description: Revenue split rules
           items:
-            $ref: '#/components/schemas/SplitRule'
+            $ref: "#/components/schemas/SplitRule"
         status:
           type: string
           enum:
-            - PENDING
-            - REQUIRES_CONFIRMATION
-            - PROCESSING
-            - SUCCEEDED
-            - FAILED
-            - CANCELED
+          - PENDING
+          - REQUIRES_CONFIRMATION
+          - PROCESSING
+          - SUCCEEDED
+          - FAILED
+          - CANCELED
         client_secret:
           type: string
           description: Client-side secret for payment confirmation
@@ -1978,7 +2118,7 @@ components:
         updated_at:
           type: string
           format: date-time
-    
+
     SplitRule:
       type: object
       required: [recipient_id, amount_or_percentage, type]
@@ -1990,8 +2130,8 @@ components:
         type:
           type: string
           enum:
-            - FIXED_AMOUNT
-            - PERCENTAGE
+          - FIXED_AMOUNT
+          - PERCENTAGE
         amount:
           type: integer
           minimum: 0
@@ -2005,7 +2145,7 @@ components:
         description:
           type: string
           description: Description of split (e.g., "Creator revenue share")
-  
+
     Charge:
       type: object
       required: [id, amount, currency, status, created_at]
@@ -2025,16 +2165,16 @@ components:
           default: 0
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         status:
           type: string
           enum:
-            - PENDING
-            - AUTHORIZED
-            - CAPTURED
-            - REFUNDED
-            - PARTIALLY_REFUNDED
-            - FAILED
+          - PENDING
+          - AUTHORIZED
+          - CAPTURED
+          - REFUNDED
+          - PARTIALLY_REFUNDED
+          - FAILED
         fraud_score:
           type: number
           minimum: 0
@@ -2051,9 +2191,9 @@ components:
           type: string
           format: date-time
         captured_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     Subscription:
       type: object
       required: [id, subscriber_id, plan_id, status, created_at]
@@ -2074,21 +2214,21 @@ components:
           description: Recurring amount in smallest currency unit
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         interval:
           type: string
           enum:
-            - DAILY
-            - WEEKLY
-            - MONTHLY
-            - YEARLY
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - YEARLY
         status:
           type: string
           enum:
-            - ACTIVE
-            - PAST_DUE
-            - CANCELED
-            - PAUSED
+          - ACTIVE
+          - PAST_DUE
+          - CANCELED
+          - PAUSED
         current_period_start:
           type: string
           format: date-time
@@ -2101,7 +2241,7 @@ components:
         created_at:
           type: string
           format: date-time
-    
+
     LedgerEntry:
       type: object
       required: [id, entry_type, debit_account, credit_account, amount, currency, timestamp]
@@ -2112,11 +2252,11 @@ components:
         entry_type:
           type: string
           enum:
-            - PAYMENT_RECEIVED
-            - PAYOUT_SENT
-            - FEE_COLLECTED
-            - REFUND_ISSUED
-            - SPLIT_DISTRIBUTED
+          - PAYMENT_RECEIVED
+          - PAYOUT_SENT
+          - FEE_COLLECTED
+          - REFUND_ISSUED
+          - SPLIT_DISTRIBUTED
         debit_account:
           type: string
           description: Account being debited
@@ -2128,7 +2268,7 @@ components:
           minimum: 0
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         reference_id:
           type: string
           format: uuid
@@ -2138,7 +2278,7 @@ components:
         timestamp:
           type: string
           format: date-time
-    
+
     Payout:
       type: object
       required: [id, recipient_id, amount, currency, status, created_at]
@@ -2155,33 +2295,33 @@ components:
           minimum: 0
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         status:
           type: string
           enum:
-            - PENDING
-            - HELD_FOR_REVIEW
-            - PROCESSING
-            - COMPLETED
-            - FAILED
-            - CANCELED
+          - PENDING
+          - HELD_FOR_REVIEW
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+          - CANCELED
         hold_reason:
-          type: [string, 'null']
+          type: [string, "null"]
           enum:
-            - FRAUD_REVIEW
-            - COMPLIANCE_CHECK
-            - MANUAL_REVIEW
-            - DISPUTE_PENDING
+          - FRAUD_REVIEW
+          - COMPLIANCE_CHECK
+          - MANUAL_REVIEW
+          - DISPUTE_PENDING
         hold_until:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
           description: Automatic release timestamp if not manually reviewed
         payout_method:
           type: string
           enum:
-            - BANK_TRANSFER
-            - WALLET
-            - CHECK
+          - BANK_TRANSFER
+          - WALLET
+          - CHECK
         destination_account:
           type: string
           description: Destination account identifier (obfuscated)
@@ -2189,9 +2329,9 @@ components:
           type: string
           format: date-time
         completed_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     Dispute:
       type: object
       required: [id, dispute_type, filed_by, amount, currency, status, created_at]
@@ -2202,10 +2342,10 @@ components:
         dispute_type:
           type: string
           enum:
-            - REVENUE_SPLIT
-            - PAYMENT_ERROR
-            - UNAUTHORIZED_CHARGE
-            - FRAUD_CLAIM
+          - REVENUE_SPLIT
+          - PAYMENT_ERROR
+          - UNAUTHORIZED_CHARGE
+          - FRAUD_CLAIM
         filed_by:
           type: string
           format: uuid
@@ -2220,7 +2360,7 @@ components:
           description: Disputed amount
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         reference_id:
           type: string
           format: uuid
@@ -2232,19 +2372,19 @@ components:
         status:
           type: string
           enum:
-            - OPEN
-            - UNDER_REVIEW
-            - AWAITING_RESPONSE
-            - ESCALATED_TO_ARBITRATION
-            - RESOLVED
-            - CLOSED
+          - OPEN
+          - UNDER_REVIEW
+          - AWAITING_RESPONSE
+          - ESCALATED_TO_ARBITRATION
+          - RESOLVED
+          - CLOSED
         resolution:
-          type: [string, 'null']
+          type: [string, "null"]
           enum:
-            - ACCEPTED
-            - REJECTED
-            - PARTIAL_REFUND
-            - SPLIT_ADJUSTED
+          - ACCEPTED
+          - REJECTED
+          - PARTIAL_REFUND
+          - SPLIT_ADJUSTED
         evidence:
           type: array
           items:
@@ -2253,9 +2393,9 @@ components:
               type:
                 type: string
                 enum:
-                  - DOCUMENT
-                  - TRANSACTION_LOG
-                  - COMMUNICATION
+                - DOCUMENT
+                - TRANSACTION_LOG
+                - COMMUNICATION
               url:
                 type: string
                 format: uri
@@ -2273,15 +2413,15 @@ components:
           format: date-time
           description: SLA deadline for response (7 business days from creation)
         resolved_at:
-          type: [string, 'null']
+          type: [string, "null"]
           format: date-time
-    
+
     ErrorDetail:
       type: object
       required:
-        - code
-        - message
-        - correlationId
+      - code
+      - message
+      - correlationId
       properties:
         code:
           type: string
@@ -2296,7 +2436,7 @@ components:
           type: string
           format: uuid
           description: Unique identifier for tracing errors across systems
-    
+
     Pagination:
       type: object
       properties:
@@ -2305,16 +2445,16 @@ components:
         has_prev_page:
           type: boolean
         next_cursor:
-          type: [string, 'null']
+          type: [string, "null"]
         prev_cursor:
-          type: [string, 'null']
+          type: [string, "null"]
   responses:
     BadRequest:
       description: Bad Request - The request was invalid or cannot be served
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2338,13 +2478,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Unauthorized:
       description: Unauthorized - Authentication failed or not provided
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         WWW-Authenticate:
           description: Authentication challenge
@@ -2372,13 +2516,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Forbidden:
       description: Forbidden - The authenticated user does not have permission to access this resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2402,13 +2550,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     NotFound:
       description: Not Found - The requested resource could not be found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2432,13 +2584,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Conflict:
       description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2462,13 +2618,13 @@ components:
           schema:
             type: string
             format: uuid
-    
+
     UnprocessableEntity:
       description: Unprocessable Entity - The request was well-formed but was unable to be followed due to semantic errors
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2492,13 +2648,13 @@ components:
           schema:
             type: string
             format: uuid
-    
+
     TooManyRequests:
       description: Too Many Requests - The user has sent too many requests in a given amount of time
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2526,13 +2682,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2556,13 +2716,17 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     ServiceUnavailable:
       description: Service Unavailable - The server is currently unable to handle the request
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ErrorDetail'
+            $ref: "#/components/schemas/ErrorDetail"
       headers:
         X-RateLimit-Limit:
           description: Request limit per hour
@@ -2590,7 +2754,11 @@ components:
           schema:
             type: string
             format: uuid
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
   parameters:
     Limit:
       name: limit
@@ -2602,7 +2770,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-    
+
     After:
       name: after
       in: query
@@ -2610,7 +2778,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
@@ -2618,7 +2786,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -2626,7 +2794,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     X-RateLimit-Limit:
       name: X-RateLimit-Limit
       in: header
@@ -2634,7 +2802,7 @@ components:
       required: false
       schema:
         type: integer
-    
+
     X-RateLimit-Remaining:
       name: X-RateLimit-Remaining
       in: header
@@ -2642,7 +2810,7 @@ components:
       required: false
       schema:
         type: integer
-    
+
     X-RateLimit-Reset:
       name: X-RateLimit-Reset
       in: header
@@ -2650,7 +2818,7 @@ components:
       required: false
       schema:
         type: integer
-    
+
     RA-API-Version:
       name: RA-API-Version
       in: header
@@ -2659,7 +2827,7 @@ components:
       schema:
         type: string
         example: "2025-11-01"
-    
+
     X-Correlation-ID:
       name: X-Correlation-ID
       in: header
@@ -2668,6 +2836,33 @@ components:
       schema:
         type: string
         format: uuid
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Unique request correlation ID (UUID v4) propagated across services
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2

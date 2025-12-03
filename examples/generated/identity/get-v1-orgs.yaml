@@ -1,0 +1,24 @@
+service: identity
+path: /v1/orgs
+method: GET
+summary: List organizations
+response:
+  status: "200"
+  description: Organizations retrieved successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      description: string-value
+      website: https://api.registryaccord.com/resource/123
+      created_at: '2025-11-06T12:00:00Z'
+      updated_at:
+    pagination:
+      next_cursor:
+      has_next_page: true

@@ -1,0 +1,30 @@
+service: content
+path: /v1/content/{id}/versions
+method: GET
+summary: List content versions
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Content versions list retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      content_id: 123e4567-e89b-12d3-a456-426614174000
+      version_number: 1
+      parent_version_id:
+      hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

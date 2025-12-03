@@ -1,0 +1,39 @@
+service: analytics
+path: /v1/analytics/exports
+method: POST
+summary: Create export
+request:
+  body:
+    name: string-value
+    format: CSV
+    query:
+      metrics:
+      - string-value
+      dimensions:
+      - string-value
+      filters: {}
+      date_range:
+        start: string-value
+        end: string-value
+      granularity: DAILY
+    compression: NONE
+response:
+  status: "201"
+  description: Export job created successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      status: PENDING
+      format: CSV
+      query:
+        metrics:
+        - string-value
+        dimensions:
+        - string-value
+        filters: {}
+        date_range:
+          start: string-value
+          end: string-value
+        granularity: DAILY
+      created_at:

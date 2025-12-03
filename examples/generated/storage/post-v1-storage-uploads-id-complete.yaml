@@ -1,0 +1,23 @@
+service: storage
+path: /v1/storage/uploads/{id}/complete
+method: POST
+summary: Complete upload
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    parts:
+    - part_number: 1
+      etag: string-value
+response:
+  status: "200"
+  description: Multipart upload completed successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      bucket_id: 123e4567-e89b-12d3-a456-426614174000
+      key: string-value
+      size_bytes: 0
+      content_type: "video/mp4"
+      checksum:
+      created_at:

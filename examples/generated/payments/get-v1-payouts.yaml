@@ -1,0 +1,31 @@
+service: payments
+path: /v1/payouts
+method: GET
+summary: List payouts
+request:
+  queryParams:
+    recipient_id: 123e4567-e89b-12d3-a456-426614174000
+    status: PENDING
+response:
+  status: "200"
+  description: Payouts retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      recipient_id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 0
+      currency: "^[A-Z]{3}$"
+      status: PENDING
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

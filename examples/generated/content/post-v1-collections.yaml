@@ -1,0 +1,27 @@
+service: content
+path: /v1/collections
+method: POST
+summary: Create collection
+request:
+  body:
+    name: string-value
+    description: string-value
+    is_public: false
+response:
+  status: "201"
+  description: Collection created successfully
+  headers:
+    Location:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+    name: string-value
+    description: string-value
+    is_public: false
+    created_at:
+    updated_at:

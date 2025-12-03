@@ -4,17 +4,19 @@
 
 Accepted
 
+## Summary
+
+RegistryAccord uses WebAuthn (FIDO2) / Passkey as the primary authentication method for end users logging directly into RegistryAccord services. This provides phishing-resistant, passwordless authentication using device biometrics (TouchID, FaceID, Windows Hello) or security keys.
+
+WebAuthn serves as the foundation for user authentication in the Identity Service, with OAuth2/OIDC as the authorization layer for third-party applications. This two-layer approach balances security (phishing resistance) with ecosystem openness (third-party app access).
+
 ## Context
 
-The RegistryAccord Identity Service requires a secure, user-friendly authentication
-mechanism that protects against phishing, credential theft, and account takeover
-attacks while providing excellent UX across devices.
+The RegistryAccord Identity Service requires a secure, user-friendly authentication mechanism that protects against phishing, credential theft, and account takeover attacks while providing excellent UX across devices.
 
 ## Decision
 
-We have chosen WebAuthn (FIDO2) / Passkey as the primary authentication method
-for users to authenticate directly with the Identity Service, with OAuth2/OIDC
-serving as the standard for application authorization.
+We have chosen WebAuthn (FIDO2) / Passkey as the primary authentication method for users to authenticate directly with the Identity Service, with OAuth2/OIDC serving as the standard for application authorization.
 
 ## Rationale
 
@@ -69,6 +71,57 @@ This separation follows security best practices and enables flexible access cont
 - **Password + 2FA**: Rejected due to phishing risk and poor UX
 - **OAuth2 Primary**: Rejected due to vendor lock-in and lack of true auth
 - **DIDs/Decentralized Auth**: Deferred to v2 due to complexity and limited tooling
+
+## Implementation
+
+### Identity Service Endpoints
+
+**WebAuthn Registration:**
+- `POST /v1/sessions/webauthn/register/begin` – Start passkey registration. Returns WebAuthn challenge + credential creation options. Input: user ID, display name.
+- `POST /v1/sessions/webauthn/register/complete` – Complete passkey registration. Input: signed attestation response from authenticator. Returns credential ID stored for future authentication.
+
+**WebAuthn Authentication:**
+- `POST /v1/sessions/webauthn/login/begin` – Start passkey login. Input: user identifier (email or username). Returns WebAuthn challenge + credential request options.
+- `POST /v1/sessions/webauthn/login/complete` – Complete passkey login. Input: signed assertion response from authenticator. Returns JWT access token + refresh token.
+
+### Current Implementation Status
+
+- ✅ OpenAPI spec defines all four WebAuthn endpoints in `openapi/identity/v1/openapi.yaml`.
+- ✅ Request/response schemas validated against WebAuthn Level 2 spec.
+- ✅ Security schemes document JWT token format.
+
+**Example workflow (from spec):**
+
+```typescript
+// 1. Start registration
+const registerBegin = await fetch('/v1/sessions/webauthn/register/begin', {
+  method: 'POST',
+  body: JSON.stringify({
+    user_id: 'usr_abc123',
+    display_name: 'Jane Doe'
+  })
+})
+const { challenge, credential_options } = await registerBegin.json()
+
+// 2. Browser/device creates credential
+const credential = await navigator.credentials.create({
+  publicKey: credential_options
+})
+
+// 3. Complete registration
+await fetch('/v1/sessions/webauthn/register/complete', {
+  method: 'POST',
+  body: JSON.stringify({
+    credential,
+    challenge
+  })
+})
+```
+
+### Related Implementations
+
+- See ADR-010 for full JWT token strategy (WebAuthn + OAuth2).
+- See `openapi/identity/v1/openapi.yaml` for complete API specification.
 
 ## References
 

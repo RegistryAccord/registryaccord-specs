@@ -1,0 +1,103 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "RegistryAccord Security Baseline",
+    "version": "2025-11-01",
+    "last_updated": "2025-11-18",
+    "transport_security": {
+        "tls_version_min": "1.3",
+        "mtls_required_for_service_to_service": true,
+        "certificate_pinning": true,
+        "certificate_rotation_days": 90,
+        "cipher_suites": [
+            "TLS_AES_128_GCM_SHA256",
+            "TLS_AES_256_GCM_SHA384",
+            "TLS_CHACHA20_POLY1305_SHA256"
+        ],
+        "hsts_max_age_seconds": 31536000
+    },
+    "authentication": {
+        "primary_method": "WebAuthn/Passkey",
+        "fallback_methods": [
+            "OAuth2/OIDC"
+        ],
+        "jwt_signing_algorithm": "ES256",
+        "token_expiry_seconds": 3600,
+        "refresh_token_rotation": true,
+        "refresh_token_expiry_days": 30,
+        "token_revocation_api": "/v1/identity/tokens/{token_id}/revoke"
+    },
+    "api_key_management": {
+        "principle_of_least_privilege": true,
+        "scope_enforcement": "required",
+        "key_rotation_policy_days": 90,
+        "leaked_key_revocation_api": "/v1/identity/keys/{key_id}/revoke",
+        "key_prefix_format": "sk_live_*, sk_test_*",
+        "separate_test_production_keys": true,
+        "key_scanning_integration": "GitHub Secret Scanning compatible"
+    },
+    "threat_detection": {
+        "owasp_api_top_10_coverage": true,
+        "owasp_version": "2023",
+        "ssrf_protection": true,
+        "ssrf_allowlist": "Required for webhook callbacks and storage provider URLs",
+        "shadow_api_detection": true,
+        "api_discovery_scan_frequency_hours": 24,
+        "rate_limiting": {
+            "algorithm": "token_bucket",
+            "default_limit_per_minute": 60,
+            "burst_multiplier": 2,
+            "headers": [
+                "X-RateLimit-Limit",
+                "X-RateLimit-Remaining",
+                "X-RateLimit-Reset"
+            ],
+            "ddos_protection": "Required for all public endpoints"
+        },
+        "anomaly_detection": {
+            "geographic_anomaly": true,
+            "velocity_checks": true,
+            "impossible_travel_detection": true,
+            "alerting_threshold": "3 anomalies per user per hour"
+        }
+    },
+    "supply_chain": {
+        "sbom_required": true,
+        "sbom_format": "CycloneDX 1.4+",
+        "dependency_scanning": true,
+        "dependency_scan_frequency": "Daily",
+        "signed_artifacts": true,
+        "signing_algorithm": "RSA-4096 or Ed25519",
+        "provenance_verification": "SLSA Level 3",
+        "provenance_attestation_api": "/v1/artifacts/{artifact_id}/provenance",
+        "vulnerability_disclosure_sla_days": 90
+    },
+    "standards_compliance": [
+        "OWASP API Security Top 10 (2023)",
+        "PCI DSS v4.0 (delegated to payment processors)",
+        "TAG IVT Guidelines 3.0",
+        "W3C Trace Context",
+        "RFC 7807 (Problem Details)",
+        "RFC 8594 (Deprecation Headers)",
+        "SOC 2 Type II",
+        "ISO 27001"
+    ],
+    "incident_response": {
+        "security_contact": "security@registryaccord.com",
+        "pagerduty_integration": true,
+        "runbook_required": true,
+        "runbook_location": "https://docs.registryaccord.com/security/runbooks",
+        "post_mortem_required": true,
+        "post_mortem_sla_days": 7,
+        "severity_definitions": {
+            "critical": "Data breach, authentication bypass, RCE",
+            "high": "XSS, CSRF, privilege escalation",
+            "medium": "Information disclosure, DoS",
+            "low": "Minor vulnerabilities, best practice violations"
+        }
+    },
+    "context_aware_access": {
+        "time_based_controls": "Support for time-of-day access restrictions",
+        "location_based_controls": "Geo-fencing for sensitive operations",
+        "anomaly_based_denials": "Automatic blocking on suspicious activity"
+    }
+}

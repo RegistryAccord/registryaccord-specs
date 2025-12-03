@@ -1,0 +1,28 @@
+service: payments
+path: /v1/disputes/{id}/escalate
+method: POST
+summary: Escalate dispute
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    reason: string-value
+response:
+  status: "200"
+  description: Dispute escalated successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      dispute_type: REVENUE_SPLIT
+      filed_by: 123e4567-e89b-12d3-a456-426614174000
+      respondent_id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 0
+      currency:
+      status:
+      created_at:

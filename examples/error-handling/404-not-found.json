@@ -1,0 +1,11 @@
+{
+    "type": "https://registryaccord.org/errors/not-found/resource-not-found",
+    "title": "Resource Not Found",
+    "status": 404,
+    "detail": "The requested resource 'content' with ID 'cnt_xyz789' does not exist or has been deleted",
+    "instance": "/v1/content/cnt_xyz789",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440003",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "resource_type": "content",
+    "resource_id": "cnt_xyz789"
+}

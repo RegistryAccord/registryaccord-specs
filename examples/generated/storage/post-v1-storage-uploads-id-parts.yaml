@@ -1,0 +1,15 @@
+service: storage
+path: /v1/storage/uploads/{id}/parts
+method: POST
+summary: Upload part
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  queryParams:
+    part_number: 1
+  body: string-value
+response:
+  status: "200"
+  description: Part uploaded successfully
+  headers:
+    ETag:

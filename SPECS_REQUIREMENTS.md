@@ -150,6 +150,13 @@ All API specifications must follow these design principles:
   * **Booleans:** Field names for booleans should be positive assertions (e.g., `is_active` instead of `is_not_deleted`).
   * **Enums:** All enum values should be `SCREAMING_SNAKE_CASE` for clarity.
 
+### 4.9. Observability & Traceability
+
+  * **Headers:** Every request MUST include `traceparent`, optional `tracestate`, and `X-Correlation-ID` headers as defined in [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md).
+  * **Schemas:** Logging, metrics, and health responses MUST conform to the JSON Schemas under `schemas/observability/` (`trace-context.json`, `logging-standards.json`, `metrics-standards.json`, `health-checks.json`).
+  * **Error Surfaces:** RFC 7807 envelopes MUST surface the correlation ID and trace identifiers so incidents can be traced end-to-end.
+  * **Propagation:** Services MUST propagate inbound Trace Context headers to all downstream calls and record them in structured logs per the observability standards.
+
 -----
 
 ## 5\. Service-Specific Specifications
@@ -292,27 +299,29 @@ All API specifications must follow these design principles:
       * **Differential Privacy:** Must provide "privacy budget" APIs to enforce differential privacy guarantees on queries and define warning thresholds for budget consumption.
       * **No Shadow Profiles:** Must prohibit data collection before explicit consent.
   * **NFRs:**
-      * **SLOs:** High-volume streaming (target: 100k+ events/sec).
-      * **Maximum Retention:** Define default maximum retention periods for raw behavioral data.
-
------
-
-## 6\. Governance & Conformance
-
 ### 6.1. Versioning Policy
 
-  * **API Versioning:** Specs must follow **date-based versioning** (e.g., `2025-11-01`) to signal stability.
-  * **Header Name:** The API version must be sent in a request header: `RA-API-Version: 2025-11-01`. The server must **echo** this version in the response.
-  * **Change Policy:**
-      * **Non-Breaking:** Additive changes (new endpoints, optional fields) are allowed.
-      * **Breaking:** Any removal or modification of existing fields/endpoints requires a new API version.
-  * **Deprecation:** Breaking changes require a **90-day minimum deprecation schedule**. Notifications must be sent via **API response headers**, an **email to API key owners**, and a **public changelog**.
-  * **Deprecation Headers:** Deprecated endpoints must return `Deprecation` and `Sunset` headers per **RFC 8594**.
+#### Two-Layer Versioning Strategy
+RegistryAccord uses a hybrid approach inspired by Stripe:
+1. **API Specifications**: Date-based versioning (YYYY-MM-DD)
+2. **SDK Packages**: Semantic Versioning (MAJOR.MINOR.PATCH)
+
+#### API Version Format (Date-Based)
+- Format: `YYYY-MM-DD` (e.g., `2025-11-01`)
+- Header: `RA-API-Version: 2025-11-01` (required in all requests/responses)
+- Pinning: Accounts are pinned to the API version at first request
+- Explicit Upgrade: Developers must explicitly upgrade to new API versions
+
+#### Why Date-Based for APIs?
+- Clear staleness signals (2023-06-15 is obviously 2+ years old)
+- Explicit breaking changes (new date = deliberate API change)
+- No accidental upgrades via dependency resolution
+- Strong governance for open protocol
 
 ### 6.2. RFC Process
 
   * **RFC Repo:** A public RFC (Request for Comments) repo must be used for all major changes.
-  * **RFC Lifecycle:** RFCs must follow a defined lifecycle: `Draft` -\> `Review` (14-day min) -\> `Accepted` (TSC vote) -\> `Implemented` (2+ implementations) -\> `Final`.
+  * **RFC Lifecycle:** RFCs must follow a defined lifecycle: `Draft` -> `Review` (14-day min) -> `Accepted` (TSC vote) -> `Implemented` (2+ implementations) -> `Final`.
   * **Decision Making:** Final decisions are made by a Technical Steering Committee (TSC) vote.
   * **Governance Transition:** The transition from company stewardship to a neutral foundation will be triggered by objective ecosystem metrics (e.g., **3+ independent, certified implementations in production**).
 
@@ -498,15 +507,26 @@ Specs must define standards for observability to ensure interoperability and deb
 
 -----
 
-### 12\. SDK Generation Requirements
+### 12. SDK Generation Requirements
 
   * **Generator Tooling:** Specs must be compatible with standard generators like **OpenAPI Generator**.
   * **Custom Templates:** The project will maintain custom templates to ensure idiomatic code, auth helpers, and retry logic for each supported language.
   * **Repository Structure:** Each programming language will have its own dedicated SDK repository (e.g., `registryaccord-sdk-ts`, `registryaccord-sdk-py`, `registryaccord-sdk-go`).
   * **Package Naming:** Define standard package names per language (e.g., `@registryaccord/sdk` for TypeScript, `registryaccord` for Python).
-  * **SDK Versioning:** Generated SDKs must follow **Semantic Versioning**. An SDK major version bump is required for any spec breaking change.
   * **Generated Features:** SDKs must include auth helpers, automated retries, pagination, and typed models/errors.
   * **Language Support:** Initially supporting TypeScript, Python, Go, Java, and .NET with plans to expand based on community demand.
+
+#### 12.7 SDK Versioning Strategy
+- SDKs follow Semantic Versioning (MAJOR.MINOR.PATCH).
+- SDK major version bumps when API date version changes with breaking changes.
+- SDK minor version bumps for new API features (backward-compatible).
+- SDK patch version bumps for bug fixes.
+- Each SDK release specifies compatible API version(s) in README.
+
+Example:
+- SDK v1.x.x → API `2025-11-01`. 
+- SDK v2.x.x → API `2026-05-15` (breaking changes).
+- SDK v2.5.0 → API `2026-05-15` + new optional features.
 
 -----
 

@@ -1,0 +1,10 @@
+{
+    "type": "https://registryaccord.org/errors/authentication/invalid-token",
+    "title": "Invalid Authentication Token",
+    "status": 401,
+    "detail": "The provided JWT token is expired. Token expired at 2025-11-18T05:00:00Z",
+    "instance": "/v1/content/cnt_abc123",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440001",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "remediation": "Obtain a new access token by re-authenticating or using a refresh token"
+}

@@ -1,0 +1,27 @@
+service: payments
+path: /v1/payments/subscriptions/{id}/cancel
+method: POST
+summary: Cancel subscription
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    cancel_at_period_end: true
+response:
+  status: "200"
+  description: Subscription canceled successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+      plan_id: string-value
+      amount: 0
+      currency: "^[A-Z]{3}$"
+      status:
+      created_at:

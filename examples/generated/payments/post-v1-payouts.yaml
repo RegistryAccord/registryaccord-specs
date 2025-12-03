@@ -1,0 +1,28 @@
+service: payments
+path: /v1/payouts
+method: POST
+summary: Create payout
+request:
+  body:
+    recipient_id: 123e4567-e89b-12d3-a456-426614174000
+    amount: 0
+    currency: "^[A-Z]{3}$"
+    payout_method: BANK_TRANSFER
+    destination_account: string-value
+response:
+  status: "201"
+  description: Payout created successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      recipient_id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 0
+      currency: "^[A-Z]{3}$"
+      status: PENDING
+      created_at:

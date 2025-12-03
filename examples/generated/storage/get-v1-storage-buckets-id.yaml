@@ -1,0 +1,20 @@
+service: storage
+path: /v1/storage/buckets/{id}
+method: GET
+summary: Get bucket
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Bucket retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      provider: S3
+      region: string-value
+      created_at:

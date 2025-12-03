@@ -1,0 +1,20 @@
+service: revenue
+path: /v1/ads/why-this-ad
+method: GET
+summary: "Why am I seeing this ad?"
+request:
+  queryParams:
+    ad_id: string-value
+response:
+  status: "200"
+  description: Ad targeting explanation
+  headers:
+    ETag:
+  body:
+    ad_id: string-value
+    targeting_signals:
+    - signal: string-value
+      value: string-value
+      weight: low
+    explanation: string-value
+    obfuscated: true

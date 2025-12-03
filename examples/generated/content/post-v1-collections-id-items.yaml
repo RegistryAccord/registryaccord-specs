@@ -1,0 +1,27 @@
+service: content
+path: /v1/collections/{id}/items
+method: POST
+summary: Add content to collection
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    content_ids:
+    - 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Content items added to collection successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+    name: string-value
+    description: string-value
+    is_public: false
+    created_at:
+    updated_at:

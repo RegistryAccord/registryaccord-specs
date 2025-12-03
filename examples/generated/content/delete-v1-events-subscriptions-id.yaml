@@ -1,0 +1,16 @@
+service: content
+path: /v1/events/subscriptions/{id}
+method: DELETE
+summary: Unsubscribe from content events
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "204"
+  description: Event subscription deleted successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:

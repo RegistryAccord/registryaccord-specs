@@ -4,6 +4,12 @@
 
 Accepted
 
+## Summary
+
+RegistryAccord uses SHA-256 cryptographic hashing for all content objects. Each binary payload is hashed before registration, creating immutable identifiers that allow anyone to verify integrity, detect tampering, and deduplicate identical files across the ecosystem. Content hashes live alongside version metadata so lineage stays trustworthy.
+
+This ADR covers integrity hashing enforced by the Content Registry; ADR-012 documents how the Storage Gateway uses the same hashes for content-addressed storage.
+
 ## Context
 
 The RegistryAccord Content Registry requires a robust mechanism to ensure content integrity throughout its lifecycle. Content creators, consumers, and intermediaries need to be able to verify that content has not been tampered with or corrupted during storage, transmission, or processing.
@@ -100,6 +106,48 @@ sha256sum content.txt
   }
 }
 ```
+
+## Implementation
+
+### Content Registry Schema
+
+`openapi/content/v1/openapi.yaml` defines `content_hash` on every content record and version:
+
+```yaml
+Content:
+  type: object
+  required: [id, content_hash, storage_url, metadata, created_at]
+  properties:
+    content_hash:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+      description: SHA-256 hash of content bytes
+```
+
+### Client & Gateway Workflow
+
+1. **Client hash:** Creator computes SHA-256 locally before upload (Web Crypto example in spec/examples).
+2. **Upload:** Client performs `PUT /v1/storage/objects/hash:{sha256}` with the hash in path/header.
+3. **Verification:** Storage Gateway streams upload, recomputes SHA-256, and rejects if mismatch.
+4. **Registration:** Client calls `POST /v1/content` referencing the verified hash + storage URL.
+
+### Versioning & Verification
+
+- `ContentVersion` objects store hashes for every revision.
+- `GET /v1/content/{id}/verify` downloads from storage and recomputes SHA-256 to confirm integrity.
+- Hashes are exposed publicly so third parties can independently validate.
+
+### Deduplication
+
+- Clients may `HEAD /v1/storage/objects/hash:{sha256}` to skip uploads when the hash already exists.
+- Multiple content records may reference the same hash/storage URL, conserving bandwidth.
+
+### Implementation Status
+
+- ✅ Content & version schemas require SHA-256 hashes.
+- ✅ Storage Gateway endpoints enforce hash-based addressing (see ADR-012).
+- ✅ Verification and error responses (`hash-mismatch`) documented in OpenAPI + error catalog.
+- ✅ Examples in `examples/content/*` show hashing workflow end-to-end.
 
 ## References
 

@@ -1,0 +1,650 @@
+[
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/events",
+    "method": "POST",
+    "example": "examples/generated/analytics/post-v1-analytics-events.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/metrics/query",
+    "method": "POST",
+    "example": "examples/generated/analytics/post-v1-analytics-metrics-query.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/schemas",
+    "method": "POST",
+    "example": "examples/generated/analytics/post-v1-analytics-schemas.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/schemas",
+    "method": "GET",
+    "example": "examples/generated/analytics/get-v1-analytics-schemas.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/exports",
+    "method": "POST",
+    "example": "examples/generated/analytics/post-v1-analytics-exports.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/exports",
+    "method": "GET",
+    "example": "examples/generated/analytics/get-v1-analytics-exports.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/exports/{id}",
+    "method": "GET",
+    "example": "examples/generated/analytics/get-v1-analytics-exports-id.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/privacy/budget",
+    "method": "GET",
+    "example": "examples/generated/analytics/get-v1-analytics-privacy-budget.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/privacy/budget",
+    "method": "POST",
+    "example": "examples/generated/analytics/post-v1-analytics-privacy-budget.yaml"
+  },
+  {
+    "service": "analytics",
+    "path": "/v1/analytics/data-access",
+    "method": "GET",
+    "example": "examples/generated/analytics/get-v1-analytics-data-access.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-content.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-content.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{content_id}/access-audit",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-content-content-id-access-audit.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-content-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/content/patch-v1-content-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/content/delete-v1-content-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}/versions",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-content-id-versions.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}/versions",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-content-id-versions.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}/licenses",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-content-id-licenses.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}/licenses",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-content-id-licenses.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/content/{id}/licenses/{license_id}",
+    "method": "DELETE",
+    "example": "examples/generated/content/delete-v1-content-id-licenses-license-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/events/subscriptions",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-events-subscriptions.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/events/subscriptions",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-events-subscriptions.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/events/subscriptions/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/content/delete-v1-events-subscriptions-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-collections.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-collections.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections/{id}",
+    "method": "GET",
+    "example": "examples/generated/content/get-v1-collections-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/content/patch-v1-collections-id.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections/{id}/items",
+    "method": "POST",
+    "example": "examples/generated/content/post-v1-collections-id-items.yaml"
+  },
+  {
+    "service": "content",
+    "path": "/v1/collections/{id}/items/{content_id}",
+    "method": "DELETE",
+    "example": "examples/generated/content/delete-v1-collections-id-items-content-id.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/query",
+    "method": "POST",
+    "example": "examples/generated/feeds/post-v1-feeds-query.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/{id}",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-id.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/signals",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-signals.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/signals/custom",
+    "method": "POST",
+    "example": "examples/generated/feeds/post-v1-feeds-signals-custom.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/experiments",
+    "method": "POST",
+    "example": "examples/generated/feeds/post-v1-feeds-experiments.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/experiments",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-experiments.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/experiments/{id}/results",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-experiments-id-results.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/scorecards/{ranker_id}",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-scorecards-ranker-id.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/audits/{ranker_id}",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-audits-ranker-id.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/disputes",
+    "method": "POST",
+    "example": "examples/generated/feeds/post-v1-feeds-disputes.yaml"
+  },
+  {
+    "service": "feeds",
+    "path": "/v1/feeds/disputes/stats",
+    "method": "GET",
+    "example": "examples/generated/feeds/get-v1-feeds-disputes-stats.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/identities",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-identities.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/identities/{id}",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-identities-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/identities/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/identity/patch-v1-identities-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/identities/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/identity/delete-v1-identities-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/sessions",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-sessions.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/sessions/{id}",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-sessions-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/sessions/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/identity/delete-v1-sessions-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/tokens",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-tokens.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/tokens/verify",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-tokens-verify.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/tokens/refresh",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-tokens-refresh.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/tokens/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/identity/delete-v1-tokens-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/orgs",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-orgs.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/orgs",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-orgs.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/orgs/{id}",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-orgs-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/orgs/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/identity/patch-v1-orgs-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/consents",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-consents.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/consents",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-consents.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/consents/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/identity/delete-v1-consents-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/keys",
+    "method": "POST",
+    "example": "examples/generated/identity/post-v1-keys.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/keys",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-keys.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/keys/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/identity/delete-v1-keys-id.yaml"
+  },
+  {
+    "service": "identity",
+    "path": "/v1/audit",
+    "method": "GET",
+    "example": "examples/generated/identity/get-v1-audit.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/intents",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-intents.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/intents/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payments-intents-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/intents/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/payments/patch-v1-payments-intents-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/intents/{id}/confirm",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-intents-id-confirm.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/charges",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-charges.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/charges/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payments-charges-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/charges/{id}/capture",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-charges-id-capture.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/charges/{id}/refund",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-charges-id-refund.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/subscriptions",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-subscriptions.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/subscriptions",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payments-subscriptions.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/subscriptions/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payments-subscriptions-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/subscriptions/{id}",
+    "method": "PATCH",
+    "example": "examples/generated/payments/patch-v1-payments-subscriptions-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payments/subscriptions/{id}/cancel",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payments-subscriptions-id-cancel.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/ledgers",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-ledgers.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/ledgers/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-ledgers-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/ledgers/balance",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-ledgers-balance.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payouts",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payouts.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payouts",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payouts.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payouts/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-payouts-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payouts/{id}/hold",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payouts-id-hold.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/payouts/{id}/release",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-payouts-id-release.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/disputes",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-disputes.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/disputes",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-disputes.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/disputes/{id}",
+    "method": "GET",
+    "example": "examples/generated/payments/get-v1-disputes-id.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/disputes/{id}/respond",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-disputes-id-respond.yaml"
+  },
+  {
+    "service": "payments",
+    "path": "/v1/disputes/{id}/escalate",
+    "method": "POST",
+    "example": "examples/generated/payments/post-v1-disputes-id-escalate.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/campaigns",
+    "method": "POST",
+    "example": "examples/generated/revenue/post-v1-ads-campaigns.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/campaigns",
+    "method": "GET",
+    "example": "examples/generated/revenue/get-v1-ads-campaigns.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/why-this-ad",
+    "method": "GET",
+    "example": "examples/generated/revenue/get-v1-ads-why-this-ad.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/segments",
+    "method": "POST",
+    "example": "examples/generated/revenue/post-v1-ads-segments.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/segments",
+    "method": "GET",
+    "example": "examples/generated/revenue/get-v1-ads-segments.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/creatives",
+    "method": "POST",
+    "example": "examples/generated/revenue/post-v1-ads-creatives.yaml"
+  },
+  {
+    "service": "revenue",
+    "path": "/v1/ads/creatives",
+    "method": "GET",
+    "example": "examples/generated/revenue/get-v1-ads-creatives.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/buckets",
+    "method": "POST",
+    "example": "examples/generated/storage/post-v1-storage-buckets.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/buckets",
+    "method": "GET",
+    "example": "examples/generated/storage/get-v1-storage-buckets.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/buckets/{id}",
+    "method": "GET",
+    "example": "examples/generated/storage/get-v1-storage-buckets-id.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/buckets/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/storage/delete-v1-storage-buckets-id.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/objects",
+    "method": "POST",
+    "example": "examples/generated/storage/post-v1-storage-objects.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/objects",
+    "method": "GET",
+    "example": "examples/generated/storage/get-v1-storage-objects.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/objects/{id}",
+    "method": "GET",
+    "example": "examples/generated/storage/get-v1-storage-objects-id.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/objects/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/storage/delete-v1-storage-objects-id.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/uploads",
+    "method": "POST",
+    "example": "examples/generated/storage/post-v1-storage-uploads.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/uploads/{id}/parts",
+    "method": "POST",
+    "example": "examples/generated/storage/post-v1-storage-uploads-id-parts.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/uploads/{id}/complete",
+    "method": "POST",
+    "example": "examples/generated/storage/post-v1-storage-uploads-id-complete.yaml"
+  },
+  {
+    "service": "storage",
+    "path": "/v1/storage/uploads/{id}",
+    "method": "DELETE",
+    "example": "examples/generated/storage/delete-v1-storage-uploads-id.yaml"
+  }
+]

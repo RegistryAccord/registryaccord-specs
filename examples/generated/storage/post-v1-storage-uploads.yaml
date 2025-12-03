@@ -1,0 +1,27 @@
+service: storage
+path: /v1/storage/uploads
+method: POST
+summary: Create multipart upload session
+request:
+  body:
+    bucket_id: 123e4567-e89b-12d3-a456-426614174000
+    key: string-value
+    content_type: "video/mp4"
+    metadata: {}
+    storage_class: STANDARD
+response:
+  status: "201"
+  description: Multipart upload session created successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      bucket_id: 123e4567-e89b-12d3-a456-426614174000
+      key: string-value
+      upload_id: string-value
+      parts:
+      - part_number: 1
+        size_bytes: 1
+        etag: string-value
+        uploaded_at: '2025-11-06T12:00:00Z'
+        status: IN_PROGRESS
+      created_at:

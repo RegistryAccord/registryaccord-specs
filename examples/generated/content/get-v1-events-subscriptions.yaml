@@ -1,0 +1,28 @@
+service: content
+path: /v1/events/subscriptions
+method: GET
+summary: List event subscriptions
+response:
+  status: "200"
+  description: Event subscriptions list retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+      webhook_url: https://api.registryaccord.com/resource/123
+      webhook_secret: string-value
+      event_types:
+      - CONTENT_CREATED
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

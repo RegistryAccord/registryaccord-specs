@@ -1,0 +1,23 @@
+service: feeds
+path: /v1/feeds/{id}
+method: GET
+summary: Get cached feed
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Cached feed retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - content_id: 123e4567-e89b-12d3-a456-426614174000
+      score: 0.0
+      position: 1
+      explanation:
+        user_facing: "Popular with people you follow"
+        auditor_detail:
+          signals_used:
+          - string-value
+          weights: {}
