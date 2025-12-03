@@ -1,0 +1,27 @@
+service: payments
+path: /v1/payments/intents/{id}/confirm
+method: POST
+summary: Confirm payment intent
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    payment_method_details: {}
+response:
+  status: "200"
+  description: Payment intent confirmed successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 10000
+      currency: "USD"
+      description: string-value
+      metadata: {}
+      status:
+      created_at:

@@ -1,0 +1,25 @@
+service: feeds
+path: /v1/feeds/audits/{ranker_id}
+method: GET
+summary: Retrieve audit history
+request:
+  pathParams:
+    ranker_id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Audit history retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      ranker_id: 123e4567-e89b-12d3-a456-426614174000
+      audits:
+      - audit_id: 123e4567-e89b-12d3-a456-426614174000
+        audit_date: '2025-11-06T12:00:00Z'
+        auditor_name: string-value
+        findings:
+        - category: DEMOGRAPHIC_PARITY
+          severity: LOW
+          description: string-value
+          remediation_status: PENDING
+        next_audit_date: '2025-11-06T12:00:00Z'

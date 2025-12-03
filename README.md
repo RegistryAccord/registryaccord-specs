@@ -60,6 +60,25 @@ registryaccord-specs/
 * [SECURITY.md](SECURITY.md) - Security policies and vulnerability reporting
 * [Architecture Decision Records](adrs/) - Key architectural decisions
 
+## SDKs
+
+Official SDKs maintained in separate repositories:
+
+* TypeScript - `npm install @registryaccord/sdk`
+* Python - `pip install registryaccord`
+* Go - `go get github.com/registryaccord/sdk-go`
+
+See [docs/SDK-GENERATION.md](docs/SDK-GENERATION.md) for details.
+
+## 🔭 Observability
+
+All services must propagate Trace Context and correlation IDs and follow shared logging/metrics schemas:
+
+* Trace Context & correlation IDs – [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md)
+* Schemas – `schemas/observability/trace-context.json`, `logging-standards.json`, `metrics-standards.json`, `health-checks.json`
+
+Each OpenAPI spec imports reusable `traceparent`, `tracestate`, and `X-Correlation-ID` headers so SDKs and implementations expose a consistent contract.
+
 ## 🔧 Validation
 
 * **Spectral linting rules** for API specification quality

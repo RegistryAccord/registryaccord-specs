@@ -1,0 +1,10 @@
+{
+    "type": "https://registryaccord.org/errors/server/internal-error",
+    "title": "Internal Server Error",
+    "status": 500,
+    "detail": "An unexpected error occurred while processing your request. Our team has been notified.",
+    "instance": "/v1/content",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440005",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "remediation": "Retry the request. If the problem persists, contact support with the correlation ID"
+}

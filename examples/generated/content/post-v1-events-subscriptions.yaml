@@ -1,0 +1,28 @@
+service: content
+path: /v1/events/subscriptions
+method: POST
+summary: Subscribe to content events
+request:
+  body:
+    webhook_url: https://api.registryaccord.com/resource/123
+    event_types:
+    - CONTENT_CREATED
+    is_active: true
+response:
+  status: "201"
+  description: Event subscription created successfully
+  headers:
+    Location:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+    webhook_url: https://api.registryaccord.com/resource/123
+    webhook_secret: string-value
+    event_types:
+    - CONTENT_CREATED
+    created_at:

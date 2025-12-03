@@ -2,6 +2,10 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Analytics API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Event ingestion, metrics querying, and privacy-compliant analytics
     with differential privacy guarantees.
@@ -14,39 +18,41 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 tags:
-  - name: Events
-    description: Event ingestion
-  - name: Metrics
-    description: Metrics querying
-  - name: Schemas
-    description: Schema registry
-  - name: Exports
-    description: Data export
-  - name: Privacy
-    description: Privacy budget management
+- name: Events
+  description: Event ingestion
+- name: Exports
+  description: Data export
+- name: Metrics
+  description: Metrics querying
+- name: Privacy
+  description: Privacy budget management
+- name: Schemas
+  description: Schema registry
+- name: Transparency
+  description: Transparency and user data access
 
 servers:
-  - url: https://api.registryaccord.dev/analytics
-    description: Development environment
-  - url: https://api.registryaccord.com/analytics
-    description: Production environment
+- url: https://api.registryaccord.dev/analytics
+  description: Development environment
+- url: https://api.registryaccord.com/analytics
+  description: Production environment
 
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   /v1/analytics/events:
     post:
       tags:
-        - Events
+      - Events
       summary: Ingest events
       description: Ingest analytics events
       operationId: ingestEvents
       security:
-        - oauth2:
-            - event:write
-        - bearerAuth: []
+      - oauth2:
+        - event:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -54,47 +60,53 @@ paths:
             schema:
               type: object
               required:
-                - events
+              - events
               properties:
                 events:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Event'
+                    $ref: "#/components/schemas/Event"
       responses:
-        '204':
+        "204":
           description: Events ingested successfully
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/analytics/metrics/query:
     post:
       tags:
-        - Metrics
+      - Metrics
       summary: Query metrics
       description: Query analytics metrics
       operationId: queryMetrics
       security:
-        - oauth2:
-            - metric:read
-        - bearerAuth: []
+      - oauth2:
+        - metric:read
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MetricQuery'
+              $ref: "#/components/schemas/MetricQuery"
       responses:
-        '200':
+        "200":
           description: Metrics query successful
           content:
             application/json:
@@ -102,39 +114,43 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MetricResult'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/MetricResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/analytics/schemas:
     post:
       tags:
-        - Schemas
+      - Schemas
       summary: Register schema
       description: Register an event schema
       operationId: registerSchema
       security:
-        - oauth2:
-            - schema:write
-        - bearerAuth: []
+      - oauth2:
+        - schema:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SchemaDefinition'
+              $ref: "#/components/schemas/SchemaDefinition"
       responses:
-        '201':
+        "201":
           description: Schema registered successfully
           content:
             application/json:
@@ -142,38 +158,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SchemaDefinition'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/SchemaDefinition"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Schemas
+      - Schemas
       summary: List schemas
       description: List registered event schemas
       operationId: listSchemas
       security:
-        - oauth2:
-            - schema:read
-        - bearerAuth: []
+      - oauth2:
+        - schema:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
+        "200":
           description: Schemas retrieved successfully
           content:
             application/json:
@@ -183,41 +206,46 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SchemaDefinition'
+                      $ref: "#/components/schemas/SchemaDefinition"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/analytics/exports:
     post:
       tags:
-        - Exports
+      - Exports
       summary: Create export
       description: Create a data export job
       operationId: createExport
       security:
-        - oauth2:
-            - export:write
-        - bearerAuth: []
+      - oauth2:
+        - export:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExportRequest'
+              $ref: "#/components/schemas/ExportRequest"
       responses:
-        '201':
+        "201":
           description: Export job created successfully
           content:
             application/json:
@@ -225,38 +253,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ExportJob'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/ExportJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Exports
+      - Exports
       summary: List exports
       description: List data export jobs
       operationId: listExports
       security:
-        - oauth2:
-            - export:read
-        - bearerAuth: []
+      - oauth2:
+        - export:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
+        "200":
           description: Export jobs retrieved successfully
           content:
             application/json:
@@ -266,42 +301,51 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ExportJob'
+                      $ref: "#/components/schemas/ExportJob"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/analytics/exports/{id}:
     get:
       tags:
-        - Exports
+      - Exports
       summary: Get export
       description: Get details of a specific export job
       operationId: getExport
       security:
-        - oauth2:
-            - export:read
-        - bearerAuth: []
+      - oauth2:
+        - export:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Export job identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Export job retrieved successfully
           content:
             application/json:
@@ -309,35 +353,40 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ExportJob'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/ExportJob"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/analytics/privacy/budget:
     get:
       tags:
-        - Privacy
+      - Privacy
       summary: Get privacy budget
       description: Get current privacy budget status
       operationId: getPrivacyBudget
       security:
-        - oauth2:
-            - privacy:read
-        - bearerAuth: []
+      - oauth2:
+        - privacy:read
+      - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Privacy budget retrieved successfully
           content:
             application/json:
@@ -345,38 +394,47 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PrivacyBudget'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/PrivacyBudget"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     post:
       tags:
-        - Privacy
+      - Privacy
       summary: Adjust privacy budget
       description: Adjust privacy budget allocation
       operationId: adjustPrivacyBudget
       security:
-        - oauth2:
-            - privacy:write
-        - bearerAuth: []
+      - oauth2:
+        - privacy:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PrivacyBudgetAdjustment'
+              $ref: "#/components/schemas/PrivacyBudgetAdjustment"
       responses:
-        '200':
+        "200":
           description: Privacy budget adjusted successfully
           content:
             application/json:
@@ -384,21 +442,98 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PrivacyBudget'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+                    $ref: "#/components/schemas/PrivacyBudget"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+  /v1/analytics/data-access:
+    get:
+      summary: "What do you know about me?"
+      description: |
+        User data export endpoint (GDPR/CCPA compliance).
+        Returns all data RegistryAccord has collected about the authenticated user.
+      operationId: getUserDataExport
+      tags:
+      - Transparency
+      security:
+      - bearerAuth: []
+      - oauth2:
+        - analytics:data-access:read
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: include
+        in: query
+        description: Data categories to include in export
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - profile
+            - behavioral
+            - consent
+            - analytics
+      responses:
+        "200":
+          description: User data export
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  profile_data:
+                    type: object
+                    description: User profile information
+                  behavioral_data:
+                    type: array
+                    description: Behavioral events collected
+                    items:
+                      type: object
+                  consent_history:
+                    type: array
+                    description: Consent records
+                    items:
+                      type: object
+                  export_timestamp:
+                    type: string
+                    format: date-time
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
 components:
   schemas:
@@ -436,7 +571,7 @@ components:
             referrer:
               type: string
               format: uri
-    
+
     MetricQuery:
       type: object
       required: [metrics, dimensions, filters, date_range]
@@ -468,12 +603,12 @@ components:
         granularity:
           type: string
           enum:
-            - HOURLY
-            - DAILY
-            - WEEKLY
-            - MONTHLY
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - MONTHLY
           default: DAILY
-    
+
     MetricResult:
       type: object
       required: [data, metadata]
@@ -500,7 +635,7 @@ components:
               type: integer
             row_count:
               type: integer
-    
+
     SchemaDefinition:
       type: object
       required: [id, name, version, schema]
@@ -520,7 +655,7 @@ components:
         created_at:
           type: string
           format: date-time
-    
+
     ExportRequest:
       type: object
       required: [name, format, query]
@@ -530,18 +665,18 @@ components:
         format:
           type: string
           enum:
-            - CSV
-            - JSON
-            - PARQUET
+          - CSV
+          - JSON
+          - PARQUET
         query:
-          $ref: '#/components/schemas/MetricQuery'
+          $ref: "#/components/schemas/MetricQuery"
         compression:
           type: string
           enum:
-            - GZIP
-            - NONE
+          - GZIP
+          - NONE
           default: NONE
-    
+
     ExportJob:
       type: object
       required: [id, name, status, format, created_at]
@@ -554,18 +689,18 @@ components:
         status:
           type: string
           enum:
-            - PENDING
-            - PROCESSING
-            - COMPLETED
-            - FAILED
+          - PENDING
+          - PROCESSING
+          - COMPLETED
+          - FAILED
         format:
           type: string
           enum:
-            - CSV
-            - JSON
-            - PARQUET
+          - CSV
+          - JSON
+          - PARQUET
         query:
-          $ref: '#/components/schemas/MetricQuery'
+          $ref: "#/components/schemas/MetricQuery"
         result_url:
           type: string
           format: uri
@@ -579,7 +714,7 @@ components:
         completed_at:
           type: string
           format: date-time
-    
+
     PrivacyBudget:
       type: object
       required: [total_epsilon, total_delta, consumed_epsilon, consumed_delta, remaining_epsilon, remaining_delta]
@@ -605,7 +740,7 @@ components:
         last_updated:
           type: string
           format: date-time
-    
+
     PrivacyBudgetAdjustment:
       type: object
       required: [epsilon, delta]
@@ -619,7 +754,7 @@ components:
         reason:
           type: string
           description: Reason for adjustment
-    
+
     Pagination:
       type: object
       properties:
@@ -631,18 +766,18 @@ components:
           type: string
         prev_cursor:
           type: string
-    
+
     Error:
       type: object
       required:
-        - error
+      - error
       properties:
         error:
           type: object
           required:
-            - code
-            - message
-            - correlationId
+          - code
+          - message
+          - correlationId
           properties:
             code:
               type: string
@@ -657,74 +792,107 @@ components:
               type: string
               format: uuid
               description: Unique identifier for tracing errors across systems
-  
+
   responses:
     BadRequest:
       description: Bad Request - The request was invalid or cannot be served
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Unauthorized:
       description: Unauthorized - Authentication failed or not provided
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Forbidden:
       description: Forbidden - The authenticated user does not have permission to access this resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     NotFound:
       description: Not Found - The requested resource could not be found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Conflict:
       description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
     TooManyRequests:
       description: Too Many Requests - The user has sent too many requests in a given amount of time
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     ServiceUnavailable:
       description: Service Unavailable - The server is currently unable to handle the request
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-  
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
   parameters:
     Limit:
       name: limit
@@ -736,7 +904,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-    
+
     After:
       name: after
       in: query
@@ -744,7 +912,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
@@ -752,7 +920,34 @@ components:
       required: false
       schema:
         type: string
-  
+
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Unique request correlation ID (UUID v4) propagated across services
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2
@@ -762,24 +957,26 @@ components:
           tokenUrl: https://auth.registryaccord.com/token
           scopes:
             event:write: Ingest analytics events
-            metric:read: Query analytics metrics
-            schema:read: Read event schemas
-            schema:write: Register event schemas
-            export:read: Read data export jobs
-            export:write: Create data export jobs
-            privacy:read: Read privacy budget status
+            metric:read: Query metrics
+            schema:write: Register schemas
+            schema:read: List schemas
+            export:write: Create exports
+            export:read: View exports
+            privacy:read: View privacy budget
             privacy:write: Adjust privacy budget
+            analytics:data-access:read: Retrieve user data export
         clientCredentials:
           tokenUrl: https://auth.registryaccord.com/token
           scopes:
             event:write: Ingest analytics events
-            metric:read: Query analytics metrics
-            schema:read: Read event schemas
-            schema:write: Register event schemas
-            export:read: Read data export jobs
-            export:write: Create data export jobs
-            privacy:read: Read privacy budget status
+            metric:read: Query metrics
+            schema:write: Register schemas
+            schema:read: List schemas
+            export:write: Create exports
+            export:read: View exports
+            privacy:read: View privacy budget
             privacy:write: Adjust privacy budget
+            analytics:data-access:read: Retrieve user data export
     bearerAuth:
       type: http
       scheme: bearer

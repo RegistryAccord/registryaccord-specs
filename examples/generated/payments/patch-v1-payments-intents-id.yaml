@@ -1,0 +1,35 @@
+service: payments
+path: /v1/payments/intents/{id}
+method: PATCH
+summary: Update payment intent
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    description: string-value
+    metadata: {}
+    split_rules:
+    - recipient_id: 123e4567-e89b-12d3-a456-426614174000
+      type: FIXED_AMOUNT
+      amount: 0
+      percentage: 15.5
+      description: string-value
+      amount_or_percentage:
+response:
+  status: "200"
+  description: Payment intent updated successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 10000
+      currency: "USD"
+      description: string-value
+      metadata: {}
+      status:
+      created_at:

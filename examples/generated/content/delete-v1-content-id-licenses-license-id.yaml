@@ -1,0 +1,17 @@
+service: content
+path: /v1/content/{id}/licenses/{license_id}
+method: DELETE
+summary: Remove license from content
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    license_id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "204"
+  description: License removed successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:

@@ -1,0 +1,16 @@
+service: identity
+path: /v1/tokens/{id}
+method: DELETE
+summary: Revoke token
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "204"
+  description: No Content - Successful operation with no response body
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+  body:

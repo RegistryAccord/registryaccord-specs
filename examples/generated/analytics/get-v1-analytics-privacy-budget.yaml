@@ -1,0 +1,17 @@
+service: analytics
+path: /v1/analytics/privacy/budget
+method: GET
+summary: Get privacy budget
+response:
+  status: "200"
+  description: Privacy budget retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      total_epsilon: 0.0
+      total_delta: 0.0
+      consumed_epsilon: 0.0
+      consumed_delta: 0.0
+      remaining_epsilon: 0.0
+      remaining_delta:

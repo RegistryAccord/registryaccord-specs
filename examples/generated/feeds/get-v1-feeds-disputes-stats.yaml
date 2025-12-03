@@ -1,0 +1,22 @@
+service: feeds
+path: /v1/feeds/disputes/stats
+method: GET
+summary: Retrieve dispute statistics
+response:
+  status: "200"
+  description: Dispute statistics retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      total_disputes: 1
+      disputes_by_type:
+        demographic_bias: 1
+        content_discrimination: 1
+        engagement_manipulation: 1
+        other: 1
+      average_resolution_time_days: 0.0
+      resolution_outcomes:
+        upheld: 1
+        dismissed: 1
+        partially_upheld: 1

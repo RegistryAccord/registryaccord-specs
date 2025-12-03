@@ -1,0 +1,26 @@
+service: storage
+path: /v1/storage/objects
+method: GET
+summary: List objects
+request:
+  queryParams:
+    bucket_id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Objects retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      bucket_id: 123e4567-e89b-12d3-a456-426614174000
+      key: string-value
+      size_bytes: 0
+      content_type: "video/mp4"
+      checksum:
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor: string-value
+      prev_cursor: string-value

@@ -1,0 +1,20 @@
+service: analytics
+path: /v1/analytics/privacy/budget
+method: POST
+summary: Adjust privacy budget
+request:
+  body:
+    epsilon: 0.0
+    delta: 0.0
+    reason: string-value
+response:
+  status: "200"
+  description: Privacy budget adjusted successfully
+  body:
+    data:
+      total_epsilon: 0.0
+      total_delta: 0.0
+      consumed_epsilon: 0.0
+      consumed_delta: 0.0
+      remaining_epsilon: 0.0
+      remaining_delta:

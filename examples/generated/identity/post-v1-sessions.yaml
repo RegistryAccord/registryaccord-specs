@@ -1,0 +1,24 @@
+service: identity
+path: /v1/sessions
+method: POST
+summary: Create session
+request:
+  body:
+    identity_id: 123e4567-e89b-12d3-a456-426614174000
+    user_agent: string-value
+    ip_address: string-value
+response:
+  status: "201"
+  description: Session created successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      identity_id: 123e4567-e89b-12d3-a456-426614174000
+      created_at: '2025-11-06T12:00:00Z'
+      expires_at: '2025-11-06T12:00:00Z'
+      last_accessed_at: '2025-11-06T12:00:00Z'

@@ -1,0 +1,27 @@
+service: payments
+path: /v1/payouts/{id}/hold
+method: POST
+summary: Hold payout
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    hold_reason: FRAUD_REVIEW
+    hold_until: '2025-11-06T12:00:00Z'
+response:
+  status: "200"
+  description: Payout held successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      recipient_id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 0
+      currency: "^[A-Z]{3}$"
+      status: PENDING
+      created_at:

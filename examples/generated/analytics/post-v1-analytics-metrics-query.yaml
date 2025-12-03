@@ -1,0 +1,27 @@
+service: analytics
+path: /v1/analytics/metrics/query
+method: POST
+summary: Query metrics
+request:
+  body:
+    metrics:
+    - string-value
+    dimensions:
+    - string-value
+    filters: {}
+    date_range:
+      start: string-value
+      end: string-value
+    granularity: DAILY
+response:
+  status: "200"
+  description: Metrics query successful
+  body:
+    data:
+      data:
+      - dimensions: {}
+        metrics: {}
+      metadata:
+        query_id: 123e4567-e89b-12d3-a456-426614174000
+        execution_time_ms: 1
+        row_count: 1

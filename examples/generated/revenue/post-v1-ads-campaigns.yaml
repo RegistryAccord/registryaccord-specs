@@ -1,0 +1,26 @@
+service: revenue
+path: /v1/ads/campaigns
+method: POST
+summary: Create campaign
+request:
+  body:
+    name: string-value
+    advertiser_id: 123e4567-e89b-12d3-a456-426614174000
+    start_date: string-value
+    end_date: string-value
+    budget:
+      amount: 0
+      currency: "^[A-Z]{3}$"
+response:
+  status: "201"
+  description: Campaign created successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      advertiser_id: 123e4567-e89b-12d3-a456-426614174000
+      start_date: string-value
+      end_date: string-value
+      budget:
+      status:
+      created_at:

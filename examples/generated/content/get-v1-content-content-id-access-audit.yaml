@@ -1,0 +1,29 @@
+service: content
+path: /v1/content/{content_id}/access-audit
+method: GET
+summary: "Who accessed my content?"
+request:
+  pathParams:
+    content_id: string-value
+  queryParams:
+    start_date: '2025-11-06T12:00:00Z'
+    end_date: '2025-11-06T12:00:00Z'
+    limit: 50
+response:
+  status: "200"
+  description: Content access audit log
+  headers:
+    ETag:
+  body:
+    content_id: string-value
+    access_logs:
+    - timestamp: '2025-11-06T12:00:00Z'
+      accessor_id: string-value
+      action: VIEW
+      ip_address: string-value
+      user_agent: string-value
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

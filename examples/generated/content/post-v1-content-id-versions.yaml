@@ -1,0 +1,30 @@
+service: content
+path: /v1/content/{id}/versions
+method: POST
+summary: Create new content version
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    parent_version_id: 123e4567-e89b-12d3-a456-426614174000
+    hash: "^[a-f0-9]{64}$"
+    size_bytes: 0
+    storage_url: https://api.registryaccord.com/resource/123
+    metadata: {}
+response:
+  status: "201"
+  description: Content version created successfully
+  headers:
+    Location:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    content_id: 123e4567-e89b-12d3-a456-426614174000
+    version_number: 1
+    parent_version_id:
+    hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    created_at:

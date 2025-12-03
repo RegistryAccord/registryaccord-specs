@@ -1,0 +1,17 @@
+{
+    "items": [
+        {
+            "id": "item_last",
+            "name": "Last Item in Collection",
+            "created_at": "2025-11-18T05:00:00Z"
+        }
+    ],
+    "pagination": {
+        "total_count": 1,
+        "has_next_page": false,
+        "next_cursor": null,
+        "prev_cursor": "cursor_xyz",
+        "limit": 50
+    },
+    "timestamp": "2025-11-18T06:00:00Z"
+}

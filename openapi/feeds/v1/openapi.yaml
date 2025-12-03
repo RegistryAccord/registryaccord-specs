@@ -2,6 +2,10 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Feed Generator API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Pluggable feed generation and ranking system with deterministic baseline,
     custom rankers, and A/B testing support.
@@ -14,43 +18,47 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 tags:
-  - name: Feeds
-    description: Generate personalized feeds
-  - name: Signals
-    description: Manage ranking signals
-  - name: Experiments
-    description: A/B testing for ranking algorithms
+- name: Collections
+  description: Manage feed collections (curated sets of ranked content)
+- name: Content
+  description: Manage source content and related events
+- name: Experiments
+  description: A/B testing for ranking algorithms
+- name: Feeds
+  description: Generate personalized feeds
+- name: Signals
+  description: Manage ranking signals
 
 servers:
-  - url: https://api.registryaccord.dev/feeds
-    description: Development environment
-  - url: https://api.registryaccord.com/feeds
-    description: Production environment
+- url: https://api.registryaccord.dev/feeds
+  description: Development environment
+- url: https://api.registryaccord.com/feeds
+  description: Production environment
 
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   /v1/feeds/query:
     post:
       tags:
-        - Feeds
+      - Feeds
       summary: Generate personalized feed
       description: Generate a personalized feed for a user
       operationId: generateFeed
       security:
-        - oauth2:
-            - feed:read
-        - bearerAuth: []
+      - oauth2:
+        - feed:read
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FeedQuery'
+              $ref: "#/components/schemas/FeedQuery"
       responses:
-        '200':
+        "200":
           description: Feed generated successfully
           content:
             application/json:
@@ -60,44 +68,52 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/FeedItem'
+                      $ref: "#/components/schemas/FeedItem"
                   cache_id:
                     type: string
                     format: uuid
                     description: ID of cached feed for future retrieval
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/feeds/{id}:
     get:
       tags:
-        - Feeds
+      - Feeds
       summary: Get cached feed
       description: Retrieve a previously generated feed by ID
       operationId: getCachedFeed
       security:
-        - oauth2:
-            - feed:read
-        - bearerAuth: []
+      - oauth2:
+        - feed:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Cached feed identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Cached feed retrieved successfully
           content:
             application/json:
@@ -107,35 +123,40 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/FeedItem'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                      $ref: "#/components/schemas/FeedItem"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/feeds/signals:
     get:
       tags:
-        - Signals
+      - Signals
       summary: List available ranking signals
       description: List all available ranking signals
       operationId: listSignals
       security:
-        - oauth2:
-            - signal:read
-        - bearerAuth: []
+      - oauth2:
+        - signal:read
+      - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Ranking signals retrieved successfully
           content:
             application/json:
@@ -145,31 +166,40 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RankingSignal'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                      $ref: "#/components/schemas/RankingSignal"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/feeds/signals/custom:
     post:
       tags:
-        - Signals
+      - Signals
       summary: Register custom signal
       description: Register a custom ranking signal
       operationId: registerCustomSignal
       security:
-        - oauth2:
-            - signal:write
-        - bearerAuth: []
+      - oauth2:
+        - signal:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -177,9 +207,9 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - description
-                - implementation_url
+              - name
+              - description
+              - implementation_url
               properties:
                 name:
                   type: string
@@ -190,7 +220,7 @@ paths:
                   format: uri
                   description: URL to the signal implementation
       responses:
-        '201':
+        "201":
           description: Custom signal registered successfully
           content:
             application/json:
@@ -198,41 +228,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RankingSignal'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/RankingSignal"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/feeds/experiments:
     post:
       tags:
-        - Experiments
+      - Experiments
       summary: Create A/B test
       description: Create a new A/B test for ranking algorithms
       operationId: createExperiment
       security:
-        - oauth2:
-            - experiment:write
-        - bearerAuth: []
+      - oauth2:
+        - experiment:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Experiment'
+              $ref: "#/components/schemas/Experiment"
       responses:
-        '201':
+        "201":
           description: A/B test created successfully
           content:
             application/json:
@@ -240,38 +274,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Experiment'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Experiment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Experiments
+      - Experiments
       summary: List experiments
       description: List all A/B tests
       operationId: listExperiments
       security:
-        - oauth2:
-            - experiment:read
-        - bearerAuth: []
+      - oauth2:
+        - experiment:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
+        "200":
           description: A/B tests retrieved successfully
           content:
             application/json:
@@ -281,42 +322,51 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Experiment'
+                      $ref: "#/components/schemas/Experiment"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/feeds/experiments/{id}/results:
     get:
       tags:
-        - Experiments
+      - Experiments
       summary: Get experiment results
       description: Retrieve results for a specific A/B test
       operationId: getExperimentResults
       security:
-        - oauth2:
-            - experiment:read
-        - bearerAuth: []
+      - oauth2:
+        - experiment:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Experiment identifier
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: A/B test results retrieved successfully
           content:
             application/json:
@@ -355,42 +405,50 @@ paths:
                       confidence:
                         type: number
                         description: Statistical confidence level (0-1)
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/feeds/scorecards/{ranker_id}:
     get:
       tags:
-        - Feeds
+      - Feeds
       summary: Retrieve public fairness scorecard
       description: Retrieve public fairness scorecard for a certified ranker
       operationId: getFairnessScorecard
       security:
-        - oauth2:
-            - feed:read
-        - bearerAuth: []
+      - oauth2:
+        - feed:read
+      - bearerAuth: []
       parameters:
-        - name: ranker_id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Unique identifier for the ranker
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: ranker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier for the ranker
       responses:
-        '200':
+        "200":
           description: Fairness scorecard retrieved successfully
           content:
             application/json:
@@ -398,43 +456,51 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/FairnessScorecard'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/FairnessScorecard"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/feeds/audits/{ranker_id}:
     get:
       tags:
-        - Feeds
+      - Feeds
       summary: Retrieve audit history
       description: Retrieve audit history and results for a ranker
       operationId: getAuditHistory
       security:
-        - oauth2:
-            - feed:read
-        - bearerAuth: []
+      - oauth2:
+        - feed:read
+      - bearerAuth: []
       parameters:
-        - name: ranker_id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Unique identifier for the ranker
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: ranker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier for the ranker
       responses:
-        '200':
+        "200":
           description: Audit history retrieved successfully
           content:
             application/json:
@@ -444,8 +510,8 @@ paths:
                   data:
                     type: object
                     required:
-                      - ranker_id
-                      - audits
+                    - ranker_id
+                    - audits
                     properties:
                       ranker_id:
                         type: string
@@ -453,41 +519,46 @@ paths:
                       audits:
                         type: array
                         items:
-                          $ref: '#/components/schemas/AuditReport'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                          $ref: "#/components/schemas/AuditReport"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/feeds/disputes:
     post:
       tags:
-        - Feeds
+      - Feeds
       summary: Submit fairness dispute
       description: Submit a fairness dispute
       operationId: submitDispute
       security:
-        - oauth2:
-            - feed:read
-        - bearerAuth: []
+      - oauth2:
+        - feed:read
+      - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DisputeSubmission'
+              $ref: "#/components/schemas/DisputeSubmission"
       responses:
-        '201':
+        "201":
           description: Dispute submitted successfully
           content:
             application/json:
@@ -495,31 +566,35 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/DisputeOutcome'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/DisputeOutcome"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/feeds/disputes/stats:
     get:
       tags:
-        - Feeds
+      - Feeds
       summary: Retrieve dispute statistics
       description: Retrieve aggregated dispute statistics (public, no auth required)
       operationId: getDisputeStats
       responses:
-        '200':
+        "200":
           description: Dispute statistics retrieved successfully
           content:
             application/json:
@@ -553,19 +628,28 @@ paths:
                             type: integer
                           partially_upheld:
                             type: integer
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
 components:
   schemas:
     FeedQuery:
@@ -578,10 +662,10 @@ components:
         ranker:
           type: string
           enum:
-            - BASELINE_CHRONOLOGICAL
-            - ENGAGEMENT_BASED
-            - RELEVANCE_BASED
-            - CUSTOM
+          - BASELINE_CHRONOLOGICAL
+          - ENGAGEMENT_BASED
+          - RELEVANCE_BASED
+          - CUSTOM
           default: BASELINE_CHRONOLOGICAL
         custom_ranker_id:
           type: string
@@ -601,7 +685,7 @@ components:
           type: string
           format: uuid
           description: A/B test experiment ID
-    
+
     FeedItem:
       type: object
       required: [content_id, score, position]
@@ -632,7 +716,7 @@ components:
                     type: string
                 weights:
                   type: object
-    
+
     RankingSignal:
       type: object
       required: [id, name, type]
@@ -644,14 +728,14 @@ components:
         type:
           type: string
           enum:
-            - RECENCY
-            - ENGAGEMENT
-            - RELEVANCE
-            - SOCIAL_GRAPH
-            - CUSTOM
+          - RECENCY
+          - ENGAGEMENT
+          - RELEVANCE
+          - SOCIAL_GRAPH
+          - CUSTOM
         description:
           type: string
-    
+
     Experiment:
       type: object
       required: [id, name, variants, status, created_at]
@@ -679,14 +763,14 @@ components:
         status:
           type: string
           enum:
-            - DRAFT
-            - RUNNING
-            - PAUSED
-            - COMPLETED
+          - DRAFT
+          - RUNNING
+          - PAUSED
+          - COMPLETED
         created_at:
           type: string
           format: date-time
-    
+
     Pagination:
       type: object
       properties:
@@ -698,18 +782,18 @@ components:
           type: string
         prev_cursor:
           type: string
-    
+
     Error:
       type: object
       required:
-        - error
+      - error
       properties:
         error:
           type: object
           required:
-            - code
-            - message
-            - correlationId
+          - code
+          - message
+          - correlationId
           properties:
             code:
               type: string
@@ -724,13 +808,13 @@ components:
               type: string
               format: uuid
               description: Unique identifier for tracing errors across systems
-    
+
     FairnessScorecard:
       type: object
       required:
-        - ranker_id
-        - last_audit_date
-        - certification_status
+      - ranker_id
+      - last_audit_date
+      - certification_status
       properties:
         ranker_id:
           type: string
@@ -778,14 +862,14 @@ components:
         dispute_count:
           type: integer
           description: Number of active disputes
-    
+
     AuditReport:
       type: object
       required:
-        - audit_id
-        - audit_date
-        - auditor_name
-        - findings
+      - audit_id
+      - audit_date
+      - auditor_name
+      - findings
       properties:
         audit_id:
           type: string
@@ -814,13 +898,13 @@ components:
         next_audit_date:
           type: string
           format: date-time
-    
+
     DisputeSubmission:
       type: object
       required:
-        - ranker_id
-        - dispute_type
-        - description
+      - ranker_id
+      - dispute_type
+      - description
       properties:
         ranker_id:
           type: string
@@ -848,13 +932,13 @@ components:
             supporting_data:
               type: string
               description: Additional supporting information
-    
+
     DisputeOutcome:
       type: object
       required:
-        - dispute_id
-        - status
-        - created_at
+      - dispute_id
+      - status
+      - created_at
       properties:
         dispute_id:
           type: string
@@ -879,74 +963,107 @@ components:
               format: date-time
             summary:
               type: string
-  
+
   responses:
     BadRequest:
       description: Bad Request - The request was invalid or cannot be served
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Unauthorized:
       description: Unauthorized - Authentication failed or not provided
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Forbidden:
       description: Forbidden - The authenticated user does not have permission to access this resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     NotFound:
       description: Not Found - The requested resource could not be found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Conflict:
       description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
     TooManyRequests:
       description: Too Many Requests - The user has sent too many requests in a given amount of time
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     ServiceUnavailable:
       description: Service Unavailable - The server is currently unable to handle the request
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-  
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
   parameters:
     Limit:
       name: limit
@@ -958,7 +1075,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-    
+
     After:
       name: after
       in: query
@@ -966,7 +1083,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
@@ -974,7 +1091,34 @@ components:
       required: false
       schema:
         type: string
-  
+
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Unique request correlation ID (UUID v4) propagated across services
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2

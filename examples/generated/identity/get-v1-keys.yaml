@@ -1,0 +1,23 @@
+service: identity
+path: /v1/keys
+method: GET
+summary: List keys
+response:
+  status: "200"
+  description: Keys retrieved successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      identity_id: 123e4567-e89b-12d3-a456-426614174000
+      public_key: string-value
+      key_type: ed25519
+      created_at: '2025-11-06T12:00:00Z'
+    pagination:
+      next_cursor:
+      has_next_page: true

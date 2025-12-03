@@ -1,0 +1,30 @@
+service: identity
+path: /v1/audit
+method: GET
+summary: Query audit events
+request:
+  queryParams:
+    start_time: '2025-11-06T12:00:00Z'
+    end_time: '2025-11-06T12:00:00Z'
+    identity_id: 123e4567-e89b-12d3-a456-426614174000
+    event_type: string-value
+response:
+  status: "200"
+  description: Audit events retrieved successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      identity_id: 123e4567-e89b-12d3-a456-426614174000
+      event_type: string-value
+      resource_type: string-value
+      resource_id: 123e4567-e89b-12d3-a456-426614174000
+      timestamp:
+    pagination:
+      next_cursor:
+      has_next_page: true

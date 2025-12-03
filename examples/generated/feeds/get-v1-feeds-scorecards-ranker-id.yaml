@@ -1,0 +1,22 @@
+service: feeds
+path: /v1/feeds/scorecards/{ranker_id}
+method: GET
+summary: Retrieve public fairness scorecard
+request:
+  pathParams:
+    ranker_id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Fairness scorecard retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+      ranker_id: 123e4567-e89b-12d3-a456-426614174000
+      last_audit_date: '2025-11-06T12:00:00Z'
+      next_audit_date: '2025-11-06T12:00:00Z'
+      fairness_scores:
+        demographic_parity: 0
+        content_equity: 0
+        engagement_fairness: 0
+      certification_status: CERTIFIED

@@ -1,0 +1,113 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "RegistryAccord Privacy Policy",
+    "version": "2025-11-01",
+    "last_updated": "2025-11-18",
+    "principles": {
+        "purpose_limitation": {
+            "enabled": true,
+            "enforcement": "All event schemas must include a 'purpose' tag",
+            "allowed_purposes": [
+                "functional",
+                "analytics",
+                "ranking",
+                "advertising"
+            ],
+            "prohibited_cross_purpose_use": true,
+            "validation_api": "/v1/analytics/purpose-audit"
+        },
+        "differential_privacy": {
+            "enabled": true,
+            "epsilon_budget_per_user_per_day": 1.0,
+            "k_anonymity_threshold": 1000,
+            "services": [
+                "analytics",
+                "revenue"
+            ],
+            "budget_status_endpoint": "/v1/analytics/privacy-budget/status",
+            "warning_threshold": 0.8
+        },
+        "right_to_erasure": {
+            "sla_days": 30,
+            "cascade_services": [
+                "identity",
+                "content",
+                "storage",
+                "analytics",
+                "payments"
+            ],
+            "deletion_policy": "soft_delete_with_retention",
+            "retention_period_days": 90,
+            "audit_trail_required": true,
+            "deletion_verification_api": "/v1/identity/deletion-status"
+        },
+        "consent_management": {
+            "granular_consent_taxonomy": [
+                "functional",
+                "analytics",
+                "advertising",
+                "cross_app_sharing"
+            ],
+            "consent_withdrawal_sla_hours": 24,
+            "consent_receipts_required": true,
+            "consent_api_endpoints": [
+                "/v1/identity/consents",
+                "/v1/identity/consents/{consent_id}"
+            ],
+            "consent_proof_format": "JWT with claim 'consent_id'"
+        },
+        "no_shadow_profiles": {
+            "enabled": true,
+            "enforcement": "Behavioral data collection prohibited before explicit consent",
+            "violation_consequences": "Conformance badge revocation + 30-day suspension",
+            "monitoring_api": "/v1/identity/shadow-profile-audit"
+        },
+        "data_residency": {
+            "supported_regions": [
+                "us",
+                "eu",
+                "apac"
+            ],
+            "region_routing_api": "/v1/identity/data-residency",
+            "compliance_attestation_endpoint": "/v1/identity/compliance-status",
+            "data_sovereignty_enforcement": true,
+            "cross_region_transfer_consent_required": true
+        },
+        "behavioral_tracking_limits": {
+            "no_cross_app_correlation": true,
+            "cross_app_correlation_exception": "Explicit user consent with 90-day renewal",
+            "tracking_expiry_days": 365,
+            "tracking_minimization": "Collect only necessary data for stated purpose"
+        }
+    },
+    "breach_notification": {
+        "timeframe_hours": 72,
+        "notification_channels": [
+            "email",
+            "in_app",
+            "webhook"
+        ],
+        "regulatory_compliance": [
+            "GDPR",
+            "CCPA",
+            "PIPEDA"
+        ],
+        "notification_api": "/v1/identity/breach-notifications",
+        "severity_levels": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+        ]
+    },
+    "data_minimization": {
+        "collect_only_necessary": true,
+        "retention_policies": {
+            "behavioral_data_days": 365,
+            "audit_logs_days": 730,
+            "payment_records_years": 7,
+            "session_data_days": 30
+        },
+        "anonymization_requirements": "PII removed after retention period"
+    }
+}

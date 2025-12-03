@@ -1,0 +1,34 @@
+service: content
+path: /v1/content
+method: GET
+summary: List content
+request:
+  queryParams:
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+    content_type: string-value
+    tag: string-value
+response:
+  status: "200"
+  description: Content list retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: "c7e8a9b0-1234-5678-90ab-cdef12345678"
+      owner_id: 123e4567-e89b-12d3-a456-426614174000
+      content_type: "video/mp4"
+      title: string-value
+      description: string-value
+      created_at:
+      updated_at:
+      current_version_id:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor:
+      prev_cursor:

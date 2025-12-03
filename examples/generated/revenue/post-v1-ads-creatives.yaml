@@ -1,0 +1,25 @@
+service: revenue
+path: /v1/ads/creatives
+method: POST
+summary: Upload creative
+request:
+  body:
+    name: string-value
+    content_type: "image/jpeg"
+    size_bytes: 0
+    checksum:
+      md5: string-value
+      sha256: string-value
+response:
+  status: "201"
+  description: Creative upload initiated successfully
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      content_type: "image/jpeg"
+      size_bytes: 0
+      checksum:
+        md5: string-value
+        sha256: string-value
+      created_at:

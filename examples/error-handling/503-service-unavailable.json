@@ -1,0 +1,14 @@
+{
+    "type": "https://registryaccord.org/errors/server/service-unavailable",
+    "title": "Service Unavailable",
+    "status": 503,
+    "detail": "The service is temporarily unavailable due to scheduled maintenance. Service will resume at 2025-11-18T08:00:00Z",
+    "instance": "/v1/content",
+    "correlation_id": "550e8400-e29b-41d4-a716-446655440006",
+    "timestamp": "2025-11-18T06:00:00Z",
+    "retry_after_seconds": 7200,
+    "maintenance_window": {
+        "start": "2025-11-18T06:00:00Z",
+        "end": "2025-11-18T08:00:00Z"
+    }
+}

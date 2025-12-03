@@ -1,0 +1,21 @@
+service: analytics
+path: /v1/analytics/data-access
+method: GET
+summary: "What do you know about me?"
+request:
+  queryParams:
+    include:
+    - profile
+response:
+  status: "200"
+  description: User data export
+  headers:
+    ETag:
+  body:
+    user_id: string-value
+    profile_data: {}
+    behavioral_data:
+    - {}
+    consent_history:
+    - {}
+    export_timestamp: '2025-11-06T12:00:00Z'

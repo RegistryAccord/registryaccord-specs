@@ -4,6 +4,12 @@
 
 Accepted
 
+## Summary
+
+All error responses across RegistryAccord APIs follow the RFC 7807 Problem Details format. Every error includes the standard fields (`type`, `title`, `status`, `detail`, `instance`) plus RegistryAccord extensions such as `correlation_id` and `timestamp` so clients receive machine-readable diagnostics with traceability.
+
+This ensures a consistent developer experience across all seven services and aligns with ecosystem tooling that natively supports RFC 7807, reducing bespoke error-handling code and improving observability.
+
 ## Context
 
 RegistryAccord APIs need a standardized approach to error reporting that provides consistent, machine-readable error information to clients. Without a standard format, clients must implement custom error handling for each API, leading to:
@@ -112,6 +118,40 @@ X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440001
   "error_code": "AUTH_FAILED"
 }
 ```
+
+## Implementation
+
+### Standard Error Envelope
+
+All 4xx/5xx responses return:
+
+```json
+{
+  "type": "https://registryaccord.org/errors/{category}/{code}",
+  "title": "Human-readable title",
+  "status": 400,
+  "detail": "Specific explanation",
+  "instance": "/v1/content/cnt_abc123",
+  "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2025-11-18T06:00:00Z"
+}
+```
+
+### Error Catalog & Schemas
+
+- `schemas/errors/catalog.json` defines every error type (URI, title, status, retry hints).
+- Shared `Error` schema lives in each OpenAPI spec (`components/schemas/Error`) requiring correlation ID and timestamp.
+- Spectral rule `require-correlation-id` enforces the schema during linting.
+
+### Specification Usage
+
+Every path operation documents 400/401/403/404/429/500/503 responses referencing the shared schema. Rate-limit responses also include `Retry-After` headers.
+
+### Examples & Tooling
+
+- `examples/error-handling/*.json` provide concrete payloads for all major scenarios.
+- SDKs surface strongly typed exceptions that deserialize RFC 7807 payloads.
+- Validation scripts (`npm run lint`) ensure schemas reference the shared Error definition.
 
 ## References
 

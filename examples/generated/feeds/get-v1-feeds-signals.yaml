@@ -1,0 +1,15 @@
+service: feeds
+path: /v1/feeds/signals
+method: GET
+summary: List available ranking signals
+response:
+  status: "200"
+  description: Ranking signals retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: string-value
+      name: string-value
+      type: RECENCY
+      description: string-value

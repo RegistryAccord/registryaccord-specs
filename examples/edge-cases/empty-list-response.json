@@ -1,0 +1,10 @@
+{
+    "items": [],
+    "pagination": {
+        "total_count": 0,
+        "has_next_page": false,
+        "next_cursor": null,
+        "limit": 50
+    },
+    "timestamp": "2025-11-18T06:00:00Z"
+}

@@ -1,0 +1,25 @@
+service: content
+path: /v1/content/{id}/licenses
+method: GET
+summary: List content licenses
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Content licenses list retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      content_id: 123e4567-e89b-12d3-a456-426614174000
+      license_type: CC0
+      license_url: https://api.registryaccord.com/resource/123
+      terms: string-value
+      granted_at:

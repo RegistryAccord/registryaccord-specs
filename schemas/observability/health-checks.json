@@ -1,0 +1,199 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Health Check Standards",
+    "version": "2025-11-01",
+    "description": "Standard health check endpoints for all RegistryAccord services",
+    "endpoints": [
+        {
+            "path": "/livez",
+            "method": "GET",
+            "description": "Liveness probe - returns 200 if service process is running",
+            "response_200": {
+                "type": "object",
+                "required": [
+                    "status",
+                    "timestamp",
+                    "service",
+                    "version"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "status": "ok",
+                    "timestamp": "2025-11-18T06:00:00Z",
+                    "service": "identity-service",
+                    "version": "1.0.0"
+                }
+            },
+            "response_503": {
+                "type": "object",
+                "required": [
+                    "status",
+                    "timestamp",
+                    "service",
+                    "version",
+                    "reason"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "unavailable"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "status": "unavailable",
+                    "timestamp": "2025-11-18T06:00:00Z",
+                    "service": "identity-service",
+                    "version": "1.0.0",
+                    "reason": "Database connection failed"
+                }
+            }
+        },
+        {
+            "path": "/readyz",
+            "method": "GET",
+            "description": "Readiness probe - returns 200 if service is ready to accept traffic",
+            "response_200": {
+                "type": "object",
+                "required": [
+                    "status",
+                    "checks",
+                    "timestamp",
+                    "service",
+                    "version"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ready"
+                        ]
+                    },
+                    "checks": {
+                        "type": "object",
+                        "properties": {
+                            "database": {
+                                "type": "string",
+                                "enum": [
+                                    "ok",
+                                    "degraded",
+                                    "failed"
+                                ]
+                            },
+                            "cache": {
+                                "type": "string",
+                                "enum": [
+                                    "ok",
+                                    "degraded",
+                                    "failed"
+                                ]
+                            },
+                            "external_services": {
+                                "type": "string",
+                                "enum": [
+                                    "ok",
+                                    "degraded",
+                                    "failed"
+                                ]
+                            }
+                        }
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "status": "ready",
+                    "checks": {
+                        "database": "ok",
+                        "cache": "ok",
+                        "external_services": "ok"
+                    },
+                    "timestamp": "2025-11-18T06:00:00Z",
+                    "service": "identity-service",
+                    "version": "1.0.0"
+                }
+            },
+            "response_503": {
+                "type": "object",
+                "required": [
+                    "status",
+                    "checks",
+                    "timestamp",
+                    "service",
+                    "version"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "not_ready"
+                        ]
+                    },
+                    "checks": {
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "status": "not_ready",
+                    "checks": {
+                        "database": "ok",
+                        "cache": "degraded",
+                        "external_services": "failed"
+                    },
+                    "timestamp": "2025-11-18T06:00:00Z",
+                    "service": "identity-service",
+                    "version": "1.0.0"
+                }
+            }
+        }
+    ]
+}

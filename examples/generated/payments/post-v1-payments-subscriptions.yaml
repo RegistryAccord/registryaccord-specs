@@ -1,0 +1,29 @@
+service: payments
+path: /v1/payments/subscriptions
+method: POST
+summary: Create subscription
+request:
+  body:
+    subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+    plan_id: string-value
+    amount: 0
+    currency: "^[A-Z]{3}$"
+    interval: DAILY
+response:
+  status: "201"
+  description: Subscription created successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      subscriber_id: 123e4567-e89b-12d3-a456-426614174000
+      plan_id: string-value
+      amount: 0
+      currency: "^[A-Z]{3}$"
+      status:
+      created_at:

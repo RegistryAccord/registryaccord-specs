@@ -1,0 +1,24 @@
+service: identity
+path: /v1/tokens/refresh
+method: POST
+summary: Refresh token
+request:
+  body:
+    refresh_token: string-value
+response:
+  status: "200"
+  description: Token refreshed successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      identity_id: 123e4567-e89b-12d3-a456-426614174000
+      token_type: access
+      scopes:
+      - string-value
+      issued_at: '2025-11-06T12:00:00Z'
+      expires_at:

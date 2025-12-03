@@ -1,0 +1,28 @@
+service: payments
+path: /v1/payments/charges/{id}/refund
+method: POST
+summary: Refund charge
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    amount: 0
+    reason: string-value
+response:
+  status: "200"
+  description: Charge refunded successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      payment_intent_id: 123e4567-e89b-12d3-a456-426614174000
+      amount: 0
+      amount_refunded: 0
+      currency: "^[A-Z]{3}$"
+      status:
+      created_at:

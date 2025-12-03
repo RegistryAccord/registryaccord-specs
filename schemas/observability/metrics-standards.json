@@ -1,0 +1,141 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "OpenTelemetry Metrics Standards",
+    "version": "2025-11-01",
+    "description": "Standard metrics for all RegistryAccord services following OpenTelemetry semantic conventions",
+    "standard": "OpenTelemetry Semantic Conventions",
+    "specification_url": "https://opentelemetry.io/docs/specs/semconv/",
+    "metric_categories": [
+        {
+            "category": "http",
+            "description": "HTTP server metrics",
+            "metrics": [
+                {
+                    "name": "http.server.request.duration",
+                    "type": "histogram",
+                    "unit": "seconds",
+                    "description": "Duration of HTTP server requests",
+                    "buckets": [
+                        0.005,
+                        0.01,
+                        0.025,
+                        0.05,
+                        0.075,
+                        0.1,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1,
+                        2.5,
+                        5,
+                        7.5,
+                        10
+                    ]
+                },
+                {
+                    "name": "http.server.request.count",
+                    "type": "counter",
+                    "unit": "requests",
+                    "description": "Total number of HTTP requests"
+                },
+                {
+                    "name": "http.server.active_requests",
+                    "type": "gauge",
+                    "unit": "requests",
+                    "description": "Number of active HTTP requests"
+                },
+                {
+                    "name": "http.server.response.size",
+                    "type": "histogram",
+                    "unit": "bytes",
+                    "description": "Size of HTTP response bodies"
+                }
+            ]
+        },
+        {
+            "category": "database",
+            "description": "Database operation metrics",
+            "metrics": [
+                {
+                    "name": "db.query.duration",
+                    "type": "histogram",
+                    "unit": "seconds",
+                    "description": "Database query execution time"
+                },
+                {
+                    "name": "db.connection.pool.size",
+                    "type": "gauge",
+                    "unit": "connections",
+                    "description": "Number of database connections in pool"
+                },
+                {
+                    "name": "db.connection.pool.idle",
+                    "type": "gauge",
+                    "unit": "connections",
+                    "description": "Number of idle database connections"
+                }
+            ]
+        },
+        {
+            "category": "cache",
+            "description": "Cache operation metrics",
+            "metrics": [
+                {
+                    "name": "cache.hit_rate",
+                    "type": "gauge",
+                    "unit": "ratio",
+                    "description": "Cache hit rate (0.0 to 1.0)"
+                },
+                {
+                    "name": "cache.operation.duration",
+                    "type": "histogram",
+                    "unit": "seconds",
+                    "description": "Cache operation latency"
+                },
+                {
+                    "name": "cache.size",
+                    "type": "gauge",
+                    "unit": "bytes",
+                    "description": "Current cache size"
+                }
+            ]
+        },
+        {
+            "category": "queue",
+            "description": "Message queue metrics",
+            "metrics": [
+                {
+                    "name": "queue.message.duration",
+                    "type": "histogram",
+                    "unit": "seconds",
+                    "description": "Time message spent in queue"
+                },
+                {
+                    "name": "queue.size",
+                    "type": "gauge",
+                    "unit": "messages",
+                    "description": "Number of messages in queue"
+                }
+            ]
+        }
+    ],
+    "required_dimensions": [
+        "service",
+        "environment",
+        "version"
+    ],
+    "optional_dimensions": [
+        "endpoint",
+        "status_code",
+        "error_type",
+        "method",
+        "db_system",
+        "cache_system"
+    ],
+    "implementation_notes": [
+        "All metrics must include required dimensions (service, environment, version)",
+        "Use OpenTelemetry semantic conventions for naming",
+        "Histogram buckets should be tuned per service SLOs",
+        "Metrics should be exported in Prometheus format or OTLP"
+    ]
+}

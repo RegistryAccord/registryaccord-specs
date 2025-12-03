@@ -1,0 +1,27 @@
+service: feeds
+path: /v1/feeds/query
+method: POST
+summary: Generate personalized feed
+request:
+  body:
+    user_id: 123e4567-e89b-12d3-a456-426614174000
+    ranker: BASELINE_CHRONOLOGICAL
+    custom_ranker_id: 123e4567-e89b-12d3-a456-426614174000
+    signals:
+    - string-value
+    limit: 50
+response:
+  status: "200"
+  description: Feed generated successfully
+  body:
+    data:
+    - content_id: 123e4567-e89b-12d3-a456-426614174000
+      score: 0.0
+      position: 1
+      explanation:
+        user_facing: "Popular with people you follow"
+        auditor_detail:
+          signals_used:
+          - string-value
+          weights: {}
+    cache_id: 123e4567-e89b-12d3-a456-426614174000

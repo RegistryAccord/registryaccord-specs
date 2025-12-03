@@ -1,0 +1,26 @@
+service: content
+path: /v1/content/{id}
+method: GET
+summary: Get content
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Content retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    id: "c7e8a9b0-1234-5678-90ab-cdef12345678"
+    owner_id: 123e4567-e89b-12d3-a456-426614174000
+    content_type: "video/mp4"
+    title: string-value
+    description: string-value
+    created_at:
+    updated_at:
+    current_version_id:

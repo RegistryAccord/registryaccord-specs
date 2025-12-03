@@ -2,6 +2,10 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Storage Gateway API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Storage abstraction layer enabling pluggable backends (S3, GCS, Azure, 3rd-party)
     with pre-signed URLs, multipart uploads, and KMS encryption integration.
@@ -14,35 +18,35 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 tags:
-  - name: Buckets
-    description: Manage storage buckets
-  - name: Objects
-    description: Manage storage objects
-  - name: Uploads
-    description: Handle multipart uploads
+- name: Buckets
+  description: Manage storage buckets
+- name: Objects
+  description: Manage storage objects
+- name: Uploads
+  description: Handle multipart uploads
 
 servers:
-  - url: https://api.registryaccord.dev/storage
-    description: Development environment
-  - url: https://api.registryaccord.com/storage
-    description: Production environment
+- url: https://api.registryaccord.dev/storage
+  description: Development environment
+- url: https://api.registryaccord.com/storage
+  description: Production environment
 
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   /v1/storage/buckets:
     post:
       tags:
-        - Buckets
+      - Buckets
       summary: Create bucket
       description: Create a new storage bucket
       operationId: createBucket
       security:
-        - oauth2:
-            - bucket:write
-        - bearerAuth: []
+      - oauth2:
+        - bucket:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -50,13 +54,13 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - owner_id
-                - provider
+              - name
+              - owner_id
+              - provider
               properties:
                 name:
                   type: string
-                  pattern: '^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+                  pattern: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
                   description: Bucket name (DNS-compliant)
                 owner_id:
                   type: string
@@ -64,10 +68,10 @@ paths:
                 provider:
                   type: string
                   enum:
-                    - S3
-                    - GCS
-                    - AZURE_BLOB
-                    - CUSTOM
+                  - S3
+                  - GCS
+                  - AZURE_BLOB
+                  - CUSTOM
                 region:
                   type: string
                   description: Storage region
@@ -83,7 +87,7 @@ paths:
                   type: boolean
                   default: false
       responses:
-        '201':
+        "201":
           description: Bucket created successfully
           content:
             application/json:
@@ -91,45 +95,52 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bucket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Bucket"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Buckets
+      - Buckets
       summary: List buckets
       description: List storage buckets with pagination
       operationId: listBuckets
       security:
-        - oauth2:
-            - bucket:read
-        - bearerAuth: []
+      - oauth2:
+        - bucket:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: owner_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by owner ID
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: owner_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by owner ID
       responses:
-        '200':
+        "200":
           description: Buckets retrieved successfully
           content:
             application/json:
@@ -139,42 +150,51 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Bucket'
+                      $ref: "#/components/schemas/Bucket"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/buckets/{id}:
     get:
       tags:
-        - Buckets
+      - Buckets
       summary: Get bucket
       description: Retrieve a storage bucket by ID
       operationId: getBucket
       security:
-        - oauth2:
-            - bucket:read
-        - bearerAuth: []
+      - oauth2:
+        - bucket:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Bucket ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Bucket retrieved successfully
           content:
             application/json:
@@ -182,70 +202,79 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bucket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Bucket"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     delete:
       tags:
-        - Buckets
+      - Buckets
       summary: Delete bucket
       description: Delete a storage bucket
       operationId: deleteBucket
       security:
-        - oauth2:
-            - bucket:write
-        - bearerAuth: []
+      - oauth2:
+        - bucket:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Bucket ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
+        "204":
           description: Bucket deleted successfully
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/objects:
     post:
       tags:
-        - Objects
+      - Objects
       summary: Initiate object upload
       description: Initiate a new object upload
       operationId: createObject
       security:
-        - oauth2:
-            - storage:write
-        - bearerAuth: []
+      - oauth2:
+        - storage:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -253,10 +282,10 @@ paths:
             schema:
               type: object
               required:
-                - bucket_id
-                - key
-                - content_type
-                - size_bytes
+              - bucket_id
+              - key
+              - content_type
+              - size_bytes
               properties:
                 bucket_id:
                   type: string
@@ -277,12 +306,12 @@ paths:
                 storage_class:
                   type: string
                   enum:
-                    - STANDARD
-                    - INFREQUENT_ACCESS
-                    - GLACIER
-                    - DEEP_ARCHIVE
+                  - STANDARD
+                  - INFREQUENT_ACCESS
+                  - GLACIER
+                  - DEEP_ARCHIVE
       responses:
-        '201':
+        "201":
           description: Object created successfully
           content:
             application/json:
@@ -290,47 +319,54 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/StorageObject'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/StorageObject"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Objects
+      - Objects
       summary: List objects
       description: List storage objects with pagination
       operationId: listObjects
       security:
-        - oauth2:
-            - storage:read
-        - bearerAuth: []
+      - oauth2:
+        - storage:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: bucket_id
-          in: query
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Filter by bucket ID
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: bucket_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Filter by bucket ID
       responses:
-        '200':
+        "200":
           description: Objects retrieved successfully
           content:
             application/json:
@@ -340,42 +376,51 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/StorageObject'
+                      $ref: "#/components/schemas/StorageObject"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/objects/{id}:
     get:
       tags:
-        - Objects
+      - Objects
       summary: Get object metadata
       description: Retrieve storage object metadata by ID
       operationId: getObject
       security:
-        - oauth2:
-            - storage:read
-        - bearerAuth: []
+      - oauth2:
+        - storage:read
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Object ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '200':
+        "200":
           description: Object metadata retrieved successfully
           content:
             application/json:
@@ -383,68 +428,77 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/StorageObject'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/StorageObject"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
     delete:
       tags:
-        - Objects
+      - Objects
       summary: Delete object
       description: Delete a storage object with cascading RTBF support
       operationId: deleteObject
       security:
-        - oauth2:
-            - storage:delete
-        - bearerAuth: []
+      - oauth2:
+        - storage:delete
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Object ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
+        "204":
           description: Object deleted successfully
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/uploads:
     post:
       tags:
-        - Uploads
+      - Uploads
       summary: Create multipart upload session
       description: Create a new multipart upload session
       operationId: createMultipartUpload
       security:
-        - oauth2:
-            - storage:write
-        - bearerAuth: []
+      - oauth2:
+        - storage:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -452,9 +506,9 @@ paths:
             schema:
               type: object
               required:
-                - bucket_id
-                - key
-                - content_type
+              - bucket_id
+              - key
+              - content_type
               properties:
                 bucket_id:
                   type: string
@@ -472,12 +526,12 @@ paths:
                 storage_class:
                   type: string
                   enum:
-                    - STANDARD
-                    - INFREQUENT_ACCESS
-                    - GLACIER
-                    - DEEP_ARCHIVE
+                  - STANDARD
+                  - INFREQUENT_ACCESS
+                  - GLACIER
+                  - DEEP_ARCHIVE
       responses:
-        '201':
+        "201":
           description: Multipart upload session created successfully
           content:
             application/json:
@@ -485,49 +539,57 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MultipartUpload'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/MultipartUpload"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
   /v1/storage/uploads/{id}/parts:
     post:
       tags:
-        - Uploads
+      - Uploads
       summary: Upload part
       description: Upload a part for a multipart upload
       operationId: uploadPart
       security:
-        - oauth2:
-            - storage:write
-        - bearerAuth: []
+      - oauth2:
+        - storage:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: part_number
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-          description: Part number (1-based index)
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Multipart upload ID
+        schema:
+          type: string
+          format: uuid
+      - name: part_number
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+        description: Part number (1-based index)
       requestBody:
         required: true
         content:
@@ -536,48 +598,52 @@ paths:
               type: string
               format: binary
       responses:
-        '200':
+        "200":
           description: Part uploaded successfully
           headers:
             ETag:
               description: Part ETag
               schema:
                 type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/uploads/{id}/complete:
     post:
       tags:
-        - Uploads
+      - Uploads
       summary: Complete upload
       description: Complete a multipart upload
       operationId: completeMultipartUpload
       security:
-        - oauth2:
-            - storage:write
-        - bearerAuth: []
+      - oauth2:
+        - storage:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Multipart upload ID
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -590,8 +656,8 @@ paths:
                   items:
                     type: object
                     required:
-                      - part_number
-                      - etag
+                    - part_number
+                    - etag
                     properties:
                       part_number:
                         type: integer
@@ -599,7 +665,7 @@ paths:
                       etag:
                         type: string
       responses:
-        '200':
+        "200":
           description: Multipart upload completed successfully
           content:
             application/json:
@@ -607,59 +673,63 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/StorageObject'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/StorageObject"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/storage/uploads/{id}:
     delete:
       tags:
-        - Uploads
+      - Uploads
       summary: Abort upload
       description: Abort a multipart upload
       operationId: abortMultipartUpload
       security:
-        - oauth2:
-            - storage:write
-        - bearerAuth: []
+      - oauth2:
+        - storage:write
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: id
+        in: path
+        required: true
+        description: Multipart upload ID
+        schema:
+          type: string
+          format: uuid
       responses:
-        '204':
+        "204":
           description: Multipart upload aborted successfully
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
 components:
   schemas:
@@ -672,7 +742,7 @@ components:
           format: uuid
         name:
           type: string
-          pattern: '^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+          pattern: "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
           description: Bucket name (DNS-compliant)
         owner_id:
           type: string
@@ -680,10 +750,10 @@ components:
         provider:
           type: string
           enum:
-            - S3
-            - GCS
-            - AZURE_BLOB
-            - CUSTOM
+          - S3
+          - GCS
+          - AZURE_BLOB
+          - CUSTOM
         region:
           type: string
           description: Storage region
@@ -701,7 +771,7 @@ components:
         created_at:
           type: string
           format: date-time
-    
+
     StorageObject:
       type: object
       required: [id, bucket_id, key, size_bytes, content_type, checksum, created_at]
@@ -737,10 +807,10 @@ components:
         storage_class:
           type: string
           enum:
-            - STANDARD
-            - INFREQUENT_ACCESS
-            - GLACIER
-            - DEEP_ARCHIVE
+          - STANDARD
+          - INFREQUENT_ACCESS
+          - GLACIER
+          - DEEP_ARCHIVE
         presigned_url:
           type: string
           format: uri
@@ -751,7 +821,7 @@ components:
         created_at:
           type: string
           format: date-time
-    
+
     MultipartUpload:
       type: object
       required: [id, bucket_id, key, upload_id, created_at]
@@ -785,19 +855,19 @@ components:
               status:
                 type: string
                 enum:
-                  - IN_PROGRESS
-                  - COMPLETED
-                  - ABORTED
+                - IN_PROGRESS
+                - COMPLETED
+                - ABORTED
         status:
           type: string
           enum:
-            - IN_PROGRESS
-            - COMPLETED
-            - ABORTED
+          - IN_PROGRESS
+          - COMPLETED
+          - ABORTED
         created_at:
           type: string
           format: date-time
-    
+
     Pagination:
       type: object
       properties:
@@ -809,18 +879,18 @@ components:
           type: string
         prev_cursor:
           type: string
-    
+
     Error:
       type: object
       required:
-        - error
+      - error
       properties:
         error:
           type: object
           required:
-            - code
-            - message
-            - correlationId
+          - code
+          - message
+          - correlationId
           properties:
             code:
               type: string
@@ -835,74 +905,107 @@ components:
               type: string
               format: uuid
               description: Unique identifier for tracing errors across systems
-  
+
   responses:
     BadRequest:
       description: Bad Request - The request was invalid or cannot be served
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Unauthorized:
       description: Unauthorized - Authentication failed or not provided
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Forbidden:
       description: Forbidden - The authenticated user does not have permission to access this resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     NotFound:
       description: Not Found - The requested resource could not be found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Conflict:
       description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
     TooManyRequests:
       description: Too Many Requests - The user has sent too many requests in a given amount of time
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     ServiceUnavailable:
       description: Service Unavailable - The server is currently unable to handle the request
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-  
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
   parameters:
     Limit:
       name: limit
@@ -914,7 +1017,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-    
+
     After:
       name: after
       in: query
@@ -922,7 +1025,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
@@ -930,7 +1033,34 @@ components:
       required: false
       schema:
         type: string
-  
+
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Unique request correlation ID (UUID v4) propagated across services
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2

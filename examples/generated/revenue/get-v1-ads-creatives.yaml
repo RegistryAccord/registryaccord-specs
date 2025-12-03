@@ -1,0 +1,24 @@
+service: revenue
+path: /v1/ads/creatives
+method: GET
+summary: List creatives
+response:
+  status: "200"
+  description: Creatives retrieved successfully
+  headers:
+    ETag:
+  body:
+    data:
+    - id: 123e4567-e89b-12d3-a456-426614174000
+      name: string-value
+      content_type: "image/jpeg"
+      size_bytes: 0
+      checksum:
+        md5: string-value
+        sha256: string-value
+      created_at:
+    pagination:
+      has_next_page: true
+      has_prev_page: true
+      next_cursor: string-value
+      prev_cursor: string-value

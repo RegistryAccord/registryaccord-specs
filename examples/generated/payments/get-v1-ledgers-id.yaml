@@ -1,0 +1,26 @@
+service: payments
+path: /v1/ledgers/{id}
+method: GET
+summary: Get ledger entry
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+response:
+  status: "200"
+  description: Ledger entry retrieved successfully
+  headers:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+    ETag:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      entry_type: PAYMENT_RECEIVED
+      debit_account: string-value
+      credit_account: string-value
+      amount: 0
+      currency:
+      timestamp:

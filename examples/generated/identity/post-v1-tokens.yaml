@@ -1,0 +1,27 @@
+service: identity
+path: /v1/tokens
+method: POST
+summary: Mint access token
+request:
+  body:
+    identity_id: 123e4567-e89b-12d3-a456-426614174000
+    scopes:
+    - string-value
+    expires_in: 1
+response:
+  status: "201"
+  description: Token minted successfully
+  headers:
+    RA-API-Version:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+  body:
+    data:
+      id: 123e4567-e89b-12d3-a456-426614174000
+      identity_id: 123e4567-e89b-12d3-a456-426614174000
+      token_type: access
+      scopes:
+      - string-value
+      issued_at: '2025-11-06T12:00:00Z'
+      expires_at:

@@ -1,0 +1,29 @@
+service: content
+path: /v1/content/{id}/licenses
+method: POST
+summary: Attach license to content
+request:
+  pathParams:
+    id: 123e4567-e89b-12d3-a456-426614174000
+  body:
+    license_type: CC0
+    license_url: https://api.registryaccord.com/resource/123
+    terms: string-value
+    expires_at: '2025-11-06T12:00:00Z'
+response:
+  status: "201"
+  description: License attached successfully
+  headers:
+    Location:
+    X-RateLimit-Limit:
+    X-RateLimit-Remaining:
+    X-RateLimit-Reset:
+    RA-API-Version:
+    X-Correlation-ID:
+  body:
+    id: 123e4567-e89b-12d3-a456-426614174000
+    content_id: 123e4567-e89b-12d3-a456-426614174000
+    license_type: CC0
+    license_url: https://api.registryaccord.com/resource/123
+    terms: string-value
+    granted_at:

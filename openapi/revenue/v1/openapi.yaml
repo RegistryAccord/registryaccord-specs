@@ -2,6 +2,10 @@ openapi: 3.1.0
 info:
   title: RegistryAccord Revenue Services API
   version: 1.0.0
+  x-api-version: "2025-11-01"
+  x-release-date: "2025-11-01T00:00:00Z"
+  x-support-until: "2027-05-01T00:00:00Z"
+  x-api-stability: "stable"
   description: |
     Advertising platform with real-time bidding, brand safety, viewability,
     and IVT (Invalid Traffic) detection meeting TAG guidelines.
@@ -14,47 +18,49 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 tags:
-  - name: Campaigns
-    description: Manage advertising campaigns
-  - name: Line Items
-    description: Manage campaign line items
-  - name: Segments
-    description: Manage audience segments
-  - name: Creatives
-    description: Manage ad creatives
-  - name: Auctions
-    description: Real-time bidding operations
-  - name: Events
-    description: Track impressions and clicks
-  - name: Reports
-    description: Advertising performance reports
-  - name: Budgets
-    description: Campaign budget management
-  - name: Refunds
-    description: IVT refund processing
+- name: Auctions
+  description: Real-time bidding operations
+- name: Budgets
+  description: Campaign budget management
+- name: Campaigns
+  description: Manage advertising campaigns
+- name: Creatives
+  description: Manage ad creatives
+- name: Events
+  description: Track impressions and clicks
+- name: Line Items
+  description: Manage campaign line items
+- name: Refunds
+  description: IVT refund processing
+- name: Reports
+  description: Advertising performance reports
+- name: Segments
+  description: Manage audience segments
+- name: Transparency
+  description: Transparency endpoints (ad explanations, access audits)
 
 servers:
-  - url: https://api.registryaccord.dev/revenue
-    description: Development environment
-  - url: https://api.registryaccord.com/revenue
-    description: Production environment
+- url: https://api.registryaccord.dev/revenue
+  description: Development environment
+- url: https://api.registryaccord.com/revenue
+  description: Production environment
 
 security:
-  - oauth2: []
-  - bearerAuth: []
+- oauth2: []
+- bearerAuth: []
 
 paths:
   /v1/ads/campaigns:
     post:
       tags:
-        - Campaigns
+      - Campaigns
       summary: Create campaign
       description: Create a new advertising campaign
       operationId: createCampaign
       security:
-        - oauth2:
-            - campaign:write
-        - bearerAuth: []
+      - oauth2:
+        - campaign:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -62,11 +68,11 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - advertiser_id
-                - start_date
-                - end_date
-                - budget
+              - name
+              - advertiser_id
+              - start_date
+              - end_date
+              - budget
               properties:
                 name:
                   type: string
@@ -82,25 +88,25 @@ paths:
                 budget:
                   type: object
                   required:
-                    - amount
-                    - currency
+                  - amount
+                  - currency
                   properties:
                     amount:
                       type: number
                       minimum: 0
                     currency:
                       type: string
-                      pattern: '^[A-Z]{3}$'
+                      pattern: "^[A-Z]{3}$"
                 status:
                   type: string
                   enum:
-                    - DRAFT
-                    - ACTIVE
-                    - PAUSED
-                    - COMPLETED
+                  - DRAFT
+                  - ACTIVE
+                  - PAUSED
+                  - COMPLETED
                   default: DRAFT
       responses:
-        '201':
+        "201":
           description: Campaign created successfully
           content:
             application/json:
@@ -108,56 +114,63 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Campaign'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Campaign"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Campaigns
+      - Campaigns
       summary: List campaigns
       description: List advertising campaigns
       operationId: listCampaigns
       security:
-        - oauth2:
-            - campaign:read
-        - bearerAuth: []
+      - oauth2:
+        - campaign:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
-        - name: advertiser_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Filter by advertiser ID
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: string
-            enum:
-              - DRAFT
-              - ACTIVE
-              - PAUSED
-              - COMPLETED
-          description: Filter by campaign status
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
+      - name: advertiser_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter by advertiser ID
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - DRAFT
+          - ACTIVE
+          - PAUSED
+          - COMPLETED
+        description: Filter by campaign status
       responses:
-        '200':
+        "200":
           description: Campaigns retrieved successfully
           content:
             application/json:
@@ -167,33 +180,107 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Campaign'
+                      $ref: "#/components/schemas/Campaign"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/ads/why-this-ad:
+    get:
+      summary: "Why am I seeing this ad?"
+      description: |
+        Explains why a specific ad was shown to the user.
+        Returns targeting signals in a user-friendly, obfuscated format.
+      operationId: explainAdTargeting
+      tags:
+      - Transparency
+      security:
+      - bearerAuth: []
+      - oauth2:
+        - revenue:ads:explain
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - name: ad_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: ID of the ad to explain
+      responses:
+        "200":
+          description: Ad targeting explanation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ad_id:
+                    type: string
+                  targeting_signals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        signal:
+                          type: string
+                        value:
+                          type: string
+                        weight:
+                          type: string
+                          enum: [low, medium, high]
+                  explanation:
+                    type: string
+                  obfuscated:
+                    type: boolean
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/ads/segments:
     post:
       tags:
-        - Segments
+      - Segments
       summary: Create segment
       description: Create a new audience segment
       operationId: createSegment
       security:
-        - oauth2:
-            - campaign:write
-        - bearerAuth: []
+      - oauth2:
+        - campaign:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -201,8 +288,8 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - criteria
+              - name
+              - criteria
               properties:
                 name:
                   type: string
@@ -213,7 +300,7 @@ paths:
                   description: Segment definition criteria
                   additionalProperties: true
       responses:
-        '201':
+        "201":
           description: Segment created successfully
           content:
             application/json:
@@ -221,38 +308,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Segment'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Segment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Segments
+      - Segments
       summary: List segments
       description: List audience segments
       operationId: listSegments
       security:
-        - oauth2:
-            - campaign:read
-        - bearerAuth: []
+      - oauth2:
+        - campaign:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
+        "200":
           description: Segments retrieved successfully
           content:
             application/json:
@@ -262,33 +356,38 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Segment'
+                      $ref: "#/components/schemas/Segment"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-  
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/ads/creatives:
     post:
       tags:
-        - Creatives
+      - Creatives
       summary: Upload creative
       description: Upload a new ad creative
       operationId: uploadCreative
       security:
-        - oauth2:
-            - campaign:write
-        - bearerAuth: []
+      - oauth2:
+        - campaign:write
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -296,9 +395,9 @@ paths:
             schema:
               type: object
               required:
-                - name
-                - content_type
-                - size_bytes
+              - name
+              - content_type
+              - size_bytes
               properties:
                 name:
                   type: string
@@ -316,7 +415,7 @@ paths:
                     sha256:
                       type: string
       responses:
-        '201':
+        "201":
           description: Creative upload initiated successfully
           content:
             application/json:
@@ -324,38 +423,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Creative'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-    
+                    $ref: "#/components/schemas/Creative"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+      parameters:
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
     get:
       tags:
-        - Creatives
+      - Creatives
       summary: List creatives
       description: List ad creatives
       operationId: listCreatives
       security:
-        - oauth2:
-            - campaign:read
-        - bearerAuth: []
+      - oauth2:
+        - campaign:read
+      - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/After'
-        - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/TraceState'
+      - $ref: '#/components/parameters/TraceParent'
+      - $ref: '#/components/parameters/CorrelationId'
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/After"
+      - $ref: "#/components/parameters/Before"
       responses:
-        '200':
+        "200":
           description: Creatives retrieved successfully
           content:
             application/json:
@@ -365,21 +471,26 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Creative'
+                      $ref: "#/components/schemas/Creative"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
+                    $ref: "#/components/schemas/Pagination"
+          headers:
+            ETag:
+              description: Content ETag for integrity validation and conditional requests
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 components:
   schemas:
     Campaign:
@@ -403,29 +514,29 @@ components:
         budget:
           type: object
           required:
-            - amount
-            - currency
+          - amount
+          - currency
           properties:
             amount:
               type: number
               minimum: 0
             currency:
               type: string
-              pattern: '^[A-Z]{3}$'
+              pattern: "^[A-Z]{3}$"
         status:
           type: string
           enum:
-            - DRAFT
-            - ACTIVE
-            - PAUSED
-            - COMPLETED
+          - DRAFT
+          - ACTIVE
+          - PAUSED
+          - COMPLETED
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-    
+
     Segment:
       type: object
       required: [id, name, criteria, created_at]
@@ -450,7 +561,7 @@ components:
         updated_at:
           type: string
           format: date-time
-    
+
     Creative:
       type: object
       required: [id, name, content_type, size_bytes, created_at]
@@ -486,7 +597,7 @@ components:
         updated_at:
           type: string
           format: date-time
-    
+
     Pagination:
       type: object
       properties:
@@ -498,18 +609,18 @@ components:
           type: string
         prev_cursor:
           type: string
-    
+
     Error:
       type: object
       required:
-        - error
+      - error
       properties:
         error:
           type: object
           required:
-            - code
-            - message
-            - correlationId
+          - code
+          - message
+          - correlationId
           properties:
             code:
               type: string
@@ -524,74 +635,107 @@ components:
               type: string
               format: uuid
               description: Unique identifier for tracing errors across systems
-  
+
   responses:
     BadRequest:
       description: Bad Request - The request was invalid or cannot be served
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Unauthorized:
       description: Unauthorized - Authentication failed or not provided
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Forbidden:
       description: Forbidden - The authenticated user does not have permission to access this resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     NotFound:
       description: Not Found - The requested resource could not be found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     Conflict:
       description: Conflict - The request could not be completed due to a conflict with the current state of the target resource
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
     TooManyRequests:
       description: Too Many Requests - The user has sent too many requests in a given amount of time
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-    
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
-    
+            $ref: "#/components/schemas/Error"
+
+      headers:
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
     ServiceUnavailable:
       description: Service Unavailable - The server is currently unable to handle the request
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
       headers:
         Retry-After:
           description: Seconds to wait before making another request
           schema:
             type: integer
-  
+
+        ETag:
+          description: Content ETag for integrity validation and conditional requests
+          schema:
+            type: string
   parameters:
     Limit:
       name: limit
@@ -603,7 +747,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-    
+
     After:
       name: after
       in: query
@@ -611,7 +755,7 @@ components:
       required: false
       schema:
         type: string
-    
+
     Before:
       name: before
       in: query
@@ -619,7 +763,34 @@ components:
       required: false
       schema:
         type: string
-  
+
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Unique request correlation ID (UUID v4) propagated across services
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+    TraceParent:
+      name: traceparent
+      in: header
+      required: true
+      description: W3C Trace Context header for distributed tracing
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$
+        example: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+    TraceState:
+      name: tracestate
+      in: header
+      required: false
+      description: Optional W3C Trace Context tracestate header for vendor-specific context
+      schema:
+        type: string
+        maxLength: 512
+        example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
   securitySchemes:
     oauth2:
       type: oauth2
@@ -634,6 +805,7 @@ components:
             report:read: Read advertising performance reports
             budget:read: Read campaign budget status
             budget:write: Adjust campaign budgets and process refunds
+            revenue:ads:explain: Retrieve transparency explanations for ads
         clientCredentials:
           tokenUrl: https://auth.registryaccord.com/token
           scopes:
@@ -643,6 +815,7 @@ components:
             report:read: Read advertising performance reports
             budget:read: Read campaign budget status
             budget:write: Adjust campaign budgets and process refunds
+            revenue:ads:explain: Retrieve transparency explanations for ads
     bearerAuth:
       type: http
       scheme: bearer
