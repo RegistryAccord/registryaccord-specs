@@ -22,3 +22,13 @@ coverage/
 # Build artifacts
 dist/
 build/
+
+# AI working files (temporary)
+memory-bank/scratch.md
+memory-bank/temp-*.md
+
+# IDE specific (optional, depending on team preference)
+.cursor/.cache/
+
+# Build artifacts
+*.log

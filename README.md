@@ -362,3 +362,29 @@ Apache-2.0 - See `LICENSE`
 - Issues: https://github.com/RegistryAccord/registryaccord-specs/issues
 
 Built with ❤️ by the RegistryAccord community
+
+## 🤖 AI-Native Development
+
+This repository is optimized for AI-assisted development. Whether you use Cursor, Windsurf, Claude, or any other AI coding assistant:
+
+### Quick Start for AI Agents
+1. **Read First**: `AGENTS.md` - Your entry point.
+2. **Workflows**: Check `.ai/prompts/` for task templates.
+3. **Rules**: Follow `.ai/rules/generic-rules.md`.
+
+### For Humans
+- **Requirements**: `docs/requirements/*.md`
+- **Style Guide**: `.ai/knowledge/style-guide.md`
+- **Validation**: Run `npm run lint` (if spectral is configured)
+
+### Common AI Commands
+```bash
+# Draft a new OpenAPI spec
+# Ask AI: "Use .ai/prompts/draft-openapi.md to create a new Users API spec"
+
+# Review a PR
+# Ask AI: "Use .ai/prompts/spec-review.md to review this PR"
+
+# Validate specs
+# Ask AI: "Use .ai/prompts/validate-specs.md to check all YAML files"
+```
