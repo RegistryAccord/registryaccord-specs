@@ -22,7 +22,7 @@
 
 ## Validation Checklist
 - [ ] I have read the CONTRIBUTING.md guidelines
-- [ ] My changes follow API design standards (Section 4 of SPECS_REQUIREMENTS.md)
+- [ ] My changes follow API design standards (Section 1 of `docs/requirements/global-standards.md`)
 - [ ] I have validated with `npm run validate:all` locally
 - [ ] All OpenAPI specs pass Spectral linting (zero errors)
 - [ ] I have updated examples if endpoint behavior changed

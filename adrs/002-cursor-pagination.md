@@ -191,7 +191,7 @@ Backward pagination mirrors the comparison (`>` / ASC). Composite index `(create
 
 - ✅ All seven OpenAPI specs define cursor parameters and shared pagination schemas.
 - ✅ Examples in specs and `examples/edge-cases/` show cursor responses.
-- ✅ `SPECS_REQUIREMENTS.md` §4.5 documents cursor-based pagination.
+- ✅ `docs/requirements/global-standards.md` documents cursor-based pagination.
 - ✅ SDKs expose helper methods for iterating via cursors.
 
 ## References

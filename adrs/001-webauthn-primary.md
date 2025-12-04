@@ -127,7 +127,7 @@ await fetch('/v1/sessions/webauthn/register/complete', {
 
 - W3C WebAuthn Specification: https://www.w3.org/TR/webauthn-2/
 - FIDO Alliance: https://fidoalliance.org/
-- SPECS_REQUIREMENTS.md Section 5.1: Authentication Strategy
+- `docs/requirements/identity.md`: Authentication Strategy
 - Passkey Support Matrix: https://passkeys.dev/device-support/
 
 ## Related Decisions

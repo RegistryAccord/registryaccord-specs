@@ -20,8 +20,8 @@ We consider specifications complete when ALL of the following criteria are met:
 
 ### 1. Service Coverage (100%)
 
-All 7 services specified in SPECS_REQUIREMENTS.md Section 5
-Every service has complete OpenAPI 3.1 specification
+All 7 services specified in `docs/requirements/INDEX.md`
+* `docs/requirements/global-standards.md` (Acceptance Criteria) OpenAPI 3.1 specification
 All required endpoints documented with full request/response schemas
 
 ### 2. Standards Compliance
@@ -164,8 +164,8 @@ Total coverage: 114 endpoints across seven services, each with examples, securit
 
 ## References
 
-* SPECS_REQUIREMENTS.md Section 13.3 (Acceptance Criteria)
-* SPECS_REQUIREMENTS.md Section 6.3 (Conformance Testing)
+* `docs/requirements/global-standards.md` Section 13.3 (Acceptance Criteria)
+* `docs/requirements/global-standards.md` (Conformance Testing)
 * OpenAPI Specification v3.1.0
 * RFC 7807 (Problem Details for HTTP APIs)
 

@@ -1,0 +1,16 @@
+***
+description: OpenAPI Validation Rules
+globs: ["openapi/**/*.yaml"]
+alwaysApply: true
+***
+# OpenAPI Standards
+
+When editing YAML files:
+1. Check `.ai/knowledge/style-guide.md`.
+2. Ensure `openapi: 3.1.0` version.
+3. Reuse common components (`$ref: '../../common/...'`) where possible.
+4. Run `npx spectral lint {file}` (if available) to verify.
+
+@docs/requirements/global-standards.md
+@docs/requirements/INDEX.md
+@.ai/knowledge/style-guide.md

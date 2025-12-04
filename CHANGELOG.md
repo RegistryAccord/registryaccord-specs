@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Examples**
     - 4 new fairness workflow examples demonstrating scorecard access, dispute submission, and audit history retrieval
 - **Changed**
-  - Updated SPECS_REQUIREMENTS.md from v1.0 to v2.0 with comprehensive fairness requirements
+  - Updated requirements from v1.0 to v2.0 with comprehensive fairness requirements
 - **Security & Privacy**
   - No changes to existing security or privacy baselines
   - Fairness framework enhances transparency without compromising builder IP protection
@@ -216,7 +216,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Repository Documentation**: Enhanced README with complete feature list and usage instructions
-- **Security Policies**: Updated SECURITY.md with comprehensive vulnerability reporting guidelines
+- **Security Policies**: Updated security guidelines with comprehensive vulnerability reporting guidelines
 
 ### Deprecated
 

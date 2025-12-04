@@ -34,4 +34,4 @@ All OpenAPI specs under `openapi/*/v1/openapi.yaml` import the following reusabl
 
 By referencing these parameters on every operation, the specs guarantee that SDKs and services document the required tracing and observability contract.
 
-For implementation guidance, see the upstream requirements in [`SPECS_REQUIREMENTS.md`](../SPECS_REQUIREMENTS.md#46-rate-limiting-standards) and the security/correlation guidance in `adrs/003-rfc7807-errors.md`.
+For implementation guidance, see the upstream requirements in [Rate Limiting Standards](requirements/global-standards.md#46-rate-limiting-standards) and the security/correlation guidance in `adrs/003-rfc7807-errors.md`.

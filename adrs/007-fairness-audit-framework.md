@@ -241,7 +241,7 @@ We will implement a mandatory, independent fairness audit framework for all cert
 
 - ✅ Scorecard, audit history, dispute submission/stats, audit fund, and auditor registry endpoints defined in `openapi/feeds/v1/openapi.yaml`.
 - ✅ Schemas stored under `schemas/audits/fairness-audit.json`.
-- ✅ Three-tier dispute SLAs documented in `SPECS_REQUIREMENTS.md` §6.4.
+- ✅ Three-tier dispute SLAs documented in `docs/requirements/global-standards.md`.
 - ✅ Certification statuses enumerated (CERTIFIED, SUSPENDED, REVOKED, PENDING) with fairness metrics.
 
 ### Certification & Enforcement Process
@@ -258,8 +258,6 @@ We will implement a mandatory, independent fairness audit framework for all cert
 
 ## Related Decisions
 
-## Related Decisions
-
 - ADR-001: WebAuthn as Primary Authentication
 - ADR-002: Cursor-Based Pagination
 - ADR-003: RFC 7807 Problem Details
@@ -267,9 +265,9 @@ We will implement a mandatory, independent fairness audit framework for all cert
 
 ## References
 
-- SPECS_REQUIREMENTS.md Section 5.5 (Feed Generator & Ranking API)
-- SPECS_REQUIREMENTS.md Section 6.4 (Fairness Audit Framework)
-- SPECS_REQUIREMENTS.md Section 9.4 (Dispute Resolution & Reporting)
+- `docs/requirements/feeds.md` (Feed Generator & Ranking API)
+- `docs/requirements/global-standards.md` (Fairness Audit Framework)
+- `docs/requirements/global-standards.md` (Dispute Resolution & Reporting)
 - IAB Content Taxonomy v3.0
 - TAG IVT Guidelines
 - ACM Code of Ethics and Professional Conduct

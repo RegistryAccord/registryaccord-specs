@@ -119,7 +119,7 @@ When adding new tests:
 * Include both success and error scenarios
 * Test edge cases and boundary values
 * Document expected SLOs where applicable
-* Reference specific sections of SPECS_REQUIREMENTS.md
+* Reference specific sections of `docs/requirements/INDEX.md`
 
 ## Related Repositories
 
@@ -129,5 +129,5 @@ When adding new tests:
 
 For more information, see:
 
-* SPECS_REQUIREMENTS.md Section 6.3 (Conformance Testing)
-* SPECS_REQUIREMENTS.md Section 13 (Testing & Quality)
+* `docs/requirements/global-standards.md` (Conformance Testing)
+* `docs/requirements/global-standards.md` (Testing & Quality)

@@ -55,7 +55,7 @@ Adopt a two-layer versioning strategy:
 ## References
 - `VERSIONING.md`
 - `versions.md`
-- `SPECS_REQUIREMENTS.md` §6.1 & §12.7
+- `docs/requirements/global-standards.md`
 - Stripe API versioning model
 
 ## Related ADRs

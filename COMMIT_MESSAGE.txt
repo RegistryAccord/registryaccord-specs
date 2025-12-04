@@ -1,0 +1,11 @@
+feat: restructure repo for AI-native development
+
+- Add AGENTS.md as universal AI entry point
+- Create .ai/ directory with prompts, rules, and knowledge base
+- Move SPECS_REQUIREMENTS.md to docs/requirements/
+- Add memory-bank/ for active context tracking
+- Update README with AI workflow documentation
+- Add generic rules for cross-IDE support (Cursor, Claude, Windsurf, etc.)
+
+This enables any AI coding assistant to autonomously draft, review, and
+validate OpenAPI specs following our standards.

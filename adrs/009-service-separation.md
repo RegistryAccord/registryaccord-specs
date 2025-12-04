@@ -39,7 +39,7 @@ Publish and maintain seven separate OpenAPI specifications located under `openap
 - Cross-service workflows (e.g., content publish flow) rely on trace propagation for observability.
 
 ## References
-- `SPECS_REQUIREMENTS.md` §§3 & 5
+- `docs/requirements/INDEX.md`
 - OpenAPI specs in `openapi/*/v1/`
 - Policy files defining scopes per service
 

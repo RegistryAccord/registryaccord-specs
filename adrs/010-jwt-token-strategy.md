@@ -42,7 +42,7 @@ Stakeholders include creators, third-party developers, enterprises, and service-
 - Observability targets: token verification p95 < 200ms, issuance p95 < 500ms.
 
 ## References
-- `SPECS_REQUIREMENTS.md` §§4.3 & 5.1
+- `docs/requirements/identity.md`
 - WebAuthn, OAuth2 RFC 6749, OIDC Core, JWT RFC 7519
 - Identity OpenAPI specification
 
