@@ -56,8 +56,7 @@ registryaccord-specs/
 
 ## 📚 Documentation
 
-* [SPECS_REQUIREMENTS.md](SPECS_REQUIREMENTS.md) - Detailed specification requirements
-* [SECURITY.md](SECURITY.md) - Security policies and vulnerability reporting
+* [Detailed Requirements](docs/requirements/INDEX.md)
 * [Architecture Decision Records](adrs/) - Key architectural decisions
 
 ## SDKs
@@ -337,13 +336,13 @@ Major changes require an RFC (Request for Comments):
 
 ## 📖 Documentation
 
-- **Full Requirements**: `SPECS_REQUIREMENTS.md`
+- **Full Requirements**: `docs/requirements/INDEX.md`
 - **API Design Standards**: See Section 4 of requirements
 - **Service Specifications**: See Section 5 of requirements
 
 ## 🔒 Security
 
-For security vulnerabilities, see `SECURITY.md`.
+For security vulnerabilities, please contact security@registryaccord.com.
 
 ## 📄 License
 

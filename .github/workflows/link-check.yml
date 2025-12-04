@@ -8,6 +8,10 @@ on:
       - '**/*.md'
       - '**/*.yaml'
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   link-check:
     name: Check all links in documentation
