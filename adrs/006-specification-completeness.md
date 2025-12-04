@@ -164,7 +164,7 @@ Total coverage: 114 endpoints across seven services, each with examples, securit
 
 ## References
 
-* SPECS_REQUIREMENTS.md Section 13.3 (Acceptance Criteria)
+* `docs/requirements/global-standards.md` Section 13.3 (Acceptance Criteria)
 * `docs/requirements/global-standards.md` (Conformance Testing)
 * OpenAPI Specification v3.1.0
 * RFC 7807 (Problem Details for HTTP APIs)

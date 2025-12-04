@@ -119,7 +119,7 @@ When adding new tests:
 * Include both success and error scenarios
 * Test edge cases and boundary values
 * Document expected SLOs where applicable
-* Reference specific sections of SPECS_REQUIREMENTS.md
+* Reference specific sections of `docs/requirements/INDEX.md`
 
 ## Related Repositories
 
