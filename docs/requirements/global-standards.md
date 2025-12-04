@@ -58,7 +58,7 @@ All API specifications must follow these design principles:
 
 ### 4.9. Observability & Traceability
 
-  * **Headers:** Every request MUST include `traceparent`, optional `tracestate`, and `X-Correlation-ID` headers as defined in [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md).
+  * **Headers:** Every request MUST include `traceparent`, optional `tracestate`, and `X-Correlation-ID` headers as defined in [`docs/OBSERVABILITY.md`](../OBSERVABILITY.md).
   * **Schemas:** Logging, metrics, and health responses MUST conform to the JSON Schemas under `schemas/observability/` (`trace-context.json`, `logging-standards.json`, `metrics-standards.json`, `health-checks.json`).
   * **Error Surfaces:** RFC 7807 envelopes MUST surface the correlation ID and trace identifiers so incidents can be traced end-to-end.
   * **Propagation:** Services MUST propagate inbound Trace Context headers to all downstream calls and record them in structured logs per the observability standards.

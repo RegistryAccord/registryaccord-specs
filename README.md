@@ -373,7 +373,7 @@ This repository is optimized for AI-assisted development. Whether you use Cursor
 3. **Rules**: Follow `.ai/rules/generic-rules.md`.
 
 ### For Humans
-- **Requirements**: `docs/requirements/*.md`
+- **Requirements**: `docs/requirements/INDEX.md`
 - **Style Guide**: `.ai/knowledge/style-guide.md`
 - **Validation**: Run `npm run lint` (if spectral is configured)
 

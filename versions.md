@@ -77,7 +77,7 @@ Example scenario (when a new API version is released):
 - Changed pagination format from offset to cursor
 
 **Migration**:
-1. Read [Migration Guide: 2025-11-01 → 2026-05-15](./docs/migration-2025-11-01-to-2026-05-15.md)
+1. Read Migration Guide: 2025-11-01 → 2026-05-15 (Future)
 2. Update SDK: `npm install @registryaccord/sdk@^2.0.0` 
 3. Update API version in client code:
    ```typescript

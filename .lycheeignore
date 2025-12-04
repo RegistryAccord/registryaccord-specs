@@ -1,0 +1,16 @@
+# Internal/Placeholder Domains
+https://auth.registryaccord.com
+https://registryaccord.com
+https://storage.registryaccord.com
+https://logs.registryaccord.com
+https://merchant-website.com
+https://platform-website.com
+https://storage-provider.com
+https://acme.com
+
+# Private/Not Yet Published Packages
+https://pkg.go.dev/github.com/registryaccord/sdk-go
+https://npmjs.com/package/@registryaccord/sdk
+
+# GitHub Discussions (if not enabled yet)
+https://github.com/RegistryAccord/registryaccord-specs/discussions
