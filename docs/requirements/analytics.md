@@ -1,6 +1,6 @@
 # Analytics Service Requirements
 
-### 5.7. Analytics & Telemetry API
+## 1. Analytics & Telemetry API
 
   * **Endpoints:**
       * `/v1/events`: Event ingestion.
@@ -13,3 +13,9 @@
       * **Differential Privacy:** Must provide "privacy budget" APIs to enforce differential privacy guarantees on queries and define warning thresholds for budget consumption.
       * **No Shadow Profiles:** Must prohibit data collection before explicit consent.
   * **NFRs:**
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

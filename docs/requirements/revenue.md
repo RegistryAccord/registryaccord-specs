@@ -1,6 +1,6 @@
 # Revenue Service Requirements
 
-### 5.6. Revenue Services (Ads) API
+## 1. Revenue Services (Ads) API
 
   * **Endpoints:**
       * `/v1/ads/lineitems`: Campaign line items.
@@ -20,3 +20,9 @@
   * **NFRs:**
       * Real-time bidding latency targets (\<100ms p95).
       * **Differential Privacy for Auction Logs:** Auction logs must use differential privacy with a defined **epsilon budget** and aggregation thresholds (e.g., **k-anonymity \>= 1000**) to prevent competitive intelligence leakage.
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

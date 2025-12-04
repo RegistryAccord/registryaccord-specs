@@ -1,6 +1,6 @@
 # Identity Service Requirements
 
-### 5.1. Identity Service API
+## 1. Identity Service API
 
   * **Endpoints:**
       * `/v1/identities`: Create and manage identity records.
@@ -27,3 +27,9 @@
       * High availability (99.9%+ uptime target).
       * Privacy-by-design architecture.
       * **SLOs:** `<200ms p95` token verification (cached); `<500ms p95` for new token issuance.
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

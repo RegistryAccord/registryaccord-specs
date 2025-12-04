@@ -1,6 +1,6 @@
 # Content Registry Requirements
 
-### 5.2. Content Registry API
+## 1. Content Registry API
 
   * **Endpoints:**
       * `/v1/content`: Content object CRUD.
@@ -18,3 +18,9 @@
       * **Version Integrity:** Must use immutable version hashes to prove a version has not been modified.
       * **Takedown Abuse Prevention:** Must include appeal mechanisms and proof-of-ownership requirements for content takedown requests.
   * **NFRs:** Strong consistency on writes; eventual consistency on indexes.
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

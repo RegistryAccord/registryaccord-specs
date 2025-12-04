@@ -1,6 +1,6 @@
 # Payments Service Requirements
 
-### 5.4. Payments & Payouts API
+## 1. Payments & Payouts API
 
   * **Endpoints:**
       * `/v1/payments/intents`: Payment intent creation.
@@ -18,3 +18,9 @@
       * **Payment Hold APIs:** Allows the platform or creator to temporarily pause payouts for fraud review.
       * **Dispute Resolution SLAs:** Defines timelines and processes for handling contested revenue splits, including a clear **escalation path for arbitration**.
   * **NFRs:** Idempotency for all write operations; precision-safe math; PCI delegation to PSPs.
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

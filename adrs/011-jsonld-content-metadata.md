@@ -42,7 +42,7 @@ Use JSON-LD as the serialization format and Schema.org as the base vocabulary fo
 - Documentation references how to embed metadata into HTML (`<script type="application/ld+json">`).
 
 ## References
-- `SPECS_REQUIREMENTS.md` §2.2 and §5.2
+- `docs/requirements/content.md`
 - Schema.org, JSON-LD specifications
 - `schemas/jsonld/` examples in this repository
 

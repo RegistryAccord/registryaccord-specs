@@ -11,3 +11,4 @@
    - Are error responses (4xx, 5xx) defined?
 4. **Breaking Changes**: Does this change break existing clients? (Check for removal of fields/endpoints).
 5. **Scenario Check**: Does the spec support flows defined in `docs/scenarios/`?
+- [ ] **History Updated**: Did the author update the `Version History` table in the requirement file?

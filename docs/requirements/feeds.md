@@ -1,6 +1,6 @@
 # Feeds Service Requirements
 
-### 5.5. Feed Generator & Ranking API
+## 1. Feed Generator & Ranking API
 
   * **Endpoints:**
       * `/v1/feeds/query`: Feed generation.
@@ -23,3 +23,9 @@
       * **Tiered Explainability:** Define explanation depth (high-level for users, detailed for auditors) to provide transparency without enabling gaming.
       * **Ranking Signal Obfuscation:** Define requirements to prevent reverse-engineering of ranking factors by spammers.
   * **NFRs:** Low latency (p95 targets); caching; A/B switchability.
+
+## Version History
+
+| Version | Date       | Change Type | Description        | Related ADR |
+|---------|------------|-------------|--------------------|-------------|
+| 1.0.0   | 2025-12-04 | Initial     | Base Specification | N/A         |

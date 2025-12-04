@@ -10,10 +10,10 @@
 - **Format**: OpenAPI 3.1 (YAML).
 
 ## 🤖 Standard Workflows
-1. **Draft Spec**: Use `.ai/prompts/draft-openapi.md`.
-2. **Write ADR**: Use `.ai/prompts/draft-adr.md`.
-3. **Review**: Use `.ai/prompts/spec-review.md`.
-4. **Validate**: Use `.ai/prompts/validate-specs.md`.
+- **Drafting Specs**: Use `.ai/prompts/draft-openapi.md`
+- **Reviewing**: Use `.ai/prompts/spec-review.md`
+- **Versioning**: Follow Feature Versioning Strategy (update `Version History` in requirements).
+- **Validate**: Use `.ai/prompts/validate-specs.md`.
 
 ## 🚨 Critical Rules
 - **No JSON**: All specs must be YAML.

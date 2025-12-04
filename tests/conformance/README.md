@@ -129,5 +129,5 @@ When adding new tests:
 
 For more information, see:
 
-* SPECS_REQUIREMENTS.md Section 6.3 (Conformance Testing)
-* SPECS_REQUIREMENTS.md Section 13 (Testing & Quality)
+* `docs/requirements/global-standards.md` (Conformance Testing)
+* `docs/requirements/global-standards.md` (Testing & Quality)

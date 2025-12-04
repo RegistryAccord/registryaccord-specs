@@ -158,6 +158,6 @@ Subscribe to release notifications on GitHub.
 
 - **General Questions**: info@registryaccord.com
 - **SDK Issues**: [GitHub Issues](https://github.com/RegistryAccord/registryaccord-specs/issues)
-- **Security Issues**: Use the private security contact (see SECURITY.md)
+- **Security Issues**: Use the private security contact (security@registryaccord.com)
 
 Last updated: 2025-11-17

@@ -41,7 +41,7 @@ The platform ingests large media files from many participants. Location- or UUID
 - SDKs provide helper utilities to compute SHA-256 before upload.
 
 ## References
-- `SPECS_REQUIREMENTS.md` §§2.2, 5.4
+- `docs/requirements/storage.md`
 - Storage OpenAPI specification
 - ADR-004 (Content Integrity Hashing)
 
